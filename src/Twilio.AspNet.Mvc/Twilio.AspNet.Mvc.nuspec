@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$-rc01</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/twilio/twilio-aspnet/blob/master/LICENSE</licenseUrl>
+    <projectUrl>http://github.com/twilio/twilio-aspnet</projectUrl>
+    <iconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Pre-Release</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <tags>REST SMS voice telephony phone twilio twiml</tags>
+  </metadata>
+  <files>
+    <file src="..\Twilio.AspNet.Common\bin\$configuration$\Twilio.AspNet.Common.dll" target="lib\net45\" />
+  </files>
+</package>
