@@ -1,8 +1,23 @@
 # Twilio.AspNet
 
-Twilio tools for ASP.NET MVC 3+ and eventually Web API and Core.
+Twilio tools for ASP.NET MVC 3-5 for use with v5.x of the Twilio helper library.
+This library is currently prerelease until v5.x of the Twilio helper library is released.
 
-## Incoming SMS
+The plan is to support ASP.NET Core soon.
+
+## Twilio.AspNet.Mvc
+
+### Requirements
+
+Requires .NET 4.5.1 or later with ASP.NET MVC 3-5.
+
+### Installation
+
+```
+Install-Package -Pre Twilio.AspNet.Mvc
+```
+
+### Incoming SMS
 
 ```c#
 using Twilio.AspNet.Common;
@@ -27,7 +42,7 @@ namespace WebApplication23.Controllers
 }
 ```
 
-## Incoming Voice Call
+### Incoming Voice Call
 
 ```c#
 using Twilio.AspNet.Common;
