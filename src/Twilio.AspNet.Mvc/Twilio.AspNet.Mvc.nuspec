@@ -16,6 +16,6 @@
     <tags>REST SMS voice telephony phone twilio twiml</tags>
   </metadata>
   <files>
-    <file src="..\Twilio.AspNet.Common\bin\$configuration$\Twilio.AspNet.Common.dll" target="lib\net45\" />
+    <file src="..\Twilio.AspNet.Common\bin\$configuration$\Twilio.AspNet.Common.dll" target="lib\net451\" />
   </files>
 </package>
