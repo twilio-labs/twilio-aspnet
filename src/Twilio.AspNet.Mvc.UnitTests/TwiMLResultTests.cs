@@ -46,7 +46,7 @@ namespace Twilio.AspNet.Mvc.UnitTests
         }
 
         [Fact]
-        public void TestStringDefaultEncodingUTF8()
+        public void TestStringUnicodeEncodingUTF8()
         {
             var responseString = this.GetVoiceResponse(UNICODE_CHARS).ToString();
 
@@ -88,7 +88,7 @@ namespace Twilio.AspNet.Mvc.UnitTests
         }
 
         [Fact]
-        public void TestVoiceResponseDefaultEncodingUTF8()
+        public void TestVoiceResponseUnicodeEncodingUTF8()
         {
             var response = this.GetVoiceResponse(UNICODE_CHARS);
 
