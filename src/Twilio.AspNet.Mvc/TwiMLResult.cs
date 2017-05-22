@@ -18,7 +18,12 @@ namespace Twilio.AspNet.Mvc
 
         public TwiMLResult(string twiml)
         {
-            Data = LoadFromString(twiml);
+            Data = LoadFromString(twiml, Encoding.Default);
+        }
+
+        public TwiMLResult(string twiml, Encoding encoding)
+        {
+            Data = LoadFromString(twiml, encoding);
         }
 
         public TwiMLResult(XDocument twiml)
@@ -29,18 +34,30 @@ namespace Twilio.AspNet.Mvc
         public TwiMLResult(MessagingResponse response)
         {
             if (response != null)
-                Data = LoadFromString(response.ToString());
+                Data = LoadFromString(response.ToString(), Encoding.Default);
+        }
+
+        public TwiMLResult(MessagingResponse response, Encoding encoding)
+        {
+            if (response != null)
+                Data = LoadFromString(response.ToString(), encoding);
         }
 
         public TwiMLResult(VoiceResponse response)
         {
             if (response != null)
-                Data = LoadFromString(response.ToString());
+                Data = LoadFromString(response.ToString(), Encoding.Default);
         }
 
-        private static XDocument LoadFromString(string twiml)
+        public TwiMLResult(VoiceResponse response, Encoding encoding)
         {
-            var stream = new MemoryStream(Encoding.Default.GetBytes(twiml));
+            if (response != null)
+                Data = LoadFromString(response.ToString(), encoding);
+        }
+
+        private static XDocument LoadFromString(string twiml, Encoding encoding)
+        {
+            var stream = new MemoryStream(encoding.GetBytes(twiml));
 
             var settings = new XmlReaderSettings();
             settings.DtdProcessing = DtdProcessing.Prohibit;
