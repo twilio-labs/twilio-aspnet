@@ -1,5 +1,7 @@
 # Twilio.AspNet
 
+[![Build status](https://ci.appveyor.com/api/projects/status/813hnjynh8ncamwj?svg=true)](https://ci.appveyor.com/project/TwilioAPI/twilio-aspnet)
+
 Twilio tools for ASP.NET MVC 3-5 for use with v5.x of the Twilio helper library.
 
 The plan is to support ASP.NET Core soon.
