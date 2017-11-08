@@ -1,4 +1,19 @@
+function Remove-EntirePath() {
+  Param([string]$Path)
+  if(Test-Path $Path) {
+    Remove-Item -Recurse -Force $Path
+  }
+}
+
 Push-Location .\src
+
+Remove-EntirePath .\Twilio.AspNet.Common\bin
+Remove-EntirePath .\Twilio.AspNet.Common\obj
+Remove-EntirePath .\Twilio.AspNet.Mvc\bin
+Remove-EntirePath .\Twilio.AspNet.Mvc\obj
+
+nuget restore
+if ($lastExitCode -ne 0) { exit $lastExitCode }
 
 msbuild /t:clean /verbosity:minimal
 if ($lastExitCode -ne 0) { exit $lastExitCode }
