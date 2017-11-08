@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.0;net45</TargetFrameworks>
     <PackageId>Twilio.AspNet.Common</PackageId>
-    <PackageVersion>5.8.2-rc01</PackageVersion>
+    <PackageVersion>5.8.2</PackageVersion>
     <Authors>Twilio</Authors>
     <Description>Twilio request classes for handling Twilio webhooks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
