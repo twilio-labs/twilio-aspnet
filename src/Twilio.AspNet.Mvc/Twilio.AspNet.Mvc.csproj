@@ -88,7 +88,7 @@
       <HintPath>..\packages\Twilio.5.8.2\lib\net451\Twilio.dll</HintPath>
     </Reference>
     <Reference Include="Twilio.AspNet.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Twilio.AspNet.Common.5.8.2-rc01\lib\net45\Twilio.AspNet.Common.dll</HintPath>
+      <HintPath>..\packages\Twilio.AspNet.Common.5.8.3\lib\net45\Twilio.AspNet.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

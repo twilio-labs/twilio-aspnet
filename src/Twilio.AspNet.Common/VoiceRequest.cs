@@ -45,6 +45,17 @@
         public string Digits { get; set; }
         
         /// <summary>
+        /// When used with the Gather verb, the transcribed result of the speech
+        /// </summary>
+        public string SpeechResult { get; set; }
+        
+        /// <summary>
+        /// When used with the Gather verb, a confidence score between 0.0 and 1.0 respectively.
+        /// A higher confidence score means a greater likelihood that recognized words are correct.
+        /// </summary>
+        public float? Confidence { get; set; }
+        
+        /// <summary>
         /// The URL of the recorded audio.  When the result of a transcription, the URL for the transcription's source recording resource.
         /// </summary>
         public string RecordingUrl { get; set; }
@@ -102,6 +113,30 @@
         /// </summary>
         public string DialCallDuration { get; set; }
         
+        #endregion
+
+        #region SIP Parameters
+
+        /// <summary>
+        /// The Twilio SIP Domain to which the INVITE was sent
+        /// </summary>
+        public string SipDomain { get; set; }
+
+        /// <summary>
+        /// The username given when authenticating the request, if Credential List is the authentication method.
+        /// </summary>
+        public string SipUsername { get; set; }
+
+        /// <summary>
+        /// The Call-Id of the incoming INVITE
+        /// </summary>
+        public string SipCallId { get; set; }
+
+        /// <summary>
+        /// The IP Address the incoming INVITE came from.
+        /// </summary>
+        public string SipSourceIp { get; set; }
+
         #endregion
     }
 }
