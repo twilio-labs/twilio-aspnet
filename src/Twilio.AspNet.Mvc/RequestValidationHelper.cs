@@ -18,9 +18,9 @@ namespace Twilio.AspNet.Mvc
         /// </summary>
         /// <param name="context">HttpContext to use for validation</param>
         /// <param name="authToken">AuthToken for the account used to sign the request</param>
-        public bool IsValidRequest(HttpContextBase context, string authToken)
+        public bool IsValidRequest(HttpContextBase context, string authToken, bool allowLocal = true)
         {
-            return IsValidRequest(context, authToken, null);
+            return IsValidRequest(context, authToken, null, allowLocal);
         }
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace Twilio.AspNet.Mvc
         /// <param name="context">HttpContext to use for validation</param>
         /// <param name="authToken">AuthToken for the account used to sign the request</param>
         /// <param name="urlOverride">The URL to use for validation, if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)</param>
-        public bool IsValidRequest(HttpContextBase context, string authToken, string urlOverride)
+        public bool IsValidRequest(HttpContextBase context, string authToken, string urlOverride, bool allowLocal = true)
         {
-            if (context.Request.IsLocal)
+            if (allowLocal && context.Request.IsLocal)
             {
                 return true;
             }

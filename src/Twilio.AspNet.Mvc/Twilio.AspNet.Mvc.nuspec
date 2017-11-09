@@ -11,11 +11,8 @@
     <iconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>First official release</releaseNotes>
+    <releaseNotes>Broke out Twilio.AspNet.Common into separate package.</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>REST SMS voice telephony phone twilio twiml</tags>
   </metadata>
-  <files>
-    <file src="..\Twilio.AspNet.Common\bin\$configuration$\Twilio.AspNet.Common.dll" target="lib\net451\" />
-  </files>
 </package>

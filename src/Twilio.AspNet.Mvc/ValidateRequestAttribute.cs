@@ -10,14 +10,16 @@ namespace Twilio.AspNet.Mvc
 	{
 		public string AuthToken { get; set; }
 		public string UrlOverride { get; set; }
+        public bool AllowLocal { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the ValidateRequestAttribute class.
         /// </summary>
         /// <param name="authToken"></param>
-		public ValidateRequestAttribute(string authToken)
+		public ValidateRequestAttribute(string authToken, bool allowLocal = true)
 		{
 			AuthToken = authToken;
+            AllowLocal = allowLocal;
 		}
 
         /// <summary>
@@ -25,17 +27,18 @@ namespace Twilio.AspNet.Mvc
         /// </summary>
         /// <param name="authToken"></param>
         /// <param name="urlOverride"></param>
-		public ValidateRequestAttribute(string authToken, string urlOverride)
+		public ValidateRequestAttribute(string authToken, string urlOverride, bool allowLocal = true)
 		{
 			AuthToken = authToken;
 			UrlOverride = urlOverride;
+            AllowLocal = allowLocal;
 		}
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var validator = new RequestValidationHelper();
 
-            if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, UrlOverride))
+            if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, UrlOverride, AllowLocal))
             {
                 filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
