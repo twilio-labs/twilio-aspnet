@@ -2,9 +2,13 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/813hnjynh8ncamwj?svg=true)](https://ci.appveyor.com/project/TwilioAPI/twilio-aspnet)
 
-Twilio tools for ASP.NET MVC 3-5 for use with v5.x of the Twilio helper library.
+ASP.NET tools for use with v5.x of the [Twilio helper library](https://github.com/twilio/twilio-csharp) for use with:
+- ASP.NET MVC 3-5 on the .NET Framework
+- ASP.NET Core 1-2 on .NET Core
 
-The plan is to support ASP.NET Core soon.
+You only need this library if you wish to respond to Twilio webhooks for
+voice calls and SMS messages. If you only need to use the Twilio REST API's,
+then you only need the [Twilio helper library](https://github.com/twilio/twilio-csharp).
 
 ## Twilio.AspNet.Mvc
 
@@ -17,6 +21,20 @@ Requires .NET 4.5.1 or later with ASP.NET MVC 3-5.
 ```
 Install-Package Twilio.AspNet.Mvc
 ```
+
+## Twilio.AspNet.Core
+
+### Requirements
+
+Requires .NET Core 1.0 or later with ASP.NET Core 1.0 or later.
+
+### Installation
+
+```
+Install-Package Twilio.AspNet.Core
+```
+
+## Code Samples for Either Library
 
 ### Incoming SMS
 
