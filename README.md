@@ -40,7 +40,7 @@ Install-Package Twilio.AspNet.Core
 
 ```c#
 using Twilio.AspNet.Common;
-using Twilio.AspNet.Mvc;
+using Twilio.AspNet.Mvc; // or .Core
 using Twilio.TwiML;
 
 namespace WebApplication23.Controllers
@@ -65,7 +65,7 @@ namespace WebApplication23.Controllers
 
 ```c#
 using Twilio.AspNet.Common;
-using Twilio.AspNet.Mvc;
+using Twilio.AspNet.Mvc; // or .Core
 using Twilio.TwiML;
 
 namespace WebApplication23.Controllers
