@@ -23,6 +23,9 @@ if ($lastExitCode -ne 0) { exit $lastExitCode }
 msbuild /p:Configuration=Release /verbosity:minimal
 if ($lastExitCode -ne 0) { exit $lastExitCode }
 
+# Run tests
+xunit.console.x86 ".\Twilio.AspNet.Mvc.UnitTests\bin\Release\Twilio.AspNet.Mvc.UnitTests.dll"
+
 # Create the NuGet Packages
 
 Push-Location .\Twilio.AspNet.Common

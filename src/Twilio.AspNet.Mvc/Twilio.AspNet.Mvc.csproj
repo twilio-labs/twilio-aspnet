@@ -96,6 +96,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestValidationHelper.cs" />
     <Compile Include="TwilioController.cs" />
+    <Compile Include="TwilioUriHelper.cs" />
     <Compile Include="TwiMLResult.cs" />
     <Compile Include="ValidateRequestAttribute.cs" />
   </ItemGroup>
