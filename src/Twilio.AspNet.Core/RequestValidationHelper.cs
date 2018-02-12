@@ -21,7 +21,7 @@ namespace Twilio.AspNet.Core
         /// <param name="allowLocal">Skip validation for local requests</param>
         public bool IsValidRequest(HttpContext context, string authToken, bool allowLocal = true)
         {
-            return IsValidRequest(context, authToken, null);
+            return IsValidRequest(context, authToken, null, allowLocal);
         }
 
         /// <summary>
