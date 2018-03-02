@@ -3,7 +3,6 @@ using System.Text;
 using System.Web.Mvc;
 using System.Xml;
 using System.Xml.Linq;
-using Twilio.TwiML;
 
 namespace Twilio.AspNet.Mvc
 {
@@ -18,7 +17,7 @@ namespace Twilio.AspNet.Mvc
 
         public TwiMLResult(string twiml)
         {
-            Data = LoadFromString(twiml, Encoding.Default);
+            Data = LoadFromString(twiml, Encoding.UTF8);
         }
 
         public TwiMLResult(string twiml, Encoding encoding)
@@ -31,25 +30,13 @@ namespace Twilio.AspNet.Mvc
             Data = twiml;
         }
 
-        public TwiMLResult(MessagingResponse response)
+        public TwiMLResult(TwiML.TwiML response)
         {
             if (response != null)
-                Data = LoadFromString(response.ToString(), Encoding.Default);
+                Data = LoadFromString(response.ToString(), Encoding.UTF8);
         }
 
-        public TwiMLResult(MessagingResponse response, Encoding encoding)
-        {
-            if (response != null)
-                Data = LoadFromString(response.ToString(), encoding);
-        }
-
-        public TwiMLResult(VoiceResponse response)
-        {
-            if (response != null)
-                Data = LoadFromString(response.ToString(), Encoding.Default);
-        }
-
-        public TwiMLResult(VoiceResponse response, Encoding encoding)
+        public TwiMLResult(TwiML.TwiML response, Encoding encoding)
         {
             if (response != null)
                 Data = LoadFromString(response.ToString(), encoding);

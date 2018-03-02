@@ -1,114 +1,91 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
+using System.Xml;
 using Xunit;
 
 namespace Twilio.AspNet.Mvc.UnitTests
 {
+    // ReSharper disable once InconsistentNaming
     public class TwiMLResultTests
     {
-        const string ASCII_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        const string UNICODE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890äåéö";        
+        public const string AsciiChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        public const string UnicodeChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890äåéö";        
 
         //string constructor
-
         [Fact]
         public void TestStringDefaultEncodingPass()
         {
-            var responseString = this.GetVoiceResponse(ASCII_CHARS).ToString();
+            var responseString = GetVoiceResponse(UnicodeChars).ToString();
 
             var result = new TwiMLResult(responseString);
 
-            Assert.Contains(ASCII_CHARS, result.Data.ToString());
+            Assert.Contains(UnicodeChars, result.Data.ToString());
         }
 
         [Fact]
-        public void TestStringDefaultEncodingFail()
+        public void TestStringAsciiEncodingFail()
         {
-            var responseString = this.GetVoiceResponse(UNICODE_CHARS).ToString();
+            var responseString = GetVoiceResponse(UnicodeChars).ToString();
 
-            Assert.ThrowsAny<Exception>(() =>
-            {
-                var result = new TwiMLResult(responseString);
-            });            
+            var result = new TwiMLResult(responseString, Encoding.ASCII);
+
+            Assert.Contains(AsciiChars, result.Data.ToString());
+            Assert.DoesNotContain(UnicodeChars, result.Data.ToString());
         }
 
         [Fact]
-        public void TestStringUnicodeEncodingASCII()
+        public void TestStringUnicodeEncodingUtf8()
         {
-            var responseString = this.GetVoiceResponse(ASCII_CHARS).ToString();
+            var responseString = GetVoiceResponse(UnicodeChars).ToString();
 
             var result = new TwiMLResult(responseString, Encoding.UTF8);
 
-            Assert.Contains(ASCII_CHARS, result.Data.ToString());
-        }
-
-        [Fact]
-        public void TestStringUnicodeEncodingUTF8()
-        {
-            var responseString = this.GetVoiceResponse(UNICODE_CHARS).ToString();
-
-            var result = new TwiMLResult(responseString, Encoding.UTF8);
-
-            Assert.Contains(UNICODE_CHARS, result.Data.ToString());
+            Assert.Contains(UnicodeChars, result.Data.ToString());
         }
 
         //voice response constructor
         [Fact]
         public void TestVoiceResponseDefaultEncodingPass()
         {
-            var response = this.GetVoiceResponse(ASCII_CHARS);
+            var response = GetVoiceResponse(UnicodeChars);
 
             var result = new TwiMLResult(response);
 
-            Assert.Contains(ASCII_CHARS, result.Data.ToString());
+            Assert.Contains(UnicodeChars, result.Data.ToString());
         }
 
         [Fact]
-        public void TestVoiceResponseDefaultEncodingFail()
+        public void TestVoiceResponseAsciiEncodingFail()
         {
-            var response = this.GetVoiceResponse(UNICODE_CHARS);
+            var response = GetVoiceResponse(UnicodeChars);
 
-            Assert.ThrowsAny<Exception>(() =>
-            {
-                var result = new TwiMLResult(response);
-            });
+            var result = new TwiMLResult(response, Encoding.ASCII);
+
+            Assert.Contains(AsciiChars, result.Data.ToString());
+            Assert.DoesNotContain(UnicodeChars, result.Data.ToString());
         }
 
         [Fact]
-        public void TestVoiceResponseUnicodeEncodingASCII()
+        public void TestVoiceResponseUnicodeEncodingUtf8()
         {
-            var response = this.GetVoiceResponse(ASCII_CHARS);
+            var response = GetVoiceResponse(UnicodeChars);
 
             var result = new TwiMLResult(response, Encoding.UTF8);
 
-            Assert.Contains(ASCII_CHARS, result.Data.ToString());
-        }
-
-        [Fact]
-        public void TestVoiceResponseUnicodeEncodingUTF8()
-        {
-            var response = this.GetVoiceResponse(UNICODE_CHARS);
-
-            var result = new TwiMLResult(response, Encoding.UTF8);
-
-            Assert.Contains(UNICODE_CHARS, result.Data.ToString());
+            Assert.Contains(UnicodeChars, result.Data.ToString());
         }
 
         [Fact]
         public void TestVoiceResponseExplicitDefaultEncodingFail()
         {
-            var response = this.GetVoiceResponse(UNICODE_CHARS);
+            var response = GetVoiceResponse(UnicodeChars);
 
-            Assert.ThrowsAny<Exception>(() =>
+            Assert.Throws<XmlException>(() =>
             {
-                var result = new TwiMLResult(response, Encoding.Default);
+                new TwiMLResult(response, Encoding.Default);
             });
         }
 
-        private TwiML.VoiceResponse GetVoiceResponse(string content)
+        public TwiML.VoiceResponse GetVoiceResponse(string content)
         {
             return new TwiML.VoiceResponse().Say(content);
         }
