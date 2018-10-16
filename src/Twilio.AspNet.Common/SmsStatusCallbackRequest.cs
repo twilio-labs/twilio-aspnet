@@ -1,14 +1,7 @@
 ﻿namespace Twilio.AspNet.Common
 {
-    public class SmsStatusCallbackRequest
+    public class SmsStatusCallbackRequest: SmsRequest
     {
-        /// <summary>
-        /// The status of the message. Message delivery information is reflected in 
-        /// message status. The possible values are listed in the Message resource.
-        /// See: https://www.twilio.com/docs/sms/api/message#message-status-values
-        /// </summary>
-        public string MessageStatus { get; set; }
-
         /// <summary>
         /// The error code (if any) associated with your message. If your message 
         /// status is failed or undelivered, the ErrorCode can give you more information 
