@@ -61,9 +61,24 @@
         public string RecordingUrl { get; set; }
 
         /// <summary>
+        /// The status of the recording. Possible values are: completed, failed.
+        /// </summary>
+        public string RecordingStatus { get; set; }
+
+        /// <summary>
         /// The duration of the recorded audio (in seconds)
         /// </summary>
         public string RecordingDuration { get; set; }
+
+        /// <summary>
+        /// The number of channels in the final recording file as an integer.
+        /// </summary>
+        public int? RecordingChannels { get; set; }
+
+        /// <summary>
+        /// The source of the recorded audio.
+        /// </summary>
+        public string RecordingSource { get; set; }
 
         #endregion
 
