@@ -44,8 +44,9 @@ namespace Twilio.AspNet.Core
             // validate request
             // http://www.twilio.com/docs/security-reliability/security
             // Take the full URL of the request, from the protocol (http...) through the end of the query string (everything after the ?)
-            var requestedUrl = $"{request.Scheme}://{request.Host.Host}{request.Path}{request.QueryString}";
-            var fullUrl = string.IsNullOrEmpty(urlOverride) ? requestedUrl : urlOverride;
+            string fullUrl = string.IsNullOrEmpty(urlOverride)
+                ? $"{request.Scheme}://{(request.IsHttps ? request.Host.Host : request.Host.ToUriComponent())}{request.Path}{request.QueryString}"
+                : urlOverride;
 
             var value = new StringBuilder();
             value.Append(fullUrl);
