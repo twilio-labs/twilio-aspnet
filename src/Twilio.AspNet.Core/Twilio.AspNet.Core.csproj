@@ -1,10 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
     <OutputType>Library</OutputType>
     <PackageId>Twilio.AspNet.Core</PackageId>
-    <PackageVersion>5.20.1</PackageVersion>
+    <PackageVersion>5.33.1</PackageVersion>
     <Authors>Twilio</Authors>
     <Description>Twilio helpers for ASP.NET Core 1.0 to 2.x.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -14,13 +13,11 @@
     <PackageLicenseUrl>https://github.com/twilio/twilio-aspnet/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://github.com/twilio/twilio-aspnet</PackageProjectUrl>
     <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
-    <Version>5.20.1</Version>
+    <Version>5.33.1</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
-    <PackageReference Include="Twilio" Version="5.20.1" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="5.20.1" />
+    <PackageReference Include="Twilio" Version="5.33.1" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="5.33.1" />
   </ItemGroup>
-
 </Project>

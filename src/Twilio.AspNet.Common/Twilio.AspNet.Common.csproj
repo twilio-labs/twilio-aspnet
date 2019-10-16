@@ -1,10 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard1.0;net45</TargetFrameworks>
     <OutputType>Library</OutputType>
     <PackageId>Twilio.AspNet.Common</PackageId>
-    <PackageVersion>5.20.1</PackageVersion>
+    <PackageVersion>5.33.1</PackageVersion>
     <Authors>Twilio</Authors>
     <Description>Twilio request classes for handling Twilio webhooks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -15,5 +14,4 @@
     <PackageProjectUrl>http://github.com/twilio/twilio-aspnet</PackageProjectUrl>
     <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
   </PropertyGroup>
-
 </Project>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -84,11 +84,11 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Twilio, Version=5.20.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Twilio.5.20.1\lib\net451\Twilio.dll</HintPath>
+    <Reference Include="Twilio, Version=5.33.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Twilio.5.33.1\lib\net451\Twilio.dll</HintPath>
     </Reference>
-    <Reference Include="Twilio.AspNet.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Twilio.AspNet.Common.5.20.1\lib\net45\Twilio.AspNet.Common.dll</HintPath>
+    <Reference Include="Twilio.AspNet.Common, Version=5.33.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Twilio.AspNet.Common.5.33.1\lib\net45\Twilio.AspNet.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -116,3 +116,5 @@
   </Target>
   -->
 </Project>
+
+
