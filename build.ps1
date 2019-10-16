@@ -28,7 +28,7 @@ dotnet msbuild /t:pack /p:Configuration=Release /p:OutputPath=..\..\ /verbosity:
 if ($lastExitCode -ne 0) { exit $lastExitCode }
 Pop-Location
 
-& $nugetExe ('restore', '-Source', 'C:\Users\david\Projects\twilio-aspnet;https://api.nuget.org/v3/index.json')
+& $nugetExe ('restore', '-Source', ($PSScriptRoot + ';https://api.nuget.org/v3/index.json'))
 if ($lastExitCode -ne 0) { exit $lastExitCode }
 
 dotnet msbuild /t:clean /verbosity:minimal
