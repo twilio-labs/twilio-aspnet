@@ -25,5 +25,11 @@ namespace Twilio.AspNet.Common
         /// The message OptOut type 
         /// </summary>
         public string OptOutType { get; set; }
+
+        /// <summary>
+        /// A unique identifier of the messaging service
+        /// </summary>
+        public string MessagingServiceSid { get; set; }
+
     }
 }
