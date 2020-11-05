@@ -1,4 +1,4 @@
-﻿namespace Twilio.AspNet.Common
+namespace Twilio.AspNet.Common
 {
     /// <summary>
     /// This class can be used as the parameter on your SMS action. Incoming parameters will be bound here.
@@ -20,5 +20,16 @@
         /// The status of the message
         /// </summary>
         public string MessageStatus { get; set; }
+
+        /// <summary>
+        /// The message OptOut type 
+        /// </summary>
+        public string OptOutType { get; set; }
+
+        /// <summary>
+        /// A unique identifier of the messaging service
+        /// </summary>
+        public string MessagingServiceSid { get; set; }
+
     }
 }
