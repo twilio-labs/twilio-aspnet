@@ -3,7 +3,7 @@
     <TargetFrameworks>netstandard1.0;net45</TargetFrameworks>
     <OutputType>Library</OutputType>
     <PackageId>Twilio.AspNet.Common</PackageId>
-    <PackageVersion>5.68.1</PackageVersion>
+    <PackageVersion>5.68.1-Preview</PackageVersion>
     <Authors>Twilio</Authors>
     <Description>Twilio request classes for handling Twilio webhooks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -16,6 +16,6 @@
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="icon.png" Pack="true" PackagePath="\"/>
+    <None Include="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

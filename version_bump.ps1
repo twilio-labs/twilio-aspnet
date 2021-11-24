@@ -8,7 +8,7 @@ function updateStandardCsproj() {
   }
   $fileContent.Project.PropertyGroup.PackageVersion = $targetVersion.ToString()
 
-  if ($fileContent.Project.ItemGroup) {
+  if ($fileContent.Project.ItemGroup -and $fileContent.Project.ItemGroup.PackageReference) {
     $fileContent.Project.ItemGroup.PackageReference | Where-Object { $_.Include.StartsWith("Twilio") } | ForEach-Object {
       $_.Version = $targetVersion.ToString()
     }
