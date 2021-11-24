@@ -16,14 +16,18 @@ namespace Twilio.AspNet.Mvc.UnitTests
         public Moq.Mock<HttpContext> HttpContext { get; set; }
         public Moq.Mock<HttpRequest> Request { get; set; }
 
-        public ContextMocks(bool isLocal, FormCollection? form = null) : this("", isLocal, form)
+        public ContextMocks(bool isLocal, FormCollection? form = null, bool isProxied = false) : this("", isLocal, form, isProxied)
         {
         }
 
-        public ContextMocks(string urlOverride, bool isLocal, FormCollection? form = null)
+        public ContextMocks(string urlOverride, bool isLocal, FormCollection? form = null, bool isProxied = false)
         {
             var headers = new HeaderDictionary();
             headers.Add("X-Twilio-Signature", CalculateSignature(urlOverride, form));
+            if (isProxied)
+            {
+                headers.Add("X-Forwarded-For", "1.1.1.1");
+            }
 
             var connectionInfo = new Moq.Mock<ConnectionInfo>();
             connectionInfo.Setup(x => x.RemoteIpAddress).Returns(isLocal ? IPAddress.Loopback : IPAddress.Parse("1.1.1.1"));
@@ -87,6 +91,17 @@ namespace Twilio.AspNet.Mvc.UnitTests
         }
 
         [Fact]
+        public void TestNoLocalDueToProxy()
+        {
+            var validator = new RequestValidationHelper();
+
+            var fakeContext = (new ContextMocks(true, isProxied: true)).HttpContext.Object;
+            var result = validator.IsValidRequest(fakeContext, "bad-token", true);
+
+            Assert.False(result);
+        }
+
+        [Fact]
         public void TestNoLocal()
         {
             var validator = new RequestValidationHelper();
@@ -103,6 +118,21 @@ namespace Twilio.AspNet.Mvc.UnitTests
             var validator = new RequestValidationHelper();
 
             var fakeContext = (new ContextMocks(true)).HttpContext.Object;
+            var result = validator.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void TestBadForm()
+        {
+            var validator = new RequestValidationHelper();
+
+            var contextMocks = new ContextMocks(true);
+            var fakeContext = contextMocks.HttpContext.Object;
+            contextMocks.Request.Setup(x => x.Method).Returns("POST");
+            contextMocks.Request.Setup(x => x.Form).Throws(new Exception("poof!"));
+
             var result = validator.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
 
             Assert.True(result);

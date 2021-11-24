@@ -7,6 +7,12 @@ namespace Twilio.AspNet.Core
     {
         public static bool IsLocal(this HttpRequest req)
         {
+            if (req.Headers.ContainsKey("X-Forwarded-For"))
+            {
+                // Assume not local if we're behind a proxy
+                return false;
+            }
+            
             var connection = req.HttpContext.Connection;
             if (connection.RemoteIpAddress != null)
             {
