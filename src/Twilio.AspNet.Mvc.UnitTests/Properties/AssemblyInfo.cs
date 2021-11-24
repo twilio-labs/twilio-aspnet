@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Twilio.AspNet.Mvc.UnitTests")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright © 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -14,8 +14,9 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("b92bda0d-ad69-4756-bbd6-6e77c4b51906")]
 
-[assembly: AssemblyVersion("5.37.2")]
-[assembly: AssemblyFileVersion("5.37.2")]
+[assembly: AssemblyVersion("5.68.1")]
+[assembly: AssemblyFileVersion("5.68.1")]
+
 
 
 

@@ -59,13 +59,11 @@ function updateAssemblyInfo() {
 
 $currentVersion = [version]([xml](Get-Content src/Twilio.AspNet.Common/Twilio.AspNet.Common.csproj)).Project.PropertyGroup.PackageVersion
 
-$twilioPackageInfo = (ConvertFrom-Json (Invoke-WebRequest https://api.nuget.org/v3/registration3-gz-semver2/twilio/index.json).Content)
+$twilioPackageInfo = (Invoke-WebRequest https://www.nuget.org/packages/Twilio/latest).Content
 $maxVersion = [version]"0.0.0"
 
-$twilioPackageInfo.items | ForEach-Object {
-  if ([version]$_.upper -gt $maxVersion) {
-    $maxVersion = [version]$_.upper
-  }
+if ($twilioPackageInfo -match "\| Twilio (\d+\.\d+\.\d+)") {
+  $maxVersion = [version]$matches[1]
 }
 
 Write-Host "Current Version: $currentVersion"
