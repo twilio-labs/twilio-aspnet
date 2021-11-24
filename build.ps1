@@ -18,6 +18,7 @@ function Stop-Script($exitCode) {
 }
 
 $nugetExe = Join-Path $PSScriptRoot "tools/nuget.exe"
+$xunitExe = Join-Path $PSScriptRoot "tools/xunit.console.x86.exe"
 
 Push-Location .\src
 
@@ -50,7 +51,7 @@ dotnet msbuild /p:Configuration=Release /verbosity:minimal
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 
 # Run tests
-xunit.console.x86 ".\Twilio.AspNet.Mvc.UnitTests\bin\Release\Twilio.AspNet.Mvc.UnitTests.dll"
+& $xunitExe (".\Twilio.AspNet.Mvc.UnitTests\bin\Release\Twilio.AspNet.Mvc.UnitTests.dll")
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 
 Push-Location .\Twilio.AspNet.Core.UnitTests
