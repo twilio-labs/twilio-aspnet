@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Linq;
 using System.Web;
 using Twilio.Security;
 
@@ -32,7 +33,7 @@ namespace Twilio.AspNet.Mvc
         /// <param name="allowLocal">Skip validation for local requests</param>
         public bool IsValidRequest(HttpContextBase context, string authToken, string urlOverride, bool allowLocal = true)
         {
-            if (allowLocal && context.Request.IsLocal)
+            if (allowLocal && context.Request.IsLocal && !context.Request.Headers.AllKeys.Contains("X-Forwarded-For"))
             {
                 return true;
             }
