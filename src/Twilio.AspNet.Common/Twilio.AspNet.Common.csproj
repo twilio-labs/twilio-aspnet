@@ -3,15 +3,19 @@
     <TargetFrameworks>netstandard1.0;net45</TargetFrameworks>
     <OutputType>Library</OutputType>
     <PackageId>Twilio.AspNet.Common</PackageId>
-    <PackageVersion>5.37.2</PackageVersion>
+    <PackageVersion>5.68.1</PackageVersion>
     <Authors>Twilio</Authors>
     <Description>Twilio request classes for handling Twilio webhooks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>First release</PackageReleaseNotes>
-    <Copyright>Copyright 2017 (c) Twilio, Inc. All rights reserved.</Copyright>
+    <Copyright>Copyright 2021 (c) Twilio, Inc. All rights reserved.</Copyright>
     <PackageTags>twilio</PackageTags>
-    <PackageLicenseUrl>https://github.com/twilio/twilio-aspnet/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>http://github.com/twilio/twilio-aspnet</PackageProjectUrl>
     <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>

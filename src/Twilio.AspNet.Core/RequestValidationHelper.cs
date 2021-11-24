@@ -1,8 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Http;
+using Twilio.Security;
 
 namespace Twilio.AspNet.Core
 {
@@ -48,32 +47,24 @@ namespace Twilio.AspNet.Core
                 ? $"{request.Scheme}://{(request.IsHttps ? request.Host.Host : request.Host.ToUriComponent())}{request.Path}{request.QueryString}"
                 : urlOverride;
 
-            var value = new StringBuilder();
-            value.Append(fullUrl);
-
-            // If the request is a POST, take all of the POST parameters and sort them alphabetically.
-            if (request.Method == "POST")
+            IFormCollection form = null;
+            try
             {
-                // Iterate through that sorted list of POST parameters, and append the variable name and value (with no delimiters) to the end of the URL string
-                var sortedKeys = request.Form.Keys.OrderBy(k => k, StringComparer.Ordinal).ToList();
-                foreach (var key in sortedKeys)
-                {
-                    value.Append(key);
-                    value.Append(request.Form[key]);
-                }
+                form = request.Form;
             }
-
-            // Sign the resulting value with HMAC-SHA1 using your AuthToken as the key (remember, your AuthToken's case matters!).
-            var sha1 = new HMACSHA1(Encoding.UTF8.GetBytes(authToken));
-            var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(value.ToString()));
-
-            // Base64 encode the hash
-            var encoded = Convert.ToBase64String(hash);
-
-            // Compare your hash to ours, submitted in the X-Twilio-Signature header. If they match, then you're good to go.
-            var sig = request.Headers["X-Twilio-Signature"];
-
-            return sig == encoded;
+            catch
+            {
+                // ignore errors accessing invalid/non-existant form
+            }
+            
+            var validator = new RequestValidator(authToken);
+            return validator.Validate(
+                url: fullUrl,
+                parameters: form?.Count > 0
+                    ? form.Keys.ToDictionary(k => k, k => form[k].ToString())
+                    : new Dictionary<string, string>(),
+                expected: request.Headers["X-Twilio-Signature"]
+            );
         }
     }
 }
