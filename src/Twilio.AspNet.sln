@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Core", "Twili
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Mvc.UnitTests", "Twilio.AspNet.Mvc.UnitTests\Twilio.AspNet.Mvc.UnitTests.csproj", "{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Core.UnitTests", "Twilio.AspNet.Core.UnitTests\Twilio.AspNet.Core.UnitTests.csproj", "{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

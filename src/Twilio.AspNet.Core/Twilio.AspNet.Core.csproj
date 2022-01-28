@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
     <PackageId>Twilio.AspNet.Core</PackageId>
     <PackageVersion>5.68.3</PackageVersion>
@@ -17,6 +17,7 @@
     <Version>5.68.3</Version>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
     <PackageReference Include="Twilio" Version="5.68.1" />
     <PackageReference Include="Twilio.AspNet.Common" Version="5.68.3" />
