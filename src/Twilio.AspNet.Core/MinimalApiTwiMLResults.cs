@@ -1,3 +1,4 @@
+#if NET6_0
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -38,3 +39,4 @@ namespace Twilio.AspNet.Core.MinimalApi
         }
     }
 }
+#endif
