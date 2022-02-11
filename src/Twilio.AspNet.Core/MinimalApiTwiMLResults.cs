@@ -1,4 +1,4 @@
-#if NET6_0
+#if NET6_0_OR_GREATER
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
