@@ -12,7 +12,7 @@ function Stop-Script($exitCode) {
   if ($exitCode -eq 0) {
     Write-Host "SUCCESS" -ForegroundColor Green
   } else {
-    Write-Host "FAILIURE" -ForegroundColor Red
+    Write-Host "FAILURE" -ForegroundColor Red
   }
   exit $exitCode
 }
@@ -31,23 +31,23 @@ Remove-EntirePath .\Twilio.AspNet.Mvc\obj
 
 # Build Twilio.AspNet.Common first
 Push-Location .\Twilio.AspNet.Common
-dotnet restore
+dotnet restore -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
-dotnet msbuild /t:clean /verbosity:minimal
+dotnet clean -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
-dotnet msbuild /p:Configuration=Release /verbosity:minimal
+dotnet build -c Release -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
-dotnet msbuild /t:pack /p:Configuration=Release /p:OutputPath=..\..\ /verbosity:minimal
+dotnet pack -c Release -o ..\..\ -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 Pop-Location
 
-& $nugetExe ('restore', '-Source', ($PSScriptRoot + ';https://api.nuget.org/v3/index.json'))
+dotnet restore -v m --source $($PSScriptRoot + ';https://api.nuget.org/v3/index.json')
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 
-dotnet msbuild /t:clean /verbosity:minimal
+dotnet clean -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 
-dotnet msbuild /p:Configuration=Release /verbosity:minimal
+dotnet build -c Release -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 
 # Run tests
@@ -55,14 +55,13 @@ if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 
 Push-Location .\Twilio.AspNet.Core.UnitTests
-dotnet test
+dotnet test -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 Pop-Location
 
 # Create the NuGet Packages
-
 Push-Location .\Twilio.AspNet.Core
-dotnet msbuild /t:pack /p:Configuration=Release /p:OutputPath=..\..\ /verbosity:minimal
+dotnet pack -c Release -o ..\..\ -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 Pop-Location
 

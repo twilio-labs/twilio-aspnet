@@ -1,3 +1,6 @@
+using Twilio.AspNet.Core.MinimalApi;
+using Twilio.TwiML;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -23,5 +26,13 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapMethods("/minimal-sms", new[] {"get", "post"}, () =>
+{
+    var messagingResponse = new MessagingResponse();
+    messagingResponse.Message("The Robots are coming! Head for the hills!!");
+
+    return Results.Extensions.TwiML(messagingResponse);
+});
 
 app.Run();

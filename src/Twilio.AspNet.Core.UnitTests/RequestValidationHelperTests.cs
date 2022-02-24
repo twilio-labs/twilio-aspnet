@@ -9,7 +9,7 @@ using Microsoft.Extensions.Primitives;
 using Twilio.AspNet.Core;
 using Xunit;
 
-namespace Twilio.AspNet.Mvc.UnitTests
+namespace Twilio.AspNet.Core.UnitTests
 {
     public class ContextMocks
     {

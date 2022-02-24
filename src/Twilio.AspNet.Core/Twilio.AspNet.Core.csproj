@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFrameworks>netstandard1.6;net6.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <PackageId>Twilio.AspNet.Core</PackageId>
-    <PackageVersion>5.68.3</PackageVersion>
+    <PackageVersion>5.71.0</PackageVersion>
     <Authors>Twilio</Authors>
     <Description>Twilio helpers for ASP.NET Core 1.0 to 2.x.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -14,12 +14,13 @@
     <PackageProjectUrl>http://github.com/twilio/twilio-aspnet</PackageProjectUrl>
     <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
-    <Version>5.68.3</Version>
+    <Version>5.71.0</Version>
   </PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="'$(TargetFramework)' == 'net6.0' " />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
-    <PackageReference Include="Twilio" Version="5.68.1" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="5.68.3" />
+    <PackageReference Include="Twilio" Version="5.71.0" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="5.71.0" />
     <None Include="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
