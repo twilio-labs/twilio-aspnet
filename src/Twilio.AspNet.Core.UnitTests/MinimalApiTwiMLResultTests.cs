@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Twilio.AspNet.Core.MinimalApi;
@@ -11,20 +12,27 @@ namespace Twilio.AspNet.Core.UnitTests;
 public class MinimalApiTwiMLResultTests
 {
     [Fact]
-    public async Task TestTwimlResultWritesToResponseBody()
+    public Task TestTwimlResultWritesVoiceResponseToResponseBody() =>
+        ValidateTwimlResultWritesToResponseBody(GetVoiceResponse());
+
+    [Fact]
+    public Task TestTwimlResultWritesMessagingResponseToResponseBody() =>
+        ValidateTwimlResultWritesToResponseBody(GetMessagingResponse());
+    
+    private static async Task ValidateTwimlResultWritesToResponseBody(TwiML.TwiML twiMlResponse)
     {
         var httpContext = new DefaultHttpContext();
         httpContext.Response.Body = new MemoryStream();
 
-        var twiml = GetVoiceResponse();
-        var twimlResult = Results.Extensions.TwiML(twiml);
+        var twimlResult = Results.Extensions.TwiML(twiMlResponse);
         await twimlResult.ExecuteAsync(httpContext);
 
         httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(httpContext.Response.Body);
         var responseBody = await reader.ReadToEndAsync();
-        Assert.Equal(twiml.ToString(), responseBody);
+        Assert.Equal(twiMlResponse.ToString(), responseBody);
     }
 
-    private static VoiceResponse GetVoiceResponse() => new TwiML.VoiceResponse().Say("Hello World");
+    private static VoiceResponse GetVoiceResponse() => new VoiceResponse().Say("Hello World");
+    private static MessagingResponse GetMessagingResponse() => new MessagingResponse().Message("Hello World");
 }
