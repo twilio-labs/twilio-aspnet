@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet6", "dotnet6\dotnet6.csproj", "{23F63461-B99A-481F-9A61-B80097F67280}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetFramework", "AspNetFramework\AspNetFramework.csproj", "{205BE517-D71F-47C0-ACDF-6C828884369C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalProjects", "ExternalProjects", "{AED80629-19FC-4A52-BEAA-94741C25E1BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Common", "..\Twilio.AspNet.Common\Twilio.AspNet.Common.csproj", "{5F5E8A22-A8F3-4A9F-8E30-C2AA067FD571}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Core", "..\Twilio.AspNet.Core\Twilio.AspNet.Core.csproj", "{32E21D22-8CB9-4BC5-8FF4-71E0017AF3A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Mvc", "..\Twilio.AspNet.Mvc\Twilio.AspNet.Mvc.csproj", "{42938487-C4BE-4BFA-BF4B-FB3FA6A5E367}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23F63461-B99A-481F-9A61-B80097F67280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23F63461-B99A-481F-9A61-B80097F67280}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23F63461-B99A-481F-9A61-B80097F67280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23F63461-B99A-481F-9A61-B80097F67280}.Release|Any CPU.Build.0 = Release|Any CPU
+		{205BE517-D71F-47C0-ACDF-6C828884369C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{205BE517-D71F-47C0-ACDF-6C828884369C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{205BE517-D71F-47C0-ACDF-6C828884369C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{205BE517-D71F-47C0-ACDF-6C828884369C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F5E8A22-A8F3-4A9F-8E30-C2AA067FD571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F5E8A22-A8F3-4A9F-8E30-C2AA067FD571}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F5E8A22-A8F3-4A9F-8E30-C2AA067FD571}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F5E8A22-A8F3-4A9F-8E30-C2AA067FD571}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32E21D22-8CB9-4BC5-8FF4-71E0017AF3A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32E21D22-8CB9-4BC5-8FF4-71E0017AF3A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32E21D22-8CB9-4BC5-8FF4-71E0017AF3A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32E21D22-8CB9-4BC5-8FF4-71E0017AF3A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42938487-C4BE-4BFA-BF4B-FB3FA6A5E367}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42938487-C4BE-4BFA-BF4B-FB3FA6A5E367}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42938487-C4BE-4BFA-BF4B-FB3FA6A5E367}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42938487-C4BE-4BFA-BF4B-FB3FA6A5E367}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5F5E8A22-A8F3-4A9F-8E30-C2AA067FD571} = {AED80629-19FC-4A52-BEAA-94741C25E1BD}
+		{32E21D22-8CB9-4BC5-8FF4-71E0017AF3A3} = {AED80629-19FC-4A52-BEAA-94741C25E1BD}
+		{42938487-C4BE-4BFA-BF4B-FB3FA6A5E367} = {AED80629-19FC-4A52-BEAA-94741C25E1BD}
+	EndGlobalSection
+EndGlobal
