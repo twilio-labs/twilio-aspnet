@@ -14,7 +14,7 @@ namespace Twilio.AspNet.Core
         /// <param name="response"></param>
         /// <returns></returns>
         // ReSharper disable once InconsistentNaming
-        protected TwiMLResult TwiML(MessagingResponse response)
+        public TwiMLResult TwiML(MessagingResponse response)
         {
             return new TwiMLResult(response);
         }
@@ -25,7 +25,7 @@ namespace Twilio.AspNet.Core
         /// <param name="response"></param>
         /// <returns></returns>
         // ReSharper disable once InconsistentNaming
-        protected TwiMLResult TwiML(VoiceResponse response)
+        public TwiMLResult TwiML(VoiceResponse response)
         {
             return new TwiMLResult(response);
         }
