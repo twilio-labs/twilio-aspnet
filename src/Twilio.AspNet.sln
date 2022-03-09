@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Mvc.UnitTests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Core.UnitTests", "Twilio.AspNet.Core.UnitTests\Twilio.AspNet.Core.UnitTests.csproj", "{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.SourceGenerators", "Twilio.SourceGenerators\Twilio.SourceGenerators.csproj", "{C5DC90C2-DF19-4F53-A9A3-7F55B4CEF84D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5DC90C2-DF19-4F53-A9A3-7F55B4CEF84D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5DC90C2-DF19-4F53-A9A3-7F55B4CEF84D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5DC90C2-DF19-4F53-A9A3-7F55B4CEF84D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5DC90C2-DF19-4F53-A9A3-7F55B4CEF84D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
