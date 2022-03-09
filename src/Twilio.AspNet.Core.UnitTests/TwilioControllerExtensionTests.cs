@@ -5,18 +5,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
+using Moq;
 using Twilio.TwiML;
 using Xunit;
 
 namespace Twilio.AspNet.Core.UnitTests;
 
-public class TwilioControllerTests
+public class TwilioControllerExtensionTests
 {
+
     [Fact]
-    public async Task TwimlResult_From_Should_Write_VoiceResponse_To_ResponseBody()
+    public async Task TwimlResult_Should_Write_VoiceResponse_To_ResponseBody()
     {
         var twiml = new VoiceResponse().Say("Hello World");
-        var result = new TwilioController().TwiML(twiml);
+        var result = TwilioControllerExtensions.TwiML(Mock.Of<ControllerBase>(), twiml);
         var actionContext = CreateActionContext();
         await result.ExecuteResultAsync(actionContext);
 
@@ -27,10 +29,10 @@ public class TwilioControllerTests
     }
 
     [Fact]
-    public async Task TwimlResult_From_Should_Write_MessagingResponse_To_ResponseBody()
+    public async Task TwimlResult_Should_Write_MessagingResponse_To_ResponseBody()
     {
         var twiml = new MessagingResponse().Message("Hello World");
-        var result = new TwilioController().TwiML(twiml);
+        var result = TwilioControllerExtensions.TwiML(Mock.Of<ControllerBase>(), twiml);
         var actionContext = CreateActionContext();
         await result.ExecuteResultAsync(actionContext);
 
