@@ -1,3 +1,4 @@
+using Twilio.AspNet.Common;
 using Twilio.AspNet.Core.MinimalApi;
 using Twilio.TwiML;
 
@@ -27,10 +28,11 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapMethods("/minimal-sms", new[] {"get", "post"}, () =>
+app.MapMethods("/minimal-sms", new[] {"get", "post"}, (TwilioRequestBinding<SmsRequest> requestBinding) =>
 {
+    var smsRequest = requestBinding.BindingResult;
     var messagingResponse = new MessagingResponse();
-    messagingResponse.Message("The Robots are coming! Head for the hills!!");
+    messagingResponse.Message($"You sent: {smsRequest.Body}");
 
     return Results.Extensions.TwiML(messagingResponse);
 });
