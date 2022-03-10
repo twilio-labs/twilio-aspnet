@@ -11,10 +11,11 @@
     <Copyright>Copyright 2021 (c) Twilio, Inc. All rights reserved.</Copyright>
     <PackageTags>twilio</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>http://github.com/twilio/twilio-aspnet</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/twilio/twilio-aspnet</PackageProjectUrl>
     <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <Version>5.71.0</Version>
+    <IsNet60Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net6.0'))</IsNet60Compatible>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="'$(TargetFramework)' == 'net6.0' " />
@@ -22,5 +23,8 @@
     <PackageReference Include="Twilio" Version="5.71.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="5.71.0" />
     <None Include="icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup Condition="!$(IsNet60Compatible)">
+    <Compile Remove="MinimalApiTwiMLResult.cs" />
   </ItemGroup>
 </Project>
