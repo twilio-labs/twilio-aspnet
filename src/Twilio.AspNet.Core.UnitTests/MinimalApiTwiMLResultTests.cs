@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Twilio.AspNet.Core.MinimalApi;
@@ -12,11 +11,11 @@ namespace Twilio.AspNet.Core.UnitTests;
 public class MinimalApiTwiMLResultTests
 {
     [Fact]
-    public Task TestTwimlResultWritesVoiceResponseToResponseBody() =>
+    public Task TwimlResult_Should_Write_VoiceResponse_To_ResponseBody() =>
         ValidateTwimlResultWritesToResponseBody(GetVoiceResponse());
 
     [Fact]
-    public Task TestTwimlResultWritesMessagingResponseToResponseBody() =>
+    public Task TwimlResult_Should_Write_MessagingResponse_To_ResponseBody() =>
         ValidateTwimlResultWritesToResponseBody(GetMessagingResponse());
     
     private static async Task ValidateTwimlResultWritesToResponseBody(TwiML.TwiML twiMlResponse)

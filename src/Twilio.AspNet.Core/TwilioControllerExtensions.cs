@@ -4,32 +4,28 @@ using Twilio.TwiML;
 namespace Twilio.AspNet.Core
 {
     /// <summary>
-    /// Extends the standard base controller to simplify returning a TwiML response
+    /// Adds extension methods to the ControllerBase class for returning TwiML in MVC actions
     /// </summary>
-	public class TwilioController : ControllerBase
+    public static class TwilioControllerExtensions
     {
         /// <summary>
         /// Returns a properly formatted TwiML response
         /// </summary>
+        /// <param name="controller"></param>
         /// <param name="response"></param>
         /// <returns></returns>
-        [NonAction]
         // ReSharper disable once InconsistentNaming
-        public TwiMLResult TwiML(MessagingResponse response)
-        {
-            return new TwiMLResult(response);
-        }
+        public static TwiMLResult TwiML(this ControllerBase controller, MessagingResponse response)
+            => new TwiMLResult(response);
 
         /// <summary>
         /// Returns a properly formatted TwiML response
         /// </summary>
+        /// <param name="controller"></param>
         /// <param name="response"></param>
         /// <returns></returns>
-        [NonAction]
         // ReSharper disable once InconsistentNaming
-        public TwiMLResult TwiML(VoiceResponse response)
-        {
-            return new TwiMLResult(response);
-        }
+        public static TwiMLResult TwiML(this ControllerBase controller, VoiceResponse response)
+            => new TwiMLResult(response);
     }
 }
