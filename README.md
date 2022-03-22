@@ -43,12 +43,7 @@ Alternatively, use the NuGet Package Manager for Visual Studio or the NuGet wind
 
 ## Code Samples for either Library
 
-Below, you can find samples to handle Twilio webhooks for incoming SMS and Voice calls. 
-For more 
-
-### Handle Twilio webhooks
-
-#### Incoming SMS
+### Incoming SMS
 ```csharp
 using Twilio.AspNet.Common;
 using Twilio.AspNet.Mvc; // or .Core
@@ -74,7 +69,7 @@ namespace MyWebApplication.Controllers
 This controller will handle the SMS webhook. The details of the incoming SMS will be bound to the `SmsRequest request` parameter.
 By inheriting from the `TwilioController`, you get access to the `TwiML` method which you can use to respond with TwiML.
 
-#### Incoming Voice Call
+### Incoming Voice Call
 
 ```csharp
 using Twilio.AspNet.Common;
@@ -98,7 +93,7 @@ namespace MyWebApplication.Controllers
 This controller will handle the Voice webhook. The details of the incoming voice call will be bound to the `VoiceRequest request` parameter.
 By inheriting from the `TwilioController`, you get access to the `TwiML` method which you can use to respond with TwiML.
 
-#### Using `TwiML` extension methods instead of inheriting from `TwilioController`
+### Using `TwiML` extension methods instead of inheriting from `TwilioController`
 
 If you can't inherit from the `TwilioController` class, you can use the `TwiML` extension methods.
 ```csharp
@@ -125,7 +120,7 @@ namespace MyWebApplication.Controllers
 ```
 This sample is the same as the previous SMS webhook sample, but instead of inheriting from `TwilioController`, the `SmsController` inherits from the ASP.MVC provided `Controller`, and uses `this.TwiML` to use the `TwiML` extension method.
 
-#### Minimal API
+### Minimal API
 Twilio.AspNet.Core also has support for Minimal APIs.
 
 This sample shows you how you can hande an SMS webhook using HTTP GET and POST.
@@ -164,7 +159,7 @@ app.Run();
 In traditional MVC controllers, the `SmsRequest`, `VoiceRequest`, and other typed request object would be bound, but Minimal APIs does not support the same model binding. Instead, you can bind individual parameters for HTTP GET requests using the `FromQuery` attribute. For HTTP POST requests you can grab the parameters from the `HttpRequest.Form` collection.   
 To respond with TwiML, use the `Results.Extensions.TwiML` method.
 
-#### Model Bind webhook requests to typed .NET objects
+### Model Bind webhook requests to typed .NET objects
 Twilio.AspNet comes with multiple classes to help you bind the data from webhooks to strongly typed .NET objects.
 Here's the list of classes:
 - `SmsRequest`: Holds data for incoming SMS webhook requests
@@ -175,4 +170,3 @@ Here's the list of classes:
 TODO: Add SMS sample with SMS Status Callback
 
 Note: Only MVC Controllers and Razor Pages supports model binding to typed .NET objects. In Minimal APIs and other scenario's, you'll have to write code to extract the parameters yourself.
-
