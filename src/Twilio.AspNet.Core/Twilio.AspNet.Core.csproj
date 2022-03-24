@@ -4,12 +4,12 @@
     <OutputType>Library</OutputType>
     <PackageId>Twilio.AspNet.Core</PackageId>
     <PackageVersion>5.71.0</PackageVersion>
-    <Authors>Twilio</Authors>
-    <Description>Twilio helpers for ASP.NET Core 1.0 to 2.x.</Description>
+    <Authors>Twilio Labs</Authors>
+    <Description>Twilio helper library for ASP.NET Core</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>First release</PackageReleaseNotes>
-    <Copyright>Copyright 2021 (c) Twilio, Inc. All rights reserved.</Copyright>
-    <PackageTags>twilio</PackageTags>
+    <PackageReleaseNotes>Refer to the changelog at https://github.com/twilio-labs/twilio-aspnet/blob/main/CHANGELOG.md</PackageReleaseNotes>
+    <Copyright>Copyright 2022 (c) Twilio, Inc. All rights reserved.</Copyright>
+    <PackageTags>twilio;sms;voice;phone;aspnet</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/twilio/twilio-aspnet</PackageProjectUrl>
     <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
@@ -22,7 +22,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
     <PackageReference Include="Twilio" Version="5.71.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="5.71.0" />
-    <None Include="icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup Condition="!$(IsNet60Compatible)">
     <Compile Remove="MinimalApiTwiMLResult.cs" />

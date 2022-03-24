@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Twilio.AspNet.Mvc")]
-[assembly: AssemblyDescription("Twilio helpers for ASP.NET MVC versions 3 through 5.")]
+[assembly: AssemblyDescription("Twilio helper library for ASP.NET MVC versions 3 through 5.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Twilio")]
+[assembly: AssemblyCompany("Twilio Labs")]
 [assembly: AssemblyProduct("Twilio.AspNet")]
-[assembly: AssemblyCopyright("Copyright © 2021")]
+[assembly: AssemblyCopyright("Copyright © 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

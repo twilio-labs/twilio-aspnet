@@ -107,6 +107,8 @@
     <None Include="Twilio.AspNet.Mvc.nuspec">
       <SubType>Designer</SubType>
     </None>
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

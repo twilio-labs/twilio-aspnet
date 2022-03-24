@@ -12,7 +12,7 @@
     <icon>icon.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Broke out Twilio.AspNet.Common into separate package.</releaseNotes>
+    <releaseNotes>Refer to the changelog at https://github.com/twilio-labs/twilio-aspnet/blob/main/CHANGELOG.md</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>REST SMS voice telephony phone twilio twiml</tags>
   </metadata>
