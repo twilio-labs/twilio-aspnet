@@ -14,7 +14,7 @@
     <description>$description$</description>
     <releaseNotes>Refer to the changelog at https://github.com/twilio-labs/twilio-aspnet/blob/main/CHANGELOG.md</releaseNotes>
     <copyright>$copyright$</copyright>
-    <tags>REST SMS voice telephony phone twilio twiml</tags>
+    <tags>twilio twiml SMS voice telephony phone aspnet REST</tags>
   </metadata>
   <files>
     <file src="icon.png" target="\" />
