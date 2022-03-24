@@ -1,23 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Mvc", "Twilio.AspNet.Mvc\Twilio.AspNet.Mvc.csproj", "{42938487-C4BE-4BFA-BF4B-FB3FA6A5E367}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Mvc", "Twilio.AspNet.Mvc\Twilio.AspNet.Mvc.csproj", "{42938487-C4BE-4BFA-BF4B-FB3FA6A5E367}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1996904E-B630-4445-9665-DA880CA383B3} = {1996904E-B630-4445-9665-DA880CA383B3}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Common", "Twilio.AspNet.Common\Twilio.AspNet.Common.csproj", "{1996904E-B630-4445-9665-DA880CA383B3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{339A75DF-3315-4CF3-9FD9-DAF1B0DB50B2}"
 	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
 		..\build.ps1 = ..\build.ps1
+		..\CHANGELOG.md = ..\CHANGELOG.md
+		..\icon.png = ..\icon.png
+		..\LICENSE = ..\LICENSE
+		..\nuget.config = ..\nuget.config
 		..\README.md = ..\README.md
+		..\version_bump.ps1 = ..\version_bump.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Core", "Twilio.AspNet.Core\Twilio.AspNet.Core.csproj", "{0BFC96B4-9E96-499D-B6E3-C8D17BCF869F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1996904E-B630-4445-9665-DA880CA383B3} = {1996904E-B630-4445-9665-DA880CA383B3}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Mvc.UnitTests", "Twilio.AspNet.Mvc.UnitTests\Twilio.AspNet.Mvc.UnitTests.csproj", "{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Mvc.UnitTests", "Twilio.AspNet.Mvc.UnitTests\Twilio.AspNet.Mvc.UnitTests.csproj", "{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.AspNet.Core.UnitTests", "Twilio.AspNet.Core.UnitTests\Twilio.AspNet.Core.UnitTests.csproj", "{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Core.UnitTests", "Twilio.AspNet.Core.UnitTests\Twilio.AspNet.Core.UnitTests.csproj", "{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +53,6 @@ Global
 		{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B92BDA0D-AD69-4756-BBD6-6E77C4B51906}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FABCBDFB-E9F8-4B0F-9657-7B156CDA98C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
