@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;net451</TargetFrameworks>
     <OutputType>Library</OutputType>
+    <Version>5.71.0</Version>
     <PackageId>Twilio.AspNet.Common</PackageId>
     <PackageVersion>5.71.0</PackageVersion>
     <Authors>Twilio Labs</Authors>

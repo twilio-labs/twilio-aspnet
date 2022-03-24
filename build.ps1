@@ -17,9 +17,6 @@ function Stop-Script($exitCode) {
   exit $exitCode
 }
 
-$nugetExe = Join-Path $PSScriptRoot "tools/nuget.exe"
-$xunitExe = Join-Path $PSScriptRoot "tools/xunit.console.x86.exe"
-
 Push-Location .\src
 
 Write-Host "`nRemoving packages, bin, and obj folders`n" -ForegroundColor DarkBlue -BackgroundColor White
@@ -44,12 +41,14 @@ dotnet clean -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 dotnet build -c Release -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
+
+Write-Host "`nCreating Twilio.AspNet.Common package`n" -ForegroundColor DarkBlue -BackgroundColor White
 dotnet pack -c Release -o ..\..\ -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 Pop-Location
 
 Write-Host "`nRestoring packages for solution`n" -ForegroundColor DarkBlue -BackgroundColor White
-& $nugetExe ('restore', '-Source', ($PSScriptRoot + ';https://api.nuget.org/v3/index.json'))
+dotnet restore
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 
 Write-Host "`nCleaning solution`n" -ForegroundColor DarkBlue -BackgroundColor White
@@ -62,8 +61,10 @@ if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 
 # Run tests
 Write-Host "`nTesting Twilio.AspNet.Mvc.UnitTests`n" -ForegroundColor DarkBlue -BackgroundColor White
-& $xunitExe (".\Twilio.AspNet.Mvc.UnitTests\bin\Release\Twilio.AspNet.Mvc.UnitTests.dll")
+Push-Location .\Twilio.AspNet.Mvc.UnitTests
+dotnet test -v m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
+Pop-Location
 
 Write-Host "`nTesting Twilio.AspNet.Core.UnitTests`n" -ForegroundColor DarkBlue -BackgroundColor White
 Push-Location .\Twilio.AspNet.Core.UnitTests
@@ -72,6 +73,7 @@ if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 Pop-Location
 
 # Create the NuGet Packages
+
 Write-Host "`nCreating Twilio.AspNet.Core package`n" -ForegroundColor DarkBlue -BackgroundColor White
 Push-Location .\Twilio.AspNet.Core
 dotnet pack -c Release -o ..\..\ -v m
@@ -79,8 +81,10 @@ if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
 Pop-Location
 
 Write-Host "`nCreating Twilio.AspNet.Mvc package`n" -ForegroundColor DarkBlue -BackgroundColor White
-& $nugetExe ('pack', '.\Twilio.AspNet.Mvc\Twilio.AspNet.Mvc.csproj', '-Properties', 'configuration=Release', '-OutputDirectory', '..\', '-Verbosity', 'quiet', '-NoPackageAnalysis')
+Push-Location .\Twilio.AspNet.Mvc
+dotnet msbuild /t:pack /p:Configuration=Release /p:PackageOutputPath=..\.. /p:NoPackageAnalysis=True -verbosity:m
 if ($lastExitCode -ne 0) { Stop-Script $lastExitCode }
+Pop-Location
 
 Pop-Location
 
