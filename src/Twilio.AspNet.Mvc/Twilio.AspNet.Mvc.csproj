@@ -49,7 +49,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.2" />
-    <PackageReference Include="Twilio" Version="5.71.0" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="5.71.0" />
+    <PackageReference Include="Twilio" Version="5.73.0" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="5.73.0" />
   </ItemGroup>
 </Project>
