@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard1.0;net451</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <Version>5.71.0</Version>
+    <Version>5.73.0-rc</Version>
     <PackageId>Twilio.AspNet.Common</PackageId>
-    <PackageVersion>5.71.0</PackageVersion>
+    <PackageVersion>5.73.0-rc</PackageVersion>
     <Authors>Twilio Labs</Authors>
     <Description>Twilio request classes for handling Twilio webhooks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

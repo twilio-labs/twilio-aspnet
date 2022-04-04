@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net6.0</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <Version>5.71.0</Version>
+    <Version>5.73.0-rc</Version>
     <PackageId>Twilio.AspNet.Core</PackageId>
-    <PackageVersion>5.71.0</PackageVersion>
+    <PackageVersion>5.73.0-rc</PackageVersion>
     <Authors>Twilio Labs</Authors>
     <Description>Twilio helper library for ASP.NET Core</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -20,8 +20,8 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="'$(TargetFramework)' == 'net6.0' " />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
-    <PackageReference Include="Twilio" Version="5.71.0" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="5.71.0" />
+    <PackageReference Include="Twilio" Version="5.73.0" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="5.73.0" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>

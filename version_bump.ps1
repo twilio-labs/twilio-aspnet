@@ -14,7 +14,7 @@ function updateStandardCsproj() {
 
   $fileContent.Project.ItemGroup `
   | Where-Object { $_.PackageReference -ne $Null } `
-  | Select-Object { $_.PackageReference } `
+  | Select-Object -ExpandProperty PackageReference `
   | Where-Object { $_.Include -ne $Null -and $_.Include.StartsWith("Twilio") } `
   | ForEach-Object {
       $_.Version = $targetVersion.ToString()

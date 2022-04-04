@@ -1,4 +1,4 @@
-## Upcoming Release
+## 5.71.0 (2022-04-11)
 - Add extension methods to return `TwiML` without inheriting from `TwilioController` (https://github.com/twilio-labs/twilio-aspnet/pull/45)
 - Fix Swagger bug in Twilio.AspNet.Core (https://github.com/twilio-labs/twilio-aspnet/pull/43)
 - Update readme with more samples and updated language
