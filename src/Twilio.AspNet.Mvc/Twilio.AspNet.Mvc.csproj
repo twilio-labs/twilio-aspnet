@@ -3,9 +3,9 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net451</TargetFramework>
-    <Version>5.73.0-rc</Version>
+    <Version>5.73.0</Version>
     <PackageId>Twilio.AspNet.Mvc</PackageId>
-    <PackageVersion>5.73.0-rc</PackageVersion>
+    <PackageVersion>5.73.0</PackageVersion>
     <Authors>Twilio Labs</Authors>
     <Description>Twilio helper library for ASP.NET MVC versions 3 through 5.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -45,6 +45,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Twilio" Version="5.73.0" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="5.73.0-rc" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="5.73.0" />
   </ItemGroup>
 </Project>
