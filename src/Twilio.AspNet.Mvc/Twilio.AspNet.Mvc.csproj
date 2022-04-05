@@ -41,16 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="3.0.20105.1" />
-    <PackageReference Include="Microsoft.AspNet.Razor" Version="1.0.20105.408" />
-    <PackageReference Include="Microsoft.AspNet.WebPages" Version="1.0.20105.408" />
-    <PackageReference Include="Microsoft.IdentityModel.Logging" Version="1.1.2" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.1.2" />
-    <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="6.1.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.2" />
     <PackageReference Include="Twilio" Version="5.73.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="5.73.0-rc" />
   </ItemGroup>
