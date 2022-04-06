@@ -127,27 +127,23 @@ var app = builder.Build();
 app.MapGet("/sms", ([FromQuery] string from) =>
 {
     var response = new MessagingResponse();
-    response.Message(
-        $"Hey there {from}! " +
-        "How 'bout those Seahawks?"
-    );
+    response.Message($"Ahoy {from}!");
     return Results.Extensions.TwiML(response);
 });
 
-app.MapPost("/sms", (HttpRequest request) =>
+app.MapPost("/sms", async (HttpRequest request) =>
 {
-    var from = request.Form["From"];
-    var response = new MessagingResponse();
-    response.Message(
-        $"Hey there {from}! " +
-        "How 'bout those Seahawks?"
-    );
+    var form = await request.ReadFormAsync();
+    var from = form["from"];
+    response.Message($"Ahoy {from}!");
     return Results.Extensions.TwiML(response);
 });
 
 app.Run();
 ```
-In traditional MVC controllers, the `SmsRequest`, `VoiceRequest`, and other typed request object would be bound, but Minimal APIs does not support the same model binding. Instead, you can bind individual parameters for HTTP GET requests using the `FromQuery` attribute. For HTTP POST requests you can grab the parameters from the `HttpRequest.Form` collection.   
+In traditional MVC controllers, the `SmsRequest`, `VoiceRequest`, and other typed request object would be bound, but Minimal APIs does not support the same model binding.    
+   
+Instead, you can bind individual parameters for HTTP GET requests using the `FromQuery` attribute. When you don't specify the [FromQuery](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis#parameter-binding) attribute, multiple sources will be considered to bind from in addition to the query string parameters. For HTTP POST requests you can grab the form and then retrieve individual parameters by string index.   
 To respond with TwiML, use the `Results.Extensions.TwiML` method.
 
 ### Model Bind webhook requests to typed .NET objects
@@ -169,28 +165,28 @@ using Twilio.TwiML;
 
 public class SmsController : TwilioController
 {
-	private readonly ILogger<SmsController> logger;
+    private readonly ILogger<SmsController> logger;
 
-	public SmsController(ILogger<SmsController> logger)
-	{
-		this.logger = logger;
-	}
+    public SmsController(ILogger<SmsController> logger)
+    {
+        this.logger = logger;
+    }
 
-	public TwiMLResult Index(SmsRequest request)
-	{
-		var messagingResponse = new MessagingResponse();
-		messagingResponse.Message(
-			body: $"Hey there {request.From}! How 'bout those Seahawks?",
-			action: new Uri("/Sms/StatusCallback"),
-			method: Twilio.Http.HttpMethod.Post
-		);
-		return TwiML(messagingResponse);
-	}
+    public TwiMLResult Index(SmsRequest request)
+    {
+        var messagingResponse = new MessagingResponse();
+        messagingResponse.Message(
+            body: $"Hey there {request.From}! How 'bout those Seahawks?",
+            action: new Uri("/Sms/StatusCallback"),
+            method: Twilio.Http.HttpMethod.Post
+        );
+        return TwiML(messagingResponse);
+    }
 
-	public void StatusCallback(SmsStatusCallbackRequest request)
-	{
-		logger.LogInformation("SMS Status: {Status}", request.MessageStatus);
-	}
+    public void StatusCallback(SmsStatusCallbackRequest request)
+    {
+        logger.LogInformation("SMS Status: {Status}", request.MessageStatus);
+    }
 }
 ```
 
