@@ -34,12 +34,21 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapMethods("/minimal-sms", new[] {"get", "post"}, () =>
+app.MapGet("/minimal-sms", (string from) =>
 {
-    var messagingResponse = new MessagingResponse();
-    messagingResponse.Message("The Robots are coming! Head for the hills!!");
+    var response = new MessagingResponse();
+    response.Message($"Ahoy {from}!");
+    return Results.Extensions.TwiML(response);
+});
 
-    return Results.Extensions.TwiML(messagingResponse);
+app.MapPost("/minimal-sms", async (HttpRequest request) =>
+{
+    var form = await request.ReadFormAsync();
+    var from = form["from"];
+    
+    var response = new MessagingResponse();
+    response.Message($"Ahoy {from}!");
+    return Results.Extensions.TwiML(response);
 });
 
 app.Run();
