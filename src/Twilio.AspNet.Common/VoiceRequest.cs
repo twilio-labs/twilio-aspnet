@@ -80,6 +80,11 @@
         /// </summary>
         public string RecordingSource { get; set; }
 
+        /// <summary>
+        /// The key used to submit the digits
+        /// </summary>
+        public string FinishedOnKey { get; set; }
+        
         #endregion
 
         #region Transcription Parameters
