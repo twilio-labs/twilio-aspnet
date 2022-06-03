@@ -29,5 +29,6 @@
   </ItemGroup>
   <ItemGroup Condition="!$(IsNet60Compatible)">
     <Compile Remove="MinimalApiTwiMLResult.cs" />
+    <Compile Remove="DependencyInjectionExtensions.cs" />
   </ItemGroup>
 </Project>

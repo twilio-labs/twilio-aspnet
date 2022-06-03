@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Twilio.AspNet.Core;
+using Twilio.Clients;
 using Twilio.TwiML;
 
 namespace dotnet6.Controllers;
@@ -8,7 +9,7 @@ namespace dotnet6.Controllers;
 [Route("[controller]")]
 public class SmsController : TwilioController
 {
-    [ValidateRequest("your auth token here", urlOverride: "https://??????.ngrok.io/sms")]
+    [ValidateRequest(urlOverride: "https://??????.ngrok.io/sms")]
     [HttpGet, HttpPost]
     public TwiMLResult Index()
     {
