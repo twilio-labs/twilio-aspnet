@@ -4,7 +4,11 @@ using Twilio.TwiML;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddTwilio();
+builder.Services.AddHttpClient();
+
+builder.Services
+    .AddTwilioOptions()
+    .AddTwilioClient(provider => provider.GetRequiredService<IHttpClientFactory>().CreateClient());
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

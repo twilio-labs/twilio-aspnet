@@ -3,105 +3,134 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Twilio.Clients;
+using Twilio.Http;
 
 namespace Twilio.AspNet.Core
 {
     public static class DependencyInjectionExtensions
     {
-        public static void AddTwilio(
-            this IServiceCollection services
-        )
+        public static IServiceCollection AddTwilio(this IServiceCollection services)
         {
-            AddTwilio(services, (serviceProvider, options) =>
-            {
-                var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-                configuration.GetSection("Twilio").Bind(options);
-            });
+            AddTwilioOptions(services, ConfigureDefaultOptions);
+            AddTwilioClient(services);
+
+            return services;
         }
 
-        public static void AddTwilio(
+        public static IServiceCollection AddTwilioOptions(this IServiceCollection services)
+            => AddTwilioOptions(services, ConfigureDefaultOptions);
+
+        public static IServiceCollection AddTwilioOptions(
             this IServiceCollection services,
             Action<IServiceProvider, TwilioOptions> configureOptions
         )
         {
             services.AddOptions<TwilioOptions>()
-                .Configure<IServiceProvider>((options, resolver) => configureOptions(resolver, options))
-                .PostConfigure(options =>
+                .Configure<IServiceProvider>((options, resolver) =>
                 {
-                    // properties can be empty strings, but should be set to null if so
-                    if (string.IsNullOrEmpty(options.AccountSid)) options.AccountSid = null;
-                    if (string.IsNullOrEmpty(options.AuthToken)) options.AuthToken = null;
-                    if (string.IsNullOrEmpty(options.ApiKeySid)) options.ApiKeySid = null;
-                    if (string.IsNullOrEmpty(options.ApiKeySecret)) options.ApiKeySecret = null;
-                    if (string.IsNullOrEmpty(options.Region)) options.Region = null;
-                    if (string.IsNullOrEmpty(options.Edge)) options.Edge = null;
-                    if (string.IsNullOrEmpty(options.LogLevel)) options.LogLevel = null;
-                    
-                    // validate
-                    var isApiKeyConfigured = options.AccountSid != null && 
-                                             options.ApiKeySid != null &&
-                                             options.ApiKeySecret != null;
-
-                    var isAuthTokenConfigured = options.AccountSid != null &&
-                                                options.AuthToken != null;
-
-                    if (options.CredentialType == CredentialType.Unspecified)
-                    {
-                        if (isApiKeyConfigured) options.CredentialType = CredentialType.ApiKey;
-                        else if (isAuthTokenConfigured) options.CredentialType = CredentialType.AuthToken;
-                        else
-                        {
-                            throw new Exception("Configure your Twilio API key or Auth Token");
-                        }
-                    }
-                    else if (options.CredentialType == CredentialType.ApiKey && !isApiKeyConfigured)
-                    {
-                        throw new Exception("Configure Twilio:AccountSid, Twilio:ApiKeySid, and Twilio:ApiKeySecret");
-                    }
-                    else if (options.CredentialType == CredentialType.AuthToken && !isAuthTokenConfigured)
-                    {
-                        throw new Exception("Configure Twilio:AccountSid and Twilio:AuthToken");
-                    }
+                    configureOptions(resolver, options);
+                    ValidateOptions(options);
                 });
 
-            services.AddTransient<ITwilioRestClient>(serviceProvider =>
+            return services;
+        }
+
+        private static void ConfigureDefaultOptions(IServiceProvider serviceProvider, TwilioOptions options)
+        {
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            configuration.GetSection("Twilio").Bind(options);
+        }
+
+        private static void ValidateOptions(TwilioOptions options)
+        {
+            // properties can be empty strings, but should be set to null if so
+            if (string.IsNullOrEmpty(options.AccountSid)) options.AccountSid = null;
+            if (string.IsNullOrEmpty(options.AuthToken)) options.AuthToken = null;
+            if (string.IsNullOrEmpty(options.ApiKeySid)) options.ApiKeySid = null;
+            if (string.IsNullOrEmpty(options.ApiKeySecret)) options.ApiKeySecret = null;
+            if (string.IsNullOrEmpty(options.Region)) options.Region = null;
+            if (string.IsNullOrEmpty(options.Edge)) options.Edge = null;
+            if (string.IsNullOrEmpty(options.LogLevel)) options.LogLevel = null;
+
+            // validate
+            var isApiKeyConfigured = options.AccountSid != null &&
+                                     options.ApiKeySid != null &&
+                                     options.ApiKeySecret != null;
+
+            var isAuthTokenConfigured = options.AccountSid != null &&
+                                        options.AuthToken != null;
+
+            if (options.CredentialType == CredentialType.Unspecified)
             {
-                var options = serviceProvider.GetRequiredService<IOptions<TwilioOptions>>().Value;
-                TwilioRestClient client;
-                if (options.CredentialType == CredentialType.ApiKey)
-                {
-                    client = new TwilioRestClient(
-                        username: options.ApiKeySid,
-                        password: options.ApiKeySecret,
-                        accountSid: options.AccountSid,
-                        region: options.Region,
-                        httpClient: null,
-                        edge: options.Edge
-                    );
-                }
-                else if (options.CredentialType == CredentialType.AuthToken)
-                {
-                    client = new TwilioRestClient(
-                        username: options.AccountSid,
-                        password: options.AuthToken,
-                        accountSid: options.AccountSid,
-                        region: options.Region,
-                        httpClient: null,
-                        edge: options.Edge
-                    );
-                }
-                else
-                {
-                    throw new Exception("This code should never be reached.");
-                }
+                if (isApiKeyConfigured) options.CredentialType = CredentialType.ApiKey;
+                else if (isAuthTokenConfigured) options.CredentialType = CredentialType.AuthToken;
+                else throw new Exception("Configure your Twilio API key or Auth Token");
+            }
+            else if (options.CredentialType == CredentialType.ApiKey && !isApiKeyConfigured)
+            {
+                throw new Exception("Configure Twilio:AccountSid, Twilio:ApiKeySid, and Twilio:ApiKeySecret");
+            }
+            else if (options.CredentialType == CredentialType.AuthToken && !isAuthTokenConfigured)
+            {
+                throw new Exception("Configure Twilio:AccountSid and Twilio:AuthToken");
+            }
+        }
 
-                if (options.LogLevel != null)
-                {
-                    client.LogLevel = options.LogLevel;
-                }
+        public static IServiceCollection AddTwilioClient(this IServiceCollection services)
+            => AddTwilioClient(services, provideHttpClient: null);
 
-                return client;
-            });
+        public static IServiceCollection AddTwilioClient(
+            this IServiceCollection services,
+            Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient
+        )
+        {
+            services.AddTransient<ITwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
+            services.AddTransient<TwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
+
+            return services;
+        }
+
+        private static TwilioRestClient CreateTwilioClient(
+            IServiceProvider provider, 
+            Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient
+        )
+        {
+            Twilio.Http.HttpClient twilioHttpClient = null;
+            if (provideHttpClient != null)
+            {
+                var httpClient = provideHttpClient(provider);
+                twilioHttpClient = new SystemNetHttpClient(httpClient);
+            }
+
+            var options = provider.GetRequiredService<IOptions<TwilioOptions>>().Value;
+            var client = options.CredentialType switch
+            {
+                CredentialType.ApiKey => new TwilioRestClient(
+                    username: options.ApiKeySid,
+                    password: options.ApiKeySecret,
+                    accountSid: options.AccountSid,
+                    region: options.Region,
+                    httpClient: twilioHttpClient,
+                    edge: options.Edge
+                ),
+                CredentialType.AuthToken => new TwilioRestClient(
+                    username: options.AccountSid,
+                    password: options.AuthToken,
+                    accountSid:
+                    options.AccountSid,
+                    region: options.Region,
+                    httpClient: twilioHttpClient,
+                    edge: options.Edge
+                ),
+                _ => throw new Exception("This code should never be reached.")
+            };
+
+            if (options.LogLevel != null)
+            {
+                client.LogLevel = options.LogLevel;
+            }
+
+            return client;
         }
     }
 }
