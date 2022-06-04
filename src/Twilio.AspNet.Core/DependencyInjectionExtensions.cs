@@ -103,27 +103,32 @@ namespace Twilio.AspNet.Core
             }
 
             var options = provider.GetRequiredService<IOptions<TwilioOptions>>().Value;
-            var client = options.CredentialType switch
+            TwilioRestClient client;
+            switch (options.CredentialType)
             {
-                CredentialType.ApiKey => new TwilioRestClient(
-                    username: options.ApiKeySid,
-                    password: options.ApiKeySecret,
-                    accountSid: options.AccountSid,
-                    region: options.Region,
-                    httpClient: twilioHttpClient,
-                    edge: options.Edge
-                ),
-                CredentialType.AuthToken => new TwilioRestClient(
-                    username: options.AccountSid,
-                    password: options.AuthToken,
-                    accountSid:
-                    options.AccountSid,
-                    region: options.Region,
-                    httpClient: twilioHttpClient,
-                    edge: options.Edge
-                ),
-                _ => throw new Exception("This code should never be reached.")
-            };
+                case CredentialType.ApiKey:
+                    client = new TwilioRestClient(
+                        username: options.ApiKeySid, 
+                        password: options.ApiKeySecret,
+                        accountSid: options.AccountSid, 
+                        region: options.Region, 
+                        httpClient: twilioHttpClient,
+                        edge: options.Edge
+                    );
+                    break;
+                case CredentialType.AuthToken:
+                    client = new TwilioRestClient(
+                        username: options.AccountSid, 
+                        password: options.AuthToken,
+                        accountSid: options.AccountSid, 
+                        region: options.Region, 
+                        httpClient: twilioHttpClient,
+                        edge: options.Edge
+                    );
+                    break;
+                default:
+                    throw new Exception("This code should never be reached.");
+            }
 
             if (options.LogLevel != null)
             {
