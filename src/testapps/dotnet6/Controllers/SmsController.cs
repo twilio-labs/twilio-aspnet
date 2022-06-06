@@ -9,7 +9,7 @@ namespace dotnet6.Controllers;
 [Route("[controller]")]
 public class SmsController : TwilioController
 {
-    [ValidateRequest(urlOverride: "https://??????.ngrok.io/sms")]
+    [ValidateRequest(UrlOverride = "https://??????.ngrok.io/sms")]
     [HttpGet, HttpPost]
     public TwiMLResult Index()
     {

@@ -11,9 +11,19 @@ namespace Twilio.AspNet.Core
     /// </summary>
     public class ValidateRequestAttribute : Attribute, IFilterFactory
     {
+        private bool? allowLocal = null;
+
         public string AuthToken { get; set; }
         public string UrlOverride { get; set; }
-        public bool AllowLocal { get; set; }
+
+        // by storing AllowLocal of bool into allowLocal of bool?
+        // we know that when allowLocal != null, the user explicitly configured AllowLocal,
+        // thus we should use the value of allowLocal, and not consider TwilioOptions
+        // (type of bool? is not allowed as attribute parameters which is why we need this workaround)
+        public bool AllowLocal
+        {
+            set => allowLocal = value;
+        }
 
         public bool IsReusable => true;
 
@@ -21,48 +31,34 @@ namespace Twilio.AspNet.Core
         /// Initializes a new instance of the ValidateRequestAttribute class.
         /// </summary>
         public ValidateRequestAttribute()
-            : this(null, null, true)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the ValidateRequestAttribute class.
-        /// </summary>
-        /// <param name="authToken">AuthToken for the account used to sign the request</param>
-        /// <param name="allowLocal">Skip validation for local requests</param>
-        public ValidateRequestAttribute(string authToken = null, bool allowLocal = true)
-            : this(authToken, null, allowLocal)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the ValidateRequestAttribute class.
-        /// </summary>
-        /// <param name="authToken">AuthToken for the account used to sign the request</param>
-        /// <param name="urlOverride">The URL to use for validation, if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)</param>
-        /// <param name="allowLocal">Skip validation for local requests</param>
-        public ValidateRequestAttribute(string authToken = null, string urlOverride = null, bool allowLocal = true)
-        {
-            AuthToken = authToken;
-            UrlOverride = urlOverride;
-            AllowLocal = allowLocal;
         }
 
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            var twilioOptions = serviceProvider.GetService<IOptions<TwilioOptions>>();
+            var twilioOptions = serviceProvider.GetService<IOptions<TwilioOptions>>()?.Value;
+            if (twilioOptions == null)
+            {
+                return new InternalValidateRequestAttribute(
+                    authToken: AuthToken,
+                    urlOverride: UrlOverride,
+                    allowLocal: allowLocal ?? true
+                );
+            }
+
+            var requestValidationOptions = twilioOptions.RequestValidation;
             return new InternalValidateRequestAttribute(
-                authToken: AuthToken ?? twilioOptions?.Value.AuthToken,
-                urlOverride: UrlOverride,
-                allowLocal: AllowLocal
+                authToken: AuthToken ?? requestValidationOptions?.AuthToken,
+                urlOverride: UrlOverride ?? requestValidationOptions?.UrlOverride,
+                allowLocal: allowLocal ?? requestValidationOptions?.AllowLocal ?? true
             );
         }
-
-        private class InternalValidateRequestAttribute : ActionFilterAttribute
+        
+        internal class InternalValidateRequestAttribute : ActionFilterAttribute
         {
-            private readonly string authToken;
-            private readonly string urlOverride;
-            private readonly bool allowLocal;
+            internal string AuthToken { get; set; }
+            internal string UrlOverride { get; set; }
+            internal bool AllowLocal { get; set; }
 
             /// <summary>
             /// Initializes a new instance of the ValidateRequestAttribute class.
@@ -72,16 +68,16 @@ namespace Twilio.AspNet.Core
             /// <param name="allowLocal">Skip validation for local requests</param>
             public InternalValidateRequestAttribute(string authToken, string urlOverride, bool allowLocal)
             {
-                this.authToken = authToken;
-                this.urlOverride = urlOverride;
-                this.allowLocal = allowLocal;
+                AuthToken = authToken;
+                UrlOverride = urlOverride;
+                AllowLocal = allowLocal;
             }
 
             public override void OnActionExecuting(ActionExecutingContext filterContext)
             {
                 var validator = new RequestValidationHelper();
 
-                if (!validator.IsValidRequest(filterContext.HttpContext, authToken, urlOverride, allowLocal))
+                if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, UrlOverride, AllowLocal))
                 {
                     filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
                 }
