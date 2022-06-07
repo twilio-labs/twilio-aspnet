@@ -7,8 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 
 builder.Services
-    .AddTwilioOptions()
-    .AddTwilioClient(provider => provider.GetRequiredService<IHttpClientFactory>().CreateClient());
+    .AddTwilioClient(provider => provider.GetRequiredService<IHttpClientFactory>().CreateClient())
+    .AddTwilioRequestValidation();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

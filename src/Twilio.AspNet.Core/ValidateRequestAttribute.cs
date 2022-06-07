@@ -36,8 +36,8 @@ namespace Twilio.AspNet.Core
 
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            var twilioOptions = serviceProvider.GetService<IOptions<TwilioOptions>>()?.Value;
-            if (twilioOptions == null)
+            var options = serviceProvider.GetService<IOptions<TwilioRequestValidationOptions>>()?.Value;
+            if (options == null)
             {
                 return new InternalValidateRequestAttribute(
                     authToken: AuthToken,
@@ -46,11 +46,10 @@ namespace Twilio.AspNet.Core
                 );
             }
 
-            var requestValidationOptions = twilioOptions.RequestValidation;
             return new InternalValidateRequestAttribute(
-                authToken: AuthToken ?? requestValidationOptions?.AuthToken,
-                urlOverride: UrlOverride ?? requestValidationOptions?.UrlOverride,
-                allowLocal: allowLocal ?? requestValidationOptions?.AllowLocal ?? true
+                authToken: AuthToken ?? options?.AuthToken,
+                urlOverride: UrlOverride ?? options?.UrlOverride,
+                allowLocal: allowLocal ?? options?.AllowLocal ?? true
             );
         }
         

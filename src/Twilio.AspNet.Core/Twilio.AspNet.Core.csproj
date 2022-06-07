@@ -22,8 +22,8 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="$(IsNet60Compatible)" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" Condition="$(IsNetStandard20Compatible)"  />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" Condition="$(IsNetStandard20Compatible)"  />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" Condition="$(IsNetStandard20Compatible)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" Condition="$(IsNetStandard20Compatible)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
     <PackageReference Include="Twilio" Version="5.73.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="5.73.0" />
@@ -37,6 +37,7 @@
     <Compile Remove="MinimalApiTwiMLResult.cs" />
   </ItemGroup>
   <ItemGroup Condition="!$(IsNetStandard20Compatible)">
-    <Compile Remove="DependencyInjectionExtensions.cs" />
+    <Compile Remove="TwilioClientDependencyInjectionExtensions.cs" />
+    <Compile Remove="RequestValidationDependencyInjectionExtensions.cs" />
   </ItemGroup>
 </Project>

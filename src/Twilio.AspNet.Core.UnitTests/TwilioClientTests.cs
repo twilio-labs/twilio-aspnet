@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Twilio.AspNet.Core.UnitTests;
 
-public class TwilioDependencyInjectionTests
+public class TwilioClientTests
 {
     private static readonly TwilioOptions ValidTwilioOptions = new()
     {
@@ -27,12 +27,6 @@ public class TwilioDependencyInjectionTests
             CredentialType = CredentialType.ApiKey,
             Edge = "MY EDGE",
             Region = "MY REGION"
-        },
-        RequestValidation = new TwilioRequestValidationOptions()
-        {
-            AuthToken = "My Twilio:RequestValidation:AuthToken",
-            AllowLocal = true,
-            UrlOverride = "MY URL OVERRIDE"
         }
     };
 
@@ -62,156 +56,125 @@ public class TwilioDependencyInjectionTests
     };
 
     [Fact]
-    public void AddTwilio_Should_AddTwilioOptions()
+    public void AddTwilioClient_With_Callback_Should_Match_Configuration()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildEmptyConfiguration());
-        serviceCollection.AddTwilio();
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        var twilioOptions = serviceProvider.GetService<IOptions<TwilioOptions>>()?.Value;
-
-        Assert.NotNull(twilioOptions);
-    }
-
-    [Fact]
-    public void AddTwilioOptions_Should_AddTwilioOptions()
-    {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(BuildEmptyConfiguration());
-        serviceCollection.AddTwilioOptions();
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        var twilioOptions = serviceProvider.GetService<IOptions<TwilioOptions>>()?.Value;
-
-        Assert.NotNull(twilioOptions);
-    }
-
-    [Fact]
-    public void AddTwilioOptions_With_Callback_Should_Match_Configuration()
-    {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(BuildEmptyConfiguration());
-        serviceCollection.AddTwilioOptions((_, options) =>
+        serviceCollection.AddTwilioClient((_, options) =>
         {
-            options.AuthToken = ValidTwilioOptions.AuthToken;
-
-            options.Client.AccountSid = ValidTwilioOptions.Client.AccountSid;
-            options.Client.AuthToken = ValidTwilioOptions.Client.AuthToken;
-            options.Client.ApiKeySid = ValidTwilioOptions.Client.ApiKeySid;
-            options.Client.ApiKeySecret = ValidTwilioOptions.Client.ApiKeySecret;
-            options.Client.Edge = ValidTwilioOptions.Client.Edge;
-            options.Client.Region = ValidTwilioOptions.Client.Region;
-
-            options.RequestValidation.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
-            options.RequestValidation.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
-            options.RequestValidation.UrlOverride = ValidTwilioOptions.RequestValidation.UrlOverride;
+            var client = ValidTwilioOptions.Client;
+            options.AccountSid = client.AccountSid;
+            options.AuthToken = client.AuthToken;
+            options.ApiKeySid = client.ApiKeySid;
+            options.ApiKeySecret = client.ApiKeySecret;
+            options.Edge = client.Edge;
+            options.Region = client.Region;
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var twilioOptions = serviceProvider.GetService<IOptions<TwilioOptions>>()?.Value;
+        var twilioClientOptions = serviceProvider.GetService<IOptions<TwilioClientOptions>>()?.Value;
 
-        var validOptionsJson = JsonSerializer.Serialize(ValidTwilioOptions);
-        var optionsJson = JsonSerializer.Serialize(twilioOptions);
+        var expectedJson = JsonSerializer.Serialize(ValidTwilioOptions.Client);
+        var actualJson = JsonSerializer.Serialize(twilioClientOptions);
 
-        Assert.Equal(validOptionsJson, optionsJson);
+        Assert.Equal(expectedJson, actualJson);
     }
 
     [Fact]
-    public void AddTwilioOptions_With_ValidConfiguration_Should_Match_Configuration()
+    public void AddTwilioClient_With_ValidConfiguration_Should_Match_Configuration()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildValidConfiguration());
-        serviceCollection.AddTwilioOptions();
+        serviceCollection.AddTwilioClient();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var twilioOptions = serviceProvider.GetService<IOptions<TwilioOptions>>()?.Value;
+        var twilioClientOptions = serviceProvider.GetService<IOptions<TwilioClientOptions>>()?.Value;
 
-        var validOptionsJson = JsonSerializer.Serialize(ValidTwilioOptions);
-        var optionsJson = JsonSerializer.Serialize(twilioOptions);
+        var expectedJson = JsonSerializer.Serialize(ValidTwilioOptions.Client);
+        var actualJson = JsonSerializer.Serialize(twilioClientOptions);
 
-        Assert.Equal(validOptionsJson, optionsJson);
+        Assert.Equal(expectedJson, actualJson);
     }
 
     [Fact]
-    public void AddTwilioOptions_Should_Fallback_To_AuthToken()
+    public void AddTwilioClient_Should_Fallback_To_AuthToken()
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new[]
             {
-                new KeyValuePair<string, string>("Twilio:AuthToken", ValidTwilioOptions.AuthToken)
+                new KeyValuePair<string, string>("Twilio:AuthToken", ValidTwilioOptions.AuthToken),
+                new KeyValuePair<string, string>("Twilio:Client:AccountSid", ValidTwilioOptions.Client.AccountSid)
             })
             .Build();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
-        serviceCollection.AddTwilioOptions();
+        serviceCollection.AddTwilioClient();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var twilioOptions = serviceProvider.GetRequiredService<IOptions<TwilioOptions>>().Value;
+        var twilioClientOptions = serviceProvider.GetRequiredService<IOptions<TwilioClientOptions>>().Value;
 
-        Assert.Equal(ValidTwilioOptions.AuthToken, twilioOptions.AuthToken);
-        Assert.Equal(ValidTwilioOptions.AuthToken, twilioOptions.Client.AuthToken);
-        Assert.Equal(ValidTwilioOptions.AuthToken, twilioOptions.RequestValidation.AuthToken);
+        Assert.Equal(ValidTwilioOptions.AuthToken, twilioClientOptions.AuthToken);
     }
 
     [Fact]
-    public void AddTwilioOptions_With_AuthToken_Should_Pick_CredentialTypeAuthToken()
+    public void AddTwilioClient_With_AuthToken_Should_Pick_CredentialTypeAuthToken()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddTwilioOptions((_, options) =>
+        serviceCollection.AddTwilioClient((_, options) =>
         {
-            options.Client.AuthToken = ValidTwilioOptions.Client.AuthToken;
-            options.Client.AccountSid = ValidTwilioOptions.Client.AccountSid;
+            options.AuthToken = ValidTwilioOptions.Client.AuthToken;
+            options.AccountSid = ValidTwilioOptions.Client.AccountSid;
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var twilioOptions = serviceProvider.GetRequiredService<IOptions<TwilioOptions>>().Value;
+        var twilioClientOptions = serviceProvider.GetRequiredService<IOptions<TwilioClientOptions>>().Value;
 
-        Assert.Equal(CredentialType.AuthToken, twilioOptions.Client.CredentialType);
+        Assert.Equal(CredentialType.AuthToken, twilioClientOptions.CredentialType);
     }
 
     [Fact]
-    public void AddTwilioOptions_With_ApiKey_Should_Pick_CredentialTypeApiKey()
+    public void AddTwilioClient_With_ApiKey_Should_Pick_CredentialTypeApiKey()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddTwilioOptions((_, options) =>
+        serviceCollection.AddTwilioClient((_, options) =>
         {
-            options.Client.ApiKeySid = ValidTwilioOptions.Client.ApiKeySid;
-            options.Client.ApiKeySecret = ValidTwilioOptions.Client.ApiKeySecret;
-            options.Client.AccountSid = ValidTwilioOptions.Client.AccountSid;
+            options.ApiKeySid = ValidTwilioOptions.Client.ApiKeySid;
+            options.ApiKeySecret = ValidTwilioOptions.Client.ApiKeySecret;
+            options.AccountSid = ValidTwilioOptions.Client.AccountSid;
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var twilioOptions = serviceProvider.GetRequiredService<IOptions<TwilioOptions>>().Value;
+        var twilioClientOptions = serviceProvider.GetRequiredService<IOptions<TwilioClientOptions>>().Value;
 
-        Assert.Equal(CredentialType.ApiKey, twilioOptions.Client.CredentialType);
+        Assert.Equal(CredentialType.ApiKey, twilioClientOptions.CredentialType);
     }
 
     [Fact]
-    public void AddTwilioOptions_With_Missing_AuthToken_Should_Throw()
+    public void AddTwilioClient_With_Missing_AuthToken_Should_Throw()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddTwilioOptions((_, options) =>
-        {
-            options.Client.CredentialType = CredentialType.AuthToken;
-        });
+        serviceCollection.AddTwilioClient((_, options) => { options.CredentialType = CredentialType.AuthToken; });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var exception =
-            Assert.Throws<Exception>(() => serviceProvider.GetRequiredService<IOptions<TwilioOptions>>().Value);
-        Assert.Equal("Twilio:Client:{AccountSid|AuthToken} configuration required for CredentialType.AuthToken", exception.Message);
+            Assert.Throws<Exception>(() => serviceProvider.GetRequiredService<IOptions<TwilioClientOptions>>().Value);
+        Assert.Equal("Twilio:Client:{AccountSid|AuthToken} configuration required for CredentialType.AuthToken.",
+            exception.Message);
     }
 
     [Fact]
-    public void AddTwilioOptions_With_Missing_ApiKey_Should_Throw()
+    public void AddTwilioClient_With_Missing_ApiKey_Should_Throw()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddTwilioOptions((_, options) => { options.Client.CredentialType = CredentialType.ApiKey; });
+        serviceCollection.AddTwilioClient((_, options) => { options.CredentialType = CredentialType.ApiKey; });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var exception = Assert.Throws<Exception>(() => serviceProvider.GetRequiredService<IOptions<TwilioOptions>>().Value);
-        Assert.Equal("Twilio:Client:{AccountSid|ApiKeySid|ApiKeySecret} configuration required for CredentialType.ApiKey", exception.Message);
+        var exception =
+            Assert.Throws<Exception>(() => serviceProvider.GetRequiredService<IOptions<TwilioClientOptions>>().Value);
+        Assert.Equal(
+            "Twilio:Client:{AccountSid|ApiKeySid|ApiKeySecret} configuration required for CredentialType.ApiKey.",
+            exception.Message);
     }
 
     [Fact]
@@ -219,9 +182,7 @@ public class TwilioDependencyInjectionTests
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildValidConfiguration());
-        serviceCollection
-            .AddTwilioOptions()
-            .AddTwilioClient();
+        serviceCollection.AddTwilioClient();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         using var scope = serviceProvider.CreateScope();
@@ -241,9 +202,7 @@ public class TwilioDependencyInjectionTests
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildApiKeyConfiguration());
-        serviceCollection
-            .AddTwilioOptions()
-            .AddTwilioClient();
+        serviceCollection.AddTwilioClient();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         using var scope = serviceProvider.CreateScope();
@@ -266,9 +225,7 @@ public class TwilioDependencyInjectionTests
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildAuthTokenConfiguration());
-        serviceCollection
-            .AddTwilioOptions()
-            .AddTwilioClient();
+        serviceCollection.AddTwilioClient();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         using var scope = serviceProvider.CreateScope();
@@ -293,9 +250,7 @@ public class TwilioDependencyInjectionTests
         serviceCollection.AddSingleton(BuildValidConfiguration());
 
         using var httpClient = new System.Net.Http.HttpClient();
-        serviceCollection
-            .AddTwilioOptions()
-            .AddTwilioClient(_ => httpClient);
+        serviceCollection.AddTwilioClient(_ => httpClient);
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         using var scope = serviceProvider.CreateScope();
@@ -309,7 +264,7 @@ public class TwilioDependencyInjectionTests
     }
 
     [Fact]
-    public void AddTwilioClient_Without_Options_Should_Throw()
+    public void AddTwilioClient_Without_Configuration_Should_Throw()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddTwilioClient();
@@ -317,21 +272,32 @@ public class TwilioDependencyInjectionTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         using var scope = serviceProvider.CreateScope();
         var exception = Assert.Throws<Exception>(() => scope.ServiceProvider.GetService<ITwilioRestClient>());
-        Assert.Equal("TwilioOptions not found, use AddTwilio or AddTwilioOptions", exception.Message);
+        Assert.Equal("IConfiguration not found.", exception.Message);
+    }
+    
+    [Fact]
+    public void AddTwilioClient_With_Empty_Configuration_Should_Throw()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton(BuildEmptyConfiguration());
+        serviceCollection.AddTwilioClient();
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        using var scope = serviceProvider.CreateScope();
+        var exception = Assert.Throws<Exception>(() => scope.ServiceProvider.GetService<ITwilioRestClient>());
+        Assert.Equal("Twilio:Client not configured.", exception.Message);
     }
 
     [Fact]
     public void AddTwilioClient_Without_ClientOptions_Should_Throw()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection
-            .AddTwilioOptions((_, _) => { })
-            .AddTwilioClient();
+        serviceCollection.AddTwilioClient((_, _) => { });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         using var scope = serviceProvider.CreateScope();
         var exception = Assert.Throws<Exception>(() => scope.ServiceProvider.GetService<ITwilioRestClient>());
-        Assert.Equal("Twilio:Client not configured", exception.Message);
+        Assert.Equal("Twilio:Client not configured.", exception.Message);
     }
 
     private IConfiguration BuildEmptyConfiguration() => new ConfigurationBuilder().Build();

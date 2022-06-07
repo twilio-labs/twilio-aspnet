@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Twilio.AspNet.Core.UnitTests;
@@ -19,16 +21,59 @@ public class ValidateRequestAttributeTests
             UrlOverride = "MY URL OVERRIDE"
         }
     };
+    
+    [Fact]
+    public void AddTwilioRequestValidation_With_Callback_Should_Match_Configuration()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton(BuildEmptyConfiguration());
+        serviceCollection.AddTwilioRequestValidation((_, options) =>
+        {
+            var requestValidation = ValidTwilioOptions.RequestValidation;
+            options.AuthToken = requestValidation.AuthToken;
+            options.AllowLocal = requestValidation.AllowLocal;
+            options.UrlOverride = requestValidation.UrlOverride;
+        });
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var twilioRequestValidationOptions =
+            serviceProvider.GetService<IOptions<TwilioRequestValidationOptions>>()?.Value;
+
+        var expectedJson = JsonSerializer.Serialize(ValidTwilioOptions.RequestValidation);
+        var actualJson = JsonSerializer.Serialize(twilioRequestValidationOptions);
+
+        Assert.Equal(expectedJson, actualJson);
+    }
+    
+    [Fact]
+    public void AddTwilioRequestValidation_Should_Fallback_To_AuthToken()
+    {
+        var serviceCollection = new ServiceCollection();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new[]
+            {
+                new KeyValuePair<string, string>("Twilio:AuthToken", ValidTwilioOptions.AuthToken)
+            })
+            .Build();
+
+        serviceCollection.AddSingleton<IConfiguration>(configuration);
+        serviceCollection.AddTwilioRequestValidation();
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptions<TwilioRequestValidationOptions>>().Value;
+
+        Assert.Equal(ValidTwilioOptions.AuthToken, options.AuthToken);
+    }
 
     [Fact]
     public void AddTwilio_Should_Configure_ValidateRequestAttribute()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddTwilioOptions((_, options) =>
+        serviceCollection.AddTwilioRequestValidation((_, options) =>
         {
-            options.RequestValidation.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
-            options.RequestValidation.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
-            options.RequestValidation.UrlOverride = ValidTwilioOptions.RequestValidation.UrlOverride;
+            options.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
+            options.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
+            options.UrlOverride = ValidTwilioOptions.RequestValidation.UrlOverride;
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -47,11 +92,11 @@ public class ValidateRequestAttributeTests
     public void ValidateRequestAttribute_Properties_Should_Override_TwilioOptions()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddTwilioOptions((_, options) =>
+        serviceCollection.AddTwilioRequestValidation((_, options) =>
         {
-            options.RequestValidation.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
-            options.RequestValidation.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
-            options.RequestValidation.UrlOverride = ValidTwilioOptions.RequestValidation.UrlOverride;
+            options.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
+            options.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
+            options.UrlOverride = ValidTwilioOptions.RequestValidation.UrlOverride;
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -75,6 +120,8 @@ public class ValidateRequestAttributeTests
         Assert.Equal(authToken, attribute.AuthToken);
         Assert.Equal(urlOverride, attribute.UrlOverride);
     }
+    
+    private IConfiguration BuildEmptyConfiguration() => new ConfigurationBuilder().Build();
 
     private IConfiguration BuildValidConfiguration()
     {
