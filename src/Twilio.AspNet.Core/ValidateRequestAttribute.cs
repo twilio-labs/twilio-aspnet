@@ -11,20 +11,6 @@ namespace Twilio.AspNet.Core
     /// </summary>
     public class ValidateRequestAttribute : Attribute, IFilterFactory
     {
-        private bool? allowLocal = null;
-
-        public string AuthToken { get; set; }
-        public string UrlOverride { get; set; }
-
-        // by storing AllowLocal of bool into allowLocal of bool?
-        // we know that when allowLocal != null, the user explicitly configured AllowLocal,
-        // thus we should use the value of allowLocal, and not consider TwilioOptions
-        // (type of bool? is not allowed as attribute parameters which is why we need this workaround)
-        public bool AllowLocal
-        {
-            set => allowLocal = value;
-        }
-
         public bool IsReusable => true;
 
         /// <summary>
@@ -37,22 +23,15 @@ namespace Twilio.AspNet.Core
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
             var options = serviceProvider.GetService<IOptions<TwilioRequestValidationOptions>>()?.Value;
-            if (options == null)
-            {
-                return new InternalValidateRequestAttribute(
-                    authToken: AuthToken,
-                    urlOverride: UrlOverride,
-                    allowLocal: allowLocal ?? true
-                );
-            }
+            if (options == null) throw new Exception("RequestValidationOptions is not configured.");
 
             return new InternalValidateRequestAttribute(
-                authToken: AuthToken ?? options?.AuthToken,
-                urlOverride: UrlOverride ?? options?.UrlOverride,
-                allowLocal: allowLocal ?? options?.AllowLocal ?? true
+                authToken: options.AuthToken,
+                urlOverride: options.UrlOverride,
+                allowLocal: options.AllowLocal ?? true
             );
         }
-        
+
         internal class InternalValidateRequestAttribute : ActionFilterAttribute
         {
             internal string AuthToken { get; set; }

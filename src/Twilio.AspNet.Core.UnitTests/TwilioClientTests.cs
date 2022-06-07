@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -319,7 +318,23 @@ public class TwilioClientTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         using var scope = serviceProvider.CreateScope();
         var exception = Assert.Throws<Exception>(() => scope.ServiceProvider.GetService<ITwilioRestClient>());
-        Assert.Equal("Twilio:Client not configured.", exception.Message);
+        Assert.Equal("Twilio:Client:CredentialType could not be determined. Configure as ApiKey or AuthToken.", exception.Message);
+    }
+    
+    [Fact]
+    public void AddTwilioClient_Without_Insufficient_Options_Should_Throw()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddTwilioClient((_, options) =>
+        {
+            options.AccountSid = "";
+            options.ApiKeySid = "";
+        });
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        using var scope = serviceProvider.CreateScope();
+        var exception = Assert.Throws<Exception>(() => scope.ServiceProvider.GetService<ITwilioRestClient>());
+        Assert.Equal("Twilio:Client:CredentialType could not be determined. Configure as ApiKey or AuthToken.", exception.Message);
     }
 
     private IConfiguration BuildEmptyConfiguration() => new ConfigurationBuilder().Build();

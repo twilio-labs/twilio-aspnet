@@ -35,7 +35,7 @@ namespace Twilio.AspNet.Core
         {
             if (configureTwilioClientOptions == null)
                 configureTwilioClientOptions = ConfigureDefaultTwilioClientOptions;
-            
+
             services.AddOptions<TwilioClientOptions>()
                 .Configure<IServiceProvider>((options, serviceProvider) =>
                 {
@@ -46,7 +46,7 @@ namespace Twilio.AspNet.Core
             if (provideHttpClient == null)
             {
                 provideHttpClient = ProvideDefaultHttpClient;
-                
+
                 services.AddHttpClient(TwilioHttpClientName)
                     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
                     {
@@ -105,6 +105,9 @@ namespace Twilio.AspNet.Core
             {
                 if (isApiKeyConfigured) options.CredentialType = CredentialType.ApiKey;
                 else if (isAuthTokenConfigured) options.CredentialType = CredentialType.AuthToken;
+                else
+                    throw new Exception(
+                        "Twilio:Client:CredentialType could not be determined. Configure as ApiKey or AuthToken.");
             }
             else if (options.CredentialType == CredentialType.ApiKey && !isApiKeyConfigured)
             {
@@ -120,7 +123,7 @@ namespace Twilio.AspNet.Core
 
         private static System.Net.Http.HttpClient ProvideDefaultHttpClient(IServiceProvider serviceProvider)
             => serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(TwilioHttpClientName);
-        
+
         private static TwilioRestClient CreateTwilioClient(
             IServiceProvider provider,
             Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient
@@ -159,7 +162,7 @@ namespace Twilio.AspNet.Core
                     );
                     break;
                 default:
-                    throw new Exception("Twilio:Client not configured.");
+                    throw new Exception("This code should be unreachable");
             }
 
             if (options.LogLevel != null)

@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +25,6 @@ public class ValidateRequestAttributeTests
     public void AddTwilioRequestValidation_With_Callback_Should_Match_Configuration()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(BuildEmptyConfiguration());
         serviceCollection.AddTwilioRequestValidation((_, options) =>
         {
             var requestValidation = ValidTwilioOptions.RequestValidation;
@@ -87,48 +85,16 @@ public class ValidateRequestAttributeTests
         Assert.Equal(ValidTwilioOptions.RequestValidation.AuthToken, attribute.AuthToken);
         Assert.Equal(ValidTwilioOptions.RequestValidation.UrlOverride, attribute.UrlOverride);
     }
-
+    
     [Fact]
-    public void ValidateRequestAttribute_Properties_Should_Override_TwilioOptions()
+    public void Creating_ValidateRequestAttribute_Without_AddTwilioClient_Should_Throw()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddTwilioRequestValidation((_, options) =>
-        {
-            options.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
-            options.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
-            options.UrlOverride = ValidTwilioOptions.RequestValidation.UrlOverride;
-        });
-
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var allowLocal = true;
-        var authToken = "Different Auth Token!";
-        var urlOverride = "Different URL Override";
-
-        var attributeFactory = new ValidateRequestAttribute
-        {
-            AllowLocal = allowLocal,
-            AuthToken = authToken,
-            UrlOverride = urlOverride
-        };
-
-        var attribute =
-            (ValidateRequestAttribute.InternalValidateRequestAttribute) attributeFactory
-                .CreateInstance(serviceProvider);
-
-        Assert.Equal(allowLocal, attribute.AllowLocal);
-        Assert.Equal(authToken, attribute.AuthToken);
-        Assert.Equal(urlOverride, attribute.UrlOverride);
-    }
-    
-    private IConfiguration BuildEmptyConfiguration() => new ConfigurationBuilder().Build();
-
-    private IConfiguration BuildValidConfiguration()
-    {
-        var validJson = JsonSerializer.Serialize(new {Twilio = ValidTwilioOptions});
-        var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(validJson));
-        return new ConfigurationBuilder()
-            .AddJsonStream(jsonStream)
-            .Build();
+        var attributeFactory = new ValidateRequestAttribute();
+        var exception = Assert.Throws<Exception>(() => (ValidateRequestAttribute.InternalValidateRequestAttribute) attributeFactory
+            .CreateInstance(serviceProvider));
+        Assert.Equal("RequestValidationOptions is not configured.", exception.Message);
     }
 }
