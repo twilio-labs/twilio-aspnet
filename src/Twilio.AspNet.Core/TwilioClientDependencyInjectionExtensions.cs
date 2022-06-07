@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -7,10 +8,12 @@ using Twilio.Http;
 
 namespace Twilio.AspNet.Core
 {
-    public static class DependencyInjectionExtensions
+    public static class TwilioClientDependencyInjectionExtensions
     {
+        internal const string TwilioHttpClientName = "Twilio";
+
         public static IServiceCollection AddTwilioClient(this IServiceCollection services)
-            => AddTwilioClient(services, ConfigureDefaultTwilioClientOptions, null);
+            => AddTwilioClient(services, null, null);
 
         public static IServiceCollection AddTwilioClient(
             this IServiceCollection services,
@@ -22,7 +25,7 @@ namespace Twilio.AspNet.Core
             this IServiceCollection services,
             Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient
         )
-            => AddTwilioClient(services, ConfigureDefaultTwilioClientOptions, provideHttpClient);
+            => AddTwilioClient(services, null, provideHttpClient);
 
         public static IServiceCollection AddTwilioClient(
             this IServiceCollection services,
@@ -30,12 +33,27 @@ namespace Twilio.AspNet.Core
             Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient
         )
         {
+            if (configureTwilioClientOptions == null)
+                configureTwilioClientOptions = ConfigureDefaultTwilioClientOptions;
+            
             services.AddOptions<TwilioClientOptions>()
                 .Configure<IServiceProvider>((options, serviceProvider) =>
                 {
                     configureTwilioClientOptions(serviceProvider, options);
                     SanitizeTwilioClientOptions(options);
                 });
+
+            if (provideHttpClient == null)
+            {
+                provideHttpClient = ProvideDefaultHttpClient;
+                
+                services.AddHttpClient(TwilioHttpClientName)
+                    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                    {
+                        // same options as the Twilio C# SDK
+                        AllowAutoRedirect = false
+                    });
+            }
 
             services.AddTransient<ITwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
             services.AddTransient<TwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
@@ -100,6 +118,9 @@ namespace Twilio.AspNet.Core
             }
         }
 
+        private static System.Net.Http.HttpClient ProvideDefaultHttpClient(IServiceProvider serviceProvider)
+            => serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(TwilioHttpClientName);
+        
         private static TwilioRestClient CreateTwilioClient(
             IServiceProvider provider,
             Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -178,7 +179,7 @@ public class TwilioClientTests
     }
 
     [Fact]
-    public void AddTwilioClient_WithValidOptions_Should_AddTwilioClient()
+    public void AddTwilioClient_With_ValidOptions_Should_AddTwilioClient()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildValidConfiguration());
@@ -198,7 +199,7 @@ public class TwilioClientTests
     }
 
     [Fact]
-    public void AddTwilioClient_WithApiKeyOptions_Should_Match_Properties()
+    public void AddTwilioClient_With_ApiKeyOptions_Should_Match_Properties()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildApiKeyConfiguration());
@@ -221,7 +222,7 @@ public class TwilioClientTests
     }
 
     [Fact]
-    public void AddTwilioClient_WithAuthTokenOptions_Should_Match_Properties()
+    public void AddTwilioClient_With_AuthTokenOptions_Should_Match_Properties()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildAuthTokenConfiguration());
@@ -242,9 +243,30 @@ public class TwilioClientTests
             typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(client));
     }
+    [Fact]
+    
+    public void AddTwilioClient_Without_HttpClientProvider_Should_Named_HttpClient()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddSingleton(BuildValidConfiguration());
+
+        serviceCollection.AddTwilioClient();
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        using var scope = serviceProvider.CreateScope();
+
+        var twilioRestClient = scope.ServiceProvider.GetService<TwilioRestClient>();
+        
+        var actualHttpClient = (System.Net.Http.HttpClient) typeof(SystemNetHttpClient)
+            .GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetValue(twilioRestClient.HttpClient);
+
+        Assert.NotNull(actualHttpClient);
+        // need better assertions, but not sure how
+    }
 
     [Fact]
-    public void AddTwilioClient_WithHttpClientProvider_Should_Use_HttpClient()
+    public void AddTwilioClient_With_HttpClientProvider_Should_Use_HttpClient()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(BuildValidConfiguration());
