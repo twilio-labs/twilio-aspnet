@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.6;netstandard2.0;net6.0</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <Version>5.73.0</Version>
+    <Version>6.0.0-alpha</Version>
     <PackageId>Twilio.AspNet.Core</PackageId>
-    <PackageVersion>5.73.0</PackageVersion>
+    <PackageVersion>6.0.0-alpha</PackageVersion>
     <Authors>Twilio Labs</Authors>
     <Description>Twilio helper library for ASP.NET Core</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -18,16 +18,26 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IsNet60Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net6.0'))</IsNet60Compatible>
+    <IsNetStandard20Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'netstandard2.0'))</IsNetStandard20Compatible>
   </PropertyGroup>
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="'$(TargetFramework)' == 'net6.0' " />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="$(IsNet60Compatible)" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" Condition="$(IsNetStandard20Compatible)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" Condition="$(IsNetStandard20Compatible)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
     <PackageReference Include="Twilio" Version="5.73.0" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="5.73.0" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="6.0.0-alpha" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Twilio.AspNet.Core.UnitTests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup Condition="!$(IsNet60Compatible)">
     <Compile Remove="MinimalApiTwiMLResult.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="!$(IsNetStandard20Compatible)">
+    <Compile Remove="TwilioClientDependencyInjectionExtensions.cs" />
+    <Compile Remove="RequestValidationDependencyInjectionExtensions.cs" />
   </ItemGroup>
 </Project>

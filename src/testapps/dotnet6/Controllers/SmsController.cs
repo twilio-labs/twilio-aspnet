@@ -8,7 +8,7 @@ namespace dotnet6.Controllers;
 [Route("[controller]")]
 public class SmsController : TwilioController
 {
-    [ValidateRequest("your auth token here", urlOverride: "https://??????.ngrok.io/sms")]
+    [ValidateRequest]
     [HttpGet, HttpPost]
     public TwiMLResult Index()
     {
