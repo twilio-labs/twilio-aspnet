@@ -55,8 +55,8 @@ namespace Twilio.AspNet.Core
                     });
             }
 
-            services.AddTransient<ITwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
-            services.AddTransient<TwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
+            services.AddScoped<ITwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
+            services.AddScoped<TwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
 
             return services;
         }
