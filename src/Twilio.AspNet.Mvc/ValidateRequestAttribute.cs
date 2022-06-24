@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Configuration;
+using System.Net;
 using System.Web.Mvc;
 
 namespace Twilio.AspNet.Mvc
@@ -7,34 +9,46 @@ namespace Twilio.AspNet.Mvc
     /// Represents an attribute that is used to prevent forgery of a request.
     /// </summary>
 	public class ValidateRequestAttribute : ActionFilterAttribute
-	{
-		public string AuthToken { get; set; }
-		public string UrlOverride { get; set; }
-        public bool AllowLocal { get; set; }
+    {
+        protected internal string AuthToken { get; set; }
+        protected internal string UrlOverride { get; set; }
+        protected internal bool AllowLocal { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the ValidateRequestAttribute class.
         /// </summary>
-        /// <param name="authToken">AuthToken for the account used to sign the request</param>
-        /// <param name="allowLocal">Skip validation for local requests</param>
-		public ValidateRequestAttribute(string authToken, bool allowLocal = true)
-		{
-			AuthToken = authToken;
-            AllowLocal = allowLocal;
-		}
+		public ValidateRequestAttribute()
+        {
+            ConfigureProperties();
+        }
 
         /// <summary>
-        /// Initializes a new instance of the ValidateRequestAttribute class.
+        /// Configures the properties of the attribute.
         /// </summary>
-        /// <param name="authToken">AuthToken for the account used to sign the request</param>
-        /// <param name="urlOverride">The URL to use for validation, if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)</param>
-        /// <param name="allowLocal">Skip validation for local requests</param>
-		public ValidateRequestAttribute(string authToken, string urlOverride, bool allowLocal = true)
-		{
-			AuthToken = authToken;
-			UrlOverride = urlOverride;
-            AllowLocal = allowLocal;
-		}
+        /// <remarks>
+        /// This method exists so ValidateRequestAttribute can be inherited from 
+        /// and ConfigureProperties can be overridden.
+        /// </remarks>
+        /// <exception cref="Exception"></exception>
+        protected virtual void ConfigureProperties()
+        {
+            var requestValidationConfiguration = ConfigurationManager.GetSection("twilio/requestValidation") as RequestValidationConfigurationSection;
+            var appSettings = ConfigurationManager.AppSettings;
+
+            AuthToken = appSettings["twilio:requestValidation:authToken"]
+                ?? appSettings["twilio:authToken"]
+                ?? requestValidationConfiguration?.AuthToken
+                ?? throw new Exception("Twilio Auth Token not configured");
+
+            UrlOverride = appSettings["twilio:requestValidation:urlOverride"]
+                ?? requestValidationConfiguration?.AuthToken;
+
+            var allowLocalAppSetting = appSettings["twilio:requestValidation:allowLocal"];
+            AllowLocal = allowLocalAppSetting != null
+                ? bool.Parse(allowLocalAppSetting)
+                : requestValidationConfiguration?.AllowLocal
+                ?? true;
+        }
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -47,6 +61,5 @@ namespace Twilio.AspNet.Mvc
 
             base.OnActionExecuting(filterContext);
         }
-
     }
 }
