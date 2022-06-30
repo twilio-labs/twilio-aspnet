@@ -5,7 +5,7 @@ namespace AspNetFramework.Controllers
 {
     public class SmsController : TwilioController
     {
-        [ValidateRequest("your auth token here", urlOverride: "https://??????.ngrok.io/sms")]
+        [ValidateRequest]
         public TwiMLResult Index()
         {
             var messagingResponse = new MessagingResponse();
