@@ -24,7 +24,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="$(IsNet60Compatible)" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" Condition="$(IsNetStandard20Compatible)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" Condition="$(IsNetStandard20Compatible)" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.6" />
     <PackageReference Include="Twilio" Version="5.73.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="6.0.0-alpha" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
