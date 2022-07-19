@@ -1,17 +1,27 @@
 name: CI Build
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      libraryVersion:
+        description: 'The version of the library to use when compiling and packaging.'
+        default: 0.0.0-alpha
+        required: false
+        type: string
+        
   push:
     branches: [ "main" ]
     paths:
       - 'src/**/*'
       - '.github/workflows/*'
+      - '.github/actions/*'
+
   pull_request:
     branches: [ "main" ]
     paths:
       - 'src/**/*'
       - '.github/workflows/*'
+      - '.github/actions/*'
 
 env: 
   CI: true
@@ -23,110 +33,8 @@ jobs:
     name: Build, test, and pack
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: 6.0.x
-        
-    # Build and pack Twilio.AspNet.Common
-    - name: (Twilio.AspNet.Common) Restore
-      run: dotnet restore
-      working-directory: src/Twilio.AspNet.Common/
-      
-    - name: (Twilio.AspNet.Common) Build
-      run: dotnet build --no-restore
-      working-directory: src/Twilio.AspNet.Common/
-      
-    - name: (Twilio.AspNet.Common) Pack
-      run: dotnet pack -c Release -o ..\..\
-      working-directory: src/Twilio.AspNet.Common/
-
-    - name: (Twilio.AspNet.Common) Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: Twilio.AspNet.Common packages
-        path: |
-          Twilio.AspNet.Common.*.nupkg
-          Twilio.AspNet.Common.*.snupkg
-      
-    # Build, test, and pack Twilio.AspNet.Core
-    - name: (Twilio.AspNet.Core) Restore
-      run: dotnet restore
-      working-directory: src/Twilio.AspNet.Core/
-      
-    - name: (Twilio.AspNet.Core) Build
-      run: dotnet build --no-restore
-      working-directory: src/Twilio.AspNet.Core/
-     
-    - name: (Twilio.AspNet.Core.UnitTests) Restore
-      run: dotnet restore
-      working-directory: src/Twilio.AspNet.Core.UnitTests/
-      
-    - name: (Twilio.AspNet.Core.UnitTests) Build
-      run: dotnet build --no-restore
-      working-directory: src/Twilio.AspNet.Core.UnitTests/
-     
-    - name: (Twilio.AspNet.Core.UnitTests) Test
-      run: dotnet test --no-build --logger trx
-      working-directory: src/Twilio.AspNet.Core.UnitTests/
-
-    - name: (Twilio.AspNet.Core.UnitTests) Report Tests
-      uses: dorny/test-reporter@v1
-      if: success() || failure() # run this step even if previous step failed
-      with:
-        name: Twilio.AspNet.Core.UnitTests
-        path: src/Twilio.AspNet.Core.UnitTests/TestResults/*.trx
-        reporter: dotnet-trx
-      
-    - name: (Twilio.AspNet.Core) Pack
-      run: dotnet pack -c Release -o ..\..\
-      working-directory: src/Twilio.AspNet.Core/
-
-    - name: (Twilio.AspNet.Core) Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: Twilio.AspNet.Core packages
-        path: |
-          Twilio.AspNet.Core.*.nupkg
-          Twilio.AspNet.Core.*.snupkg
-      
-    # Build, test, and pack Twilio.AspNet.Mvc
-    - name: (Twilio.AspNet.Mvc) Restore
-      run: dotnet restore
-      working-directory: src/Twilio.AspNet.Mvc/
-      
-    - name: (Twilio.AspNet.Mvc) Build
-      run: dotnet build --no-restore
-      working-directory: src/Twilio.AspNet.Mvc/
-      
-    - name: (Twilio.AspNet.Mvc.UnitTests) Restore
-      run: dotnet restore
-      working-directory: src/Twilio.AspNet.Mvc.UnitTests/
-      
-    - name: (Twilio.AspNet.Mvc.UnitTests) Build
-      run: dotnet build --no-restore
-      working-directory: src/Twilio.AspNet.Mvc.UnitTests/
-      
-    - name: (Twilio.AspNet.Mvc.UnitTests) Test
-      run: dotnet test --no-build --logger trx
-      working-directory: src/Twilio.AspNet.Mvc.UnitTests/
-      
-    - name: (Twilio.AspNet.Mvc.UnitTests) Report Tests
-      uses: dorny/test-reporter@v1
-      if: success() || failure() # run this step even if previous step failed
-      with:
-        name: Twilio.AspNet.Mvc.UnitTests
-        path: src/Twilio.AspNet.Mvc.UnitTests/TestResults/*.trx
-        reporter: dotnet-trx
-      
-    - name: (Twilio.AspNet.Mvc) Pack
-      run: dotnet pack -c Release -o ..\..\
-      working-directory: src/Twilio.AspNet.Mvc/
-      
-    - name: (Twilio.AspNet.Mvc) Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        path: |
-          Twilio.AspNet.Mvc.*.nupkg
-          Twilio.AspNet.Mvc.*.snupkg
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/build
+        name: Build, test, and pack libraries
+        with:
+          libraryVersion: ${{ inputs.libraryVersion }}
