@@ -30,25 +30,46 @@ jobs:
         with:
           libraryVersion: ${{ inputs.libraryVersion }}
 
+  Release:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/download-artifact@v3
+        name: Download Twilio.AspNet.Common NuGet Package
+        with:
+          name: Twilio.AspNet.Common NuGet Package
+          
+      - uses: actions/download-artifact@v3
+        name: Download Twilio.AspNet.Core NuGet Package
+        with:
+          name: Twilio.AspNet.Core NuGet Package
+          
+      - uses: actions/download-artifact@v3
+        name: Download Twilio.AspNet.Mvc NuGet Package
+        with:
+          name: Twilio.AspNet.Mvc NuGet Package
+        
       - uses: ncipollo/release-action@v1
         name: Create GitHub Release and Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ inputs.libraryVersion }}
           artifacts: "*.nupkg,*.snupkg"
-          token: ${{ secrets.YOUR_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: ${{ inputs.prerelease }}
           
-      - name: (Twilio.AspNet.Common) Publish to NuGet
+      - name: (Twilio.AspNet.Common) Push to NuGet
         run: |
-          dotnet nuget publish 'Twilio.AspNet.Common.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
-          # dotnet nuget publish 'Twilio.AspNet.Common.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push 'Twilio.AspNet.Common.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          # dotnet nuget push 'Twilio.AspNet.Common.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}
           
-      - name: (Twilio.AspNet.Core) Publish to NuGet
+      - name: (Twilio.AspNet.Core) Push to NuGet
         run: |
-          dotnet nuget publish 'Twilio.AspNet.Core.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
-          # dotnet nuget publish 'Twilio.AspNet.Core.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push 'Twilio.AspNet.Core.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          # dotnet nuget push 'Twilio.AspNet.Core.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}
       
-      - name: (Twilio.AspNet.Mvc) Publish to NuGet
+      - name: (Twilio.AspNet.Mvc) Push to NuGet
         run: |
-          dotnet nuget publish 'Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
-          # dotnet nuget publish 'Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          dotnet nuget push 'Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          # dotnet nuget push 'Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}

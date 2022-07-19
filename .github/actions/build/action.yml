@@ -46,10 +46,10 @@ runs:
   - name: (Twilio.AspNet.Common) Upload Artifacts
     uses: actions/upload-artifact@v3
     with:
-      name: NuGet Packages
+      name: Twilio.AspNet.Common NuGet Package
       path: |
-        Twilio.AspNet.Common.*.nupkg
-        Twilio.AspNet.Common.*.snupkg
+        Twilio.AspNet.Common.${{ inputs.libraryVersion }}.nupkg
+        Twilio.AspNet.Common.${{ inputs.libraryVersion }}.snupkg
     
   # Build, test, and pack Twilio.AspNet.Core
   - name: (Twilio.AspNet.Core) Restore
@@ -68,7 +68,7 @@ runs:
     shell: pwsh
     
   - name: (Twilio.AspNet.Core.UnitTests) Build
-    run: dotnet build --no-restore --configuration Release
+    run: dotnet build --no-restore
     working-directory: src/Twilio.AspNet.Core.UnitTests/
     shell: pwsh
    
@@ -93,10 +93,10 @@ runs:
   - name: (Twilio.AspNet.Core) Upload Artifacts
     uses: actions/upload-artifact@v3
     with:
-      name: NuGet Packages
+      name: Twilio.AspNet.Core NuGet Package
       path: |
-        Twilio.AspNet.Core.*.nupkg
-        Twilio.AspNet.Core.*.snupkg
+        Twilio.AspNet.Core.${{ inputs.libraryVersion }}.nupkg
+        Twilio.AspNet.Core.${{ inputs.libraryVersion }}.snupkg
     
   # Build, test, and pack Twilio.AspNet.Mvc
   - name: (Twilio.AspNet.Mvc) Restore
@@ -115,7 +115,7 @@ runs:
     shell: pwsh
     
   - name: (Twilio.AspNet.Mvc.UnitTests) Build
-    run: dotnet build --no-restore --configuration Release
+    run: dotnet build --no-restore
     working-directory: src/Twilio.AspNet.Mvc.UnitTests/
     shell: pwsh
     
@@ -140,7 +140,7 @@ runs:
   - name: (Twilio.AspNet.Mvc) Upload Artifacts
     uses: actions/upload-artifact@v3
     with:
-      name: NuGet Packages
+      name: Twilio.AspNet.Mvc NuGet Package
       path: |
-        Twilio.AspNet.Mvc.*.nupkg
-        Twilio.AspNet.Mvc.*.snupkg
+        Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.nupkg
+        Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.snupkg
