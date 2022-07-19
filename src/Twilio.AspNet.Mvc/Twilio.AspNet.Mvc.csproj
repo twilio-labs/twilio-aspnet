@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net462</TargetFramework>
-    <Version>6.0.0-alpha</Version>
+    <Version>0.0.0-alpha</Version>
     <PackageId>Twilio.AspNet.Mvc</PackageId>
-    <PackageVersion>6.0.0-alpha</PackageVersion>
+    <PackageVersion>0.0.0-alpha</PackageVersion>
     <Authors>Twilio Labs</Authors>
-    <Description>Twilio helper library for ASP.NET MVC versions 3 through 5.</Description>
+    <Description>Twilio helper library for ASP.NET MVC on .NET Framework.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Refer to the changelog at https://github.com/twilio-labs/twilio-aspnet/blob/main/CHANGELOG.md</PackageReleaseNotes>
     <Copyright>Copyright 2022 (c) Twilio, Inc. All rights reserved.</Copyright>
@@ -50,7 +50,8 @@
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.Mvc" Version="3.0.20105.1" />
+    <PackageReference Include="Twilio" Version="5.77.0" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -59,8 +60,8 @@
     <PackageReference Include="NuGet.Build.Tasks.Pack" Version="6.1.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Twilio" Version="5.77.0" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="6.0.0-alpha" />
+  </ItemGroup>
+  <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Twilio.AspNet.Mvc.UnitTests</_Parameter1>
     </AssemblyAttribute>
