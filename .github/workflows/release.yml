@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      libraryVersion:
+        description: 'The version of the library to use when compiling and packaging.'
+        required: true
+        type: string
+      prerelease:
+        description: 'Is this a prerelease (alpha/beta/rc)?'
+        required: true
+        type: boolean
+
+env: 
+  CI: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+      
+jobs:
+  build:
+    if: contains('["Swimburger","dprothero"]', github.actor)
+    name: Build, test, and pack
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: ./.github/actions/build
+        name: Build, test, and pack libraries
+        with:
+          libraryVersion: ${{ inputs.libraryVersion }}
+
+      - uses: ncipollo/release-action@v1
+        name: Create GitHub Release and Tag
+        with:
+          tag: ${{ inputs.libraryVersion }}
+          artifacts: "*.nupkg,*.snupkg"
+          token: ${{ secrets.YOUR_GITHUB_TOKEN }}
+          prerelease: ${{ inputs.prerelease }}
+          
+      - name: (Twilio.AspNet.Common) Publish to NuGet
+        run: |
+          dotnet nuget publish 'Twilio.AspNet.Common.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          # dotnet nuget publish 'Twilio.AspNet.Common.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          
+      - name: (Twilio.AspNet.Core) Publish to NuGet
+        run: |
+          dotnet nuget publish 'Twilio.AspNet.Core.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          # dotnet nuget publish 'Twilio.AspNet.Core.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+      
+      - name: (Twilio.AspNet.Mvc) Publish to NuGet
+        run: |
+          dotnet nuget publish 'Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.nupkg' --api-key ${{ secrets.NUGET_API_KEY }}
+          # dotnet nuget publish 'Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.snupkg' --api-key ${{ secrets.NUGET_API_KEY }}
