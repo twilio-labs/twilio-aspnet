@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net462</TargetFramework>
-    <Version>5.77.0</Version>
+    <Version>0.0.0-alpha</Version>
     <PackageId>Twilio.AspNet.Mvc</PackageId>
-    <PackageVersion>5.77.0</PackageVersion>
+    <PackageVersion>0.0.0-alpha</PackageVersion>
     <Authors>Twilio Labs</Authors>
     <Description>Twilio helper library for ASP.NET MVC on .NET Framework.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -22,6 +22,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\System.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net" />
@@ -45,6 +48,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Twilio" Version="5.77.0" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="5.77.0" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Twilio.AspNet.Mvc.UnitTests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 </Project>

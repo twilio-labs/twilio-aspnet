@@ -1,0 +1,40 @@
+name: CI Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      libraryVersion:
+        description: 'The version of the library to use when compiling and packaging.'
+        default: 0.0.0-alpha
+        required: false
+        type: string
+        
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'src/**/*'
+      - '.github/workflows/*'
+      - '.github/actions/*'
+
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'src/**/*'
+      - '.github/workflows/*'
+      - '.github/actions/*'
+
+env: 
+  CI: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+      
+jobs:
+  build:
+    name: Build, test, and pack
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/build
+        name: Build, test, and pack libraries
+        with:
+          libraryVersion: ${{ inputs.libraryVersion }}

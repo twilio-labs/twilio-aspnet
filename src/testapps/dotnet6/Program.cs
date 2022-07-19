@@ -1,7 +1,14 @@
+using Twilio.AspNet.Core;
 using Twilio.AspNet.Core.MinimalApi;
 using Twilio.TwiML;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient();
+
+builder.Services
+    .AddTwilioClient()
+    .AddTwilioRequestValidation();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
