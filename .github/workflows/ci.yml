@@ -37,4 +37,4 @@ jobs:
       - uses: ./.github/actions/build
         name: Build, test, and pack libraries
         with:
-          libraryVersion: ${{ inputs.libraryVersion }}
+          libraryVersion: ${{ inputs.libraryVersion || '0.0.0-alpha' }}
