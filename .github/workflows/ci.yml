@@ -34,6 +34,14 @@ jobs:
     - name: (Twilio.AspNet.Common) Pack
       run: dotnet pack -c Release -o ..\..\
       working-directory: src/Twilio.AspNet.Common/
+
+    - name: (Twilio.AspNet.Common) Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Twilio.AspNet.Common packages
+        path: |
+          Twilio.AspNet.Common.*.nupkg
+          Twilio.AspNet.Common.*.snupkg
       
     # Build, test, and pack Twilio.AspNet.Core
     - name: (Twilio.AspNet.Core) Restore
@@ -59,6 +67,14 @@ jobs:
     - name: (Twilio.AspNet.Core) Pack
       run: dotnet pack -c Release -o ..\..\
       working-directory: src/Twilio.AspNet.Core/
+
+    - name: (Twilio.AspNet.Core) Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Twilio.AspNet.Core packages
+        path: |
+          Twilio.AspNet.Core.*.nupkg
+          Twilio.AspNet.Core.*.snupkg
       
     # Build, test, and pack Twilio.AspNet.Mvc
     - name: (Twilio.AspNet.Mvc) Restore
@@ -84,3 +100,11 @@ jobs:
     - name: (Twilio.AspNet.Mvc) Pack
       run: dotnet pack -c Release -o ..\..\
       working-directory: src/Twilio.AspNet.Mvc/
+      
+    - name: (Twilio.AspNet.Mvc) Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Twilio.AspNet.Mvc packages
+        path: |
+          Twilio.AspNet.Mvc.*.nupkg
+          Twilio.AspNet.Mvc.*.snupkg
