@@ -12,7 +12,7 @@ then you only need the [Twilio SDK for C# and .NET](https://github.com/twilio/tw
 [![NuGet Badge](https://buildstats.info/nuget/Twilio.AspNet.Core)](https://www.nuget.org/packages/Twilio.AspNet.Core/) 
 ### Requirements
 
-Requires .NET Core 1.0 or later with ASP.NET Core 1.0 or later.
+Requires ASP.NET Core 5 or later.
 
 ### Installation
 Run the following command to install the package using the .NET CLI:
@@ -32,7 +32,7 @@ Alternatively, use the NuGet Package Manager for Visual Studio or the NuGet wind
 
 ### Requirements
 
-Requires .NET 4.5.1 or later with ASP.NET MVC 3-5.
+Requires .NET 4.6.2 or later.
 
 ### Installation
 From the Package Manager Console or Developer PowerShell, run the following command to install the latest version: 
