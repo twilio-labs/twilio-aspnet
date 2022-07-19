@@ -8,10 +8,12 @@ on:
 
 env: 
   CI: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
       
 jobs:
-  build-core:
-    name: Build, test, and pack Twilio.AspNet.Core
+  build:
+    name: Build, test, and pack Twilio.AspNet projects
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
@@ -57,29 +59,6 @@ jobs:
     - name: (Twilio.AspNet.Core) Pack
       run: dotnet pack -c Release -o ..\..\
       working-directory: src/Twilio.AspNet.Core/
-      
-  build-mvc:
-    name: Build, test, and pack Twilio.AspNet.Mvc
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: 6.0.x
-        
-    # Build and pack Twilio.AspNet.Common
-    - name: (Twilio.AspNet.Common) Restore
-      run: dotnet restore
-      working-directory: src/Twilio.AspNet.Common/
-      
-    - name: (Twilio.AspNet.Common) Build
-      run: dotnet build --no-restore
-      working-directory: src/Twilio.AspNet.Common/
-      
-    - name: (Twilio.AspNet.Common) Pack
-      run: dotnet pack -c Release -o ..\..\
-      working-directory: src/Twilio.AspNet.Common/
       
     # Build, test, and pack Twilio.AspNet.Mvc
     - name: (Twilio.AspNet.Mvc) Restore
