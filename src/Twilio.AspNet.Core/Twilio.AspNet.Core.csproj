@@ -17,14 +17,25 @@
     <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <IsNet60Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net6.0'))</IsNet60Compatible>
     <IsNetStandard20Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'netstandard2.0'))</IsNetStandard20Compatible>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="$(IsNet60Compatible)" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" Condition="$(IsNetStandard20Compatible)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" Condition="$(IsNetStandard20Compatible)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.6" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Twilio" Version="5.73.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="6.0.0-alpha" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
