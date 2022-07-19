@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net5.0;net6.0</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <Version>5.73.0</Version>
+    <Version>5.77.0</Version>
     <PackageId>Twilio.AspNet.Core</PackageId>
-    <PackageVersion>5.73.0</PackageVersion>
+    <PackageVersion>5.77.0</PackageVersion>
     <Authors>Twilio Labs</Authors>
     <Description>Twilio helper library for ASP.NET Core</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -17,15 +17,20 @@
     <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsNet50Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net5.0'))</IsNet50Compatible>
     <IsNet60Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net6.0'))</IsNet60Compatible>
   </PropertyGroup>
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" Condition="'$(TargetFramework)' == 'net6.0' " />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.4" />
-    <PackageReference Include="Twilio" Version="5.73.0" />
-    <PackageReference Include="Twilio.AspNet.Common" Version="5.73.0" />
+    <PackageReference Include="Twilio" Version="5.77.0" />
+    <PackageReference Include="Twilio.AspNet.Common" Version="5.77.0" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />  
+  </ItemGroup>
+  <ItemGroup Condition="$(IsNet50Compatible)">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup Condition="!$(IsNet60Compatible)">
     <Compile Remove="MinimalApiTwiMLResult.cs" />

@@ -25,18 +25,11 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.4.0" />
-    <PackageReference Include="Microsoft.AspNet.Mvc" Version="3.0.20105.1" />
-    <PackageReference Include="Microsoft.AspNet.Razor" Version="1.0.20105.408" />
-    <PackageReference Include="Microsoft.AspNet.WebPages" Version="1.0.20105.408" />
-    <PackageReference Include="Microsoft.IdentityModel.Logging" Version="5.2.1" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.1" />
-    <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.1" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.1" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.3" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
-    <PackageReference Include="Twilio" Version="5.73.0" />
+    <PackageReference Include="Twilio" Version="5.77.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.abstractions" Version="2.0.1" />
     <PackageReference Include="xunit.analyzers" Version="0.8.0" />
