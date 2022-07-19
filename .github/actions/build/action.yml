@@ -48,8 +48,8 @@ runs:
     with:
       name: Twilio.AspNet.Common NuGet Package
       path: |
-        Twilio.AspNet.Common.${{ inputs.libraryVersion }}.nupkg
-        Twilio.AspNet.Common.${{ inputs.libraryVersion }}.snupkg
+        Twilio.AspNet.Common.${{ inputs.libraryVersion || '0.0.0-alpha' }}.nupkg
+        Twilio.AspNet.Common.${{ inputs.libraryVersion || '0.0.0-alpha' }}.snupkg
     
   # Build, test, and pack Twilio.AspNet.Core
   - name: (Twilio.AspNet.Core) Restore
@@ -95,8 +95,8 @@ runs:
     with:
       name: Twilio.AspNet.Core NuGet Package
       path: |
-        Twilio.AspNet.Core.${{ inputs.libraryVersion }}.nupkg
-        Twilio.AspNet.Core.${{ inputs.libraryVersion }}.snupkg
+        Twilio.AspNet.Core.${{ inputs.libraryVersion || '0.0.0-alpha' }}.nupkg
+        Twilio.AspNet.Core.${{ inputs.libraryVersion || '0.0.0-alpha' }}.snupkg
     
   # Build, test, and pack Twilio.AspNet.Mvc
   - name: (Twilio.AspNet.Mvc) Restore
@@ -142,5 +142,5 @@ runs:
     with:
       name: Twilio.AspNet.Mvc NuGet Package
       path: |
-        Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.nupkg
-        Twilio.AspNet.Mvc.${{ inputs.libraryVersion }}.snupkg
+        Twilio.AspNet.Mvc.${{ inputs.libraryVersion || '0.0.0-alpha' }}.nupkg
+        Twilio.AspNet.Mvc.${{ inputs.libraryVersion || '0.0.0-alpha' }}.snupkg
