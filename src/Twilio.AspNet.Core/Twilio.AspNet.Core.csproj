@@ -25,6 +25,9 @@
     <IsNet50Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net5.0'))</IsNet50Compatible>
     <IsNet60Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net6.0'))</IsNet60Compatible>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Twilio" Version="5.77.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
