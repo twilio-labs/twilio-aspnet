@@ -1,6 +1,6 @@
 # Twilio helper library for ASP.NET
 
-[![Build status](https://ci.appveyor.com/api/projects/status/813hnjynh8ncamwj?svg=true)](https://ci.appveyor.com/project/TwilioAPI/twilio-aspnet) 
+[![Build](https://github.com/twilio-labs/twilio-aspnet/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/twilio-labs/twilio-aspnet/actions/workflows/ci.yml)
 
 **The Twilio helper library for ASP.NET (Twilio.AspNet), helps you integrate the official [Twilio SDK for C# and .NET](https://github.com/twilio/twilio-csharp) into your ASP.NET applications.** The library supports ASP.NET MVC on .NET Framework and ASP.NET Core.
 
