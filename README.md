@@ -91,6 +91,7 @@ By inheriting from the `TwilioController`, you get access to the `TwiML` method 
 
 If you can't inherit from the `TwilioController` class, you can use the `TwiML` extension methods.
 ```csharp
+using Microsoft.AspNetCore.Mvc; // or System.Web.Mvc for .NET Framework
 using Twilio.AspNet.Common;
 using Twilio.AspNet.Core; // or .Mvc for .NET Framework
 using Twilio.TwiML;
