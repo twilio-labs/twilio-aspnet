@@ -43,6 +43,7 @@ namespace Twilio.AspNet.Mvc
 
             BaseUrlOverride = appSettings["twilio:requestValidation:baseUrlOverride"]
                               ?? requestValidationConfiguration?.BaseUrlOverride;
+            if(BaseUrlOverride != null) BaseUrlOverride = BaseUrlOverride.TrimEnd('/');
 
             var allowLocalAppSetting = appSettings["twilio:requestValidation:allowLocal"];
             AllowLocal = allowLocalAppSetting != null
