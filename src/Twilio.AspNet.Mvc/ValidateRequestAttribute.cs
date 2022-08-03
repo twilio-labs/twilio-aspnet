@@ -8,16 +8,16 @@ namespace Twilio.AspNet.Mvc
     /// <summary>
     /// Represents an attribute that is used to prevent forgery of a request.
     /// </summary>
-	public class ValidateRequestAttribute : ActionFilterAttribute
+    public class ValidateRequestAttribute : ActionFilterAttribute
     {
         protected internal string AuthToken { get; set; }
-        protected internal string UrlOverride { get; set; }
+        protected internal string BaseUrlOverride { get; set; }
         protected internal bool AllowLocal { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the ValidateRequestAttribute class.
         /// </summary>
-		public ValidateRequestAttribute()
+        public ValidateRequestAttribute()
         {
             ConfigureProperties();
         }
@@ -32,29 +32,36 @@ namespace Twilio.AspNet.Mvc
         /// <exception cref="Exception"></exception>
         protected virtual void ConfigureProperties()
         {
-            var requestValidationConfiguration = ConfigurationManager.GetSection("twilio/requestValidation") as RequestValidationConfigurationSection;
+            var requestValidationConfiguration =
+                ConfigurationManager.GetSection("twilio/requestValidation") as RequestValidationConfigurationSection;
             var appSettings = ConfigurationManager.AppSettings;
 
             AuthToken = appSettings["twilio:requestValidation:authToken"]
-                ?? appSettings["twilio:authToken"]
-                ?? requestValidationConfiguration?.AuthToken
-                ?? throw new Exception("Twilio Auth Token not configured");
+                        ?? appSettings["twilio:authToken"]
+                        ?? requestValidationConfiguration?.AuthToken
+                        ?? throw new Exception("Twilio Auth Token not configured");
 
-            UrlOverride = appSettings["twilio:requestValidation:urlOverride"]
-                ?? requestValidationConfiguration?.AuthToken;
+            BaseUrlOverride = appSettings["twilio:requestValidation:baseUrlOverride"]
+                              ?? requestValidationConfiguration?.BaseUrlOverride;
 
             var allowLocalAppSetting = appSettings["twilio:requestValidation:allowLocal"];
             AllowLocal = allowLocalAppSetting != null
                 ? bool.Parse(allowLocalAppSetting)
                 : requestValidationConfiguration?.AllowLocal
-                ?? true;
+                  ?? true;
         }
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            string urlOverride = null;
+            if (BaseUrlOverride != null)
+            {
+                urlOverride = $"{BaseUrlOverride}{filterContext.HttpContext.Request.Path}";
+            }
+
             var validator = new RequestValidationHelper();
 
-            if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, UrlOverride, AllowLocal))
+            if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, urlOverride, AllowLocal))
             {
                 filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }

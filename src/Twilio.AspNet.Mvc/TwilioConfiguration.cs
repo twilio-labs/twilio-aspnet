@@ -12,11 +12,11 @@ namespace Twilio.AspNet.Mvc
             set => this["authToken"] = value;
         }
 
-        [ConfigurationProperty("urlOverride")]
-        public string UrlOverride
+        [ConfigurationProperty("baseUrlOverride")]
+        public string BaseUrlOverride
         {
-            get => (string)this["urlOverride"];
-            set => this["urlOverride"] = value;
+            get => (string)this["baseUrlOverride"];
+            set => this["baseUrlOverride"] = value;
         }
 
         [ConfigurationProperty("allowLocal")]

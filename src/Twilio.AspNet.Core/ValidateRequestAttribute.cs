@@ -27,7 +27,7 @@ namespace Twilio.AspNet.Core
 
             return new InternalValidateRequestAttribute(
                 authToken: options.AuthToken,
-                urlOverride: options.UrlOverride,
+                baseUrlOverride: options.BaseUrlOverride?.TrimEnd('/'),
                 allowLocal: options.AllowLocal ?? true
             );
         }
@@ -35,27 +35,36 @@ namespace Twilio.AspNet.Core
         internal class InternalValidateRequestAttribute : ActionFilterAttribute
         {
             internal string AuthToken { get; set; }
-            internal string UrlOverride { get; set; }
+            internal string BaseUrlOverride { get; set; }
             internal bool AllowLocal { get; set; }
 
             /// <summary>
             /// Initializes a new instance of the ValidateRequestAttribute class.
             /// </summary>
             /// <param name="authToken">AuthToken for the account used to sign the request</param>
-            /// <param name="urlOverride">The URL to use for validation, if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)</param>
+            /// <param name="baseUrlOverride">
+            /// The Base URL (protocol + hostname) to use for validation,
+            /// if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)
+            /// </param>
             /// <param name="allowLocal">Skip validation for local requests</param>
-            public InternalValidateRequestAttribute(string authToken, string urlOverride, bool allowLocal)
+            public InternalValidateRequestAttribute(string authToken, string baseUrlOverride, bool allowLocal)
             {
                 AuthToken = authToken;
-                UrlOverride = urlOverride;
+                BaseUrlOverride = baseUrlOverride;
                 AllowLocal = allowLocal;
             }
 
             public override void OnActionExecuting(ActionExecutingContext filterContext)
             {
+                string urlOverride = null;
+                if (BaseUrlOverride != null)
+                {
+                    urlOverride = $"{BaseUrlOverride}{filterContext.HttpContext.Request.Path}";
+                }
+                
                 var validator = new RequestValidationHelper();
 
-                if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, UrlOverride, AllowLocal))
+                if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, urlOverride, AllowLocal))
                 {
                     filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
                 }

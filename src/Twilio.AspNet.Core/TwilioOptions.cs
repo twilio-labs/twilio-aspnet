@@ -23,7 +23,7 @@ namespace Twilio.AspNet.Core
     {
         public string AuthToken { get; set; }
         public bool? AllowLocal { get; set; }
-        public string UrlOverride { get; set; }
+        public string BaseUrlOverride { get; set; }
     }
 
     public enum CredentialType

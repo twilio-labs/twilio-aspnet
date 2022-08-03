@@ -17,7 +17,7 @@ public class ValidateRequestAttributeTests
         {
             AuthToken = "My Twilio:RequestValidation:AuthToken",
             AllowLocal = false,
-            UrlOverride = "MY URL OVERRIDE"
+            BaseUrlOverride = "MY URL OVERRIDE"
         }
     };
     
@@ -30,7 +30,7 @@ public class ValidateRequestAttributeTests
             var requestValidation = ValidTwilioOptions.RequestValidation;
             options.AuthToken = requestValidation.AuthToken;
             options.AllowLocal = requestValidation.AllowLocal;
-            options.UrlOverride = requestValidation.UrlOverride;
+            options.BaseUrlOverride = requestValidation.BaseUrlOverride;
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -71,7 +71,7 @@ public class ValidateRequestAttributeTests
         {
             options.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
             options.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
-            options.UrlOverride = ValidTwilioOptions.RequestValidation.UrlOverride;
+            options.BaseUrlOverride = ValidTwilioOptions.RequestValidation.BaseUrlOverride;
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -83,7 +83,7 @@ public class ValidateRequestAttributeTests
 
         Assert.Equal(ValidTwilioOptions.RequestValidation.AllowLocal, attribute.AllowLocal);
         Assert.Equal(ValidTwilioOptions.RequestValidation.AuthToken, attribute.AuthToken);
-        Assert.Equal(ValidTwilioOptions.RequestValidation.UrlOverride, attribute.UrlOverride);
+        Assert.Equal(ValidTwilioOptions.RequestValidation.BaseUrlOverride, attribute.BaseUrlOverride);
     }
     
     [Fact]
