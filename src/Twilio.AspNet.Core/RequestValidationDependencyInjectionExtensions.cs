@@ -41,7 +41,7 @@ namespace Twilio.AspNet.Core
         {
             // properties can be empty strings, but should be set to null if so
             if (options.AuthToken == "") options.AuthToken = null;
-            if (options.UrlOverride == "") options.UrlOverride = null;
+            if (options.BaseUrlOverride == "") options.BaseUrlOverride = null;
         }
     }
 }
