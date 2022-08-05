@@ -418,4 +418,4 @@ public class SmsController : TwilioController
 #### Validate requests outside of MVC
 
 The `[ValidateRequest]` attribute only works for MVC. If you need to validate requests outside of MVC, you can use the `RequestValidationHelper` class provided by `Twilio.AspNet`.
-Alternatively, The `RequestValidator` class from the [Twilio SDK](https://github.com/twilio/twilio-csharp) can also help you with this.
+Alternatively, the `RequestValidator` class from the [Twilio SDK](https://github.com/twilio/twilio-csharp) can also help you with this.
