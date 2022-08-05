@@ -4,9 +4,7 @@
 
 **The Twilio helper library for ASP.NET (Twilio.AspNet), helps you integrate the official [Twilio SDK for C# and .NET](https://github.com/twilio/twilio-csharp) into your ASP.NET applications.** The library supports ASP.NET MVC on .NET Framework and ASP.NET Core.
 
-You only need this library if you wish to respond to Twilio webhooks for
-voice calls and SMS messages. If you only need to use the Twilio REST API's,
-then you only need the [Twilio SDK for C# and .NET](https://github.com/twilio/twilio-csharp).
+This library helps you respond to webhooks, adds the Twilio client to the dependency injection container, and validate HTTP request originate from Twilio.
 
 ## Twilio.AspNet.Core
 [![NuGet Badge](https://buildstats.info/nuget/Twilio.AspNet.Core)](https://www.nuget.org/packages/Twilio.AspNet.Core/) 
@@ -55,10 +53,7 @@ public class SmsController : TwilioController
     public TwiMLResult Index(SmsRequest request)
     {
         var response = new MessagingResponse();
-        response.Message(
-            $"Hey there {request.From}! " +
-            "How 'bout those Seahawks?"
-        );
+        response.Message($"Ahoy {request.From}!");
         return TwiML(response);
     }
 }
@@ -79,7 +74,7 @@ public class VoiceController : TwilioController
     public TwiMLResult Index(VoiceRequest request)
     {
         var response = new VoiceResponse();
-        response.Say($"Welcome. Are you from {request.FromCity}?");
+        response.Say($"Ahoy! Are you from {request.FromCity}?");
         return TwiML(response);
     }
 }
@@ -102,10 +97,7 @@ public class SmsController : Controller
     public TwiMLResult Index(SmsRequest request)
     {
         var response = new MessagingResponse();
-        response.Message(
-            $"Hey there {request.From}! " +
-            "How 'bout those Seahawks?"
-        );
+        response.Message($"Ahoy {request.From}!");
         return this.TwiML(response);
     }
 }
@@ -142,6 +134,7 @@ app.MapPost("/sms", async (HttpRequest request) =>
 
 app.Run();
 ```
+
 In traditional MVC controllers, the `SmsRequest`, `VoiceRequest`, and other typed request object would be bound, but Minimal APIs does not support the same model binding.    
    
 Instead, you can bind individual parameters for HTTP GET requests using the `FromQuery` attribute. When you don't specify the [FromQuery](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis#parameter-binding) attribute, multiple sources will be considered to bind from in addition to the query string parameters. For HTTP POST requests you can grab the form and then retrieve individual parameters by string index.   
@@ -155,7 +148,8 @@ Here's the list of classes:
 - `StatusCallbackRequest`: Holds data for tracking the status of an outbound Twilio Voice Call
 - `VoiceRequest`: Holds data for incoming Voice Calls
 
-Note: Only MVC Controllers and Razor Pages supports model binding to typed .NET objects. In Minimal APIs and other scenario's, you'll have to write code to extract the parameters yourself.
+> **Note**
+> Only MVC Controllers and Razor Pages support model binding to typed .NET objects. In Minimal APIs and other scenarios, you'll have to write code to extract the parameters yourself.
 
 The following sample shows how to accept inbound SMS, respond, and track the status of the SMS response.
 
@@ -177,7 +171,7 @@ public class SmsController : TwilioController
     {
         var messagingResponse = new MessagingResponse();
         messagingResponse.Message(
-            body: $"Hey there {request.From}! How 'bout those Seahawks?",
+            body: $"Ahoy {request.From}!",
             action: new Uri("/Sms/StatusCallback"),
             method: Twilio.Http.HttpMethod.Post
         );
@@ -193,3 +187,235 @@ public class SmsController : TwilioController
 
 As shown in the sample above, you can add an `SmsRequest` as a parameter, and MVC will bind the object for you.
 The code then responds with an SMS with the `status` and `method` parameter. When the status of the SMS changes, Twilio will send an HTTP POST request to `StatusCallback` action. You can add an `SmsStatusCallbackRequest` as a parameter, and MVC will bind the object for you.
+
+### Add the Twilio client to the ASP.NET Core dependency injection container
+
+In ASP.NET Core, you can add the Twilio REST API client to ASP.NET Core's service using the `.AddTwilioClient` method, like this:
+
+```csharp
+using Twilio.AspNet.Core;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddTwilioClient()
+```
+
+Now you can request `ITwilioRestClient` and `TwilioRestClient` via dependency injection.
+
+You can configure the Twilio client using the following configuration:
+
+```json
+{
+  "Twilio": {
+    "AuthToken": "[YOUR_AUTH_TOKEN]",
+    "Client": {
+      "AccountSid": "[YOUR_ACCOUNT_SID]",
+      "AuthToken": "[YOUR_AUTH_TOKEN]",
+      "ApiKeySid": "[YOUR_API_KEY_SID]",
+      "ApiKeySecret": "[YOUR_API_KEY_SECRET]",
+      "CredentialType": "[Unspecified|AuthToken|ApiKey]",
+      "Region": null,
+      "Edge": null,
+      "LogLevel": null
+    }
+  }
+}
+```
+
+A couple of notes:
+- `Twilio:Client:AuthToken` falls back on `Twilio:AuthToken`. You only need to configure one of them.
+- `Twilio:Client:CredentialType` has the following valid values: `Unspecified`, `AuthToken`, or `ApiKey`
+- `Twilio:Client:CredentialType` is optional and defaults to `Unspecified`. If `Unspecified`, whether you configured an API key or an Auth Token will be detected.
+
+If you do not wish to configure the Twilio client using .NET configuration, you can do so manually:
+
+```csharp
+using Twilio.AspNet.Core;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+  .AddTwilioClient((serviceProvider, options) =>
+  {
+    options.AccountSid = "[YOUR_ACCOUNT_SID]";
+    options.AuthToken = "[YOUR_AUTH_TOKEN]";
+    options.ApiKeySid = "[YOUR_API_KEY_SID]";
+    options.ApiKeySecret = "[YOUR_API_KEY_SECRET]";
+    options.Edge = null;
+    options.Region = null;
+    options.LogLevel = null;
+    options.CredentialType = CredentialType.Unspecified;
+  });
+```
+
+> **Warning**
+> Do not hard-code your **Auth Token** or **API key secret** into code and do not check them into source control.
+> We recommend using the [Secrets Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) for local development.
+> Alternatively, you can use environment variables, a vault service, or other more secure techniques.
+
+#### Use your own HTTP client
+
+By default when you call `.AddTwilioClient`, an HTTP client factory is configured that is used to provide an `HttpClient` to the Twilio REST client. If you'd like to provide your own HTTP client, you can do so by providing a callback like this:
+
+```csharp
+```csharp
+using Twilio.AspNet.Core;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddTwilioClient(provider => new HttpClient())
+```
+
+### Validate Twilio HTTP requests
+
+Webhooks require your endpoint to be publicly available, but this also introduces the risk that bad actors could find your webhook URL and try to abuse it.
+
+Luckily, you can verify that an HTTP request originated from Twilio. 
+The `Twilio.AspNet` library provides an attribute that will validate the request for you in MVC.
+The implementation differs between the `Twilio.AspNet.Core` and `Twilio.AspNet.Mvc` library.
+
+#### Validate requests in ASP.NET Core MVC
+
+Add the `.AddTwilioRequestValidation` method at startup:
+
+```csharp
+using Twilio.AspNet.Core;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddTwilioRequestValidation();
+```
+
+Then configure the request validation:
+
+```json
+{
+  "Twilio": {
+    "AuthToken": "[YOUR_AUTH_TOKEN]",
+    "RequestValidation": {
+      "AuthToken": "[YOUR_AUTH_TOKEN]",
+      "AllowLocal": true,
+      "BaseUrlOverride": "https://??????.ngrok.io"
+    }
+  }
+}
+```
+
+A couple of notes about the configuration:
+- `Twilio:RequestValidation:AuthToken` falls back on `Twilio:AuthToken`. You only need to configure one of them.
+- `AllowLocal` will skip validation when the HTTP request originated from localhost.
+- Use `BaseUrlOverride` in case your app is behind a reverse proxy or a tunnel like ngrok. The path of the current request will be appended to the `BaseUrlOverride` for request validation.
+
+You can also manually configure the request validation:
+
+```csharp
+using Twilio.AspNet.Core;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+  .AddTwilioRequestValidation((serviceProvider, options) =>
+  {
+    options.AuthToken = "[YOUR_AUTH_TOKEN]";
+    options.AllowLocal = true;
+    options.BaseUrlOverride = "https://??????.ngrok.io";
+  });
+```
+
+> **Warning**
+> Do not hard-code your **Auth Token** into code and do not check them into source control.
+> We recommend using the [Secrets Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) for local development.
+> Alternatively, you can use environment variables, a vault service, or other more secure techniques.
+
+Now that request validation has been configured, use the `[ValidateRequest]` attribute.
+You can apply the attribute globally, to MVC areas, controllers, and actions.
+Here's an example where the attribute is applied to the `Index` action:
+
+```csharp
+using Twilio.AspNet.Common;
+using Twilio.AspNet.Core;
+using Twilio.TwiML;
+
+public class SmsController : TwilioController
+{
+    [ValidateRequest]
+    public TwiMLResult Index(SmsRequest request)
+    {
+        var response = new MessagingResponse();
+        response.Message("Ahoy!");
+        return TwiML(response);
+    }
+}
+```
+
+#### Validate requests in ASP.NET MVC on .NET Framework
+
+In your _Web.config_ you can configure request validation like shown below:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <configSections>
+      <sectionGroup name="twilio" type="Twilio.AspNet.Mvc.TwilioSectionGroup,Twilio.AspNet.Mvc">
+        <section name="requestValidation" type="Twilio.AspNet.Mvc.RequestValidationConfigurationSection,Twilio.AspNet.Mvc"/>
+      </sectionGroup>
+    </configSections>
+    <twilio>
+       <requestValidation 
+         authToken="your auth token here"
+         baseUrlOverride="https://??????.ngrok.io"
+         allowLocal="true"
+       />
+    </twilio>
+</configuration>
+```
+
+You can also configure request validation using app settings:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <appSettings>
+      <add key="twilio:requestValidation:authToken" value="[YOUR_AUTH_TOKEN]"/>
+      <add key="twilio:requestValidation:baseUrlOverride" value="https://??????.ngrok.io"/>
+      <add key="twilio:requestValidation:allowLocal" value="true"/>
+    </appSettings>
+</configuration>
+```
+
+If you configure request validation using both ways, app setting will overwrite the `twilio/requestValidation` configuration element.
+
+A couple of notes about the configuration:
+- `allowLocal` will skip validation when the HTTP request originated from localhost.
+- Use `baseUrlOverride` in case you are in front of a reverse proxy or a tunnel like ngrok. The path of the current request will be appended to the `baseUrlOverride` for request validation.
+
+> **Warning**
+> Do not hard-code your **Auth Token** into code and do not check them into source control.
+> Use the `UserSecretsConfigBuilder` for local development or [one of the other configuration builders](https://docs.microsoft.com/en-us/aspnet/config-builder).
+> Alternatively, you should encrypt the configuration sections containing secrets like the Auth Token.
+
+Now that request validation has been configured, use the `[ValidateRequest]` attribute.
+You can apply the attribute globally, to MVC areas, controllers, and actions. 
+Here's an example where the attribute is applied to the `Index` action:
+
+```csharp
+using Twilio.AspNet.Common;
+using Twilio.AspNet.Mvc;
+using Twilio.TwiML;
+
+public class SmsController : TwilioController
+{
+    [ValidateRequest]
+    public TwiMLResult Index(SmsRequest request)
+    {
+        var response = new MessagingResponse();
+        response.Message("Ahoy!");
+        return TwiML(response);
+    }
+}
+```
+
+#### Validate requests outside of MVC
+
+The `[ValidateRequest]` attribute only works for MVC. If you need to validate requests outside of MVC, you can use the `RequestValidationHelper` class provided by `Twilio.AspNet`.
+Alternatively, the `RequestValidator` class from the [Twilio SDK](https://github.com/twilio/twilio-csharp) can also help you with this.
