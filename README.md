@@ -323,7 +323,7 @@ builder.Services
 ```
 
 > **Warning**
-> Do not hard-code your **Auth Token** into code and do not check them into source code.
+> Do not hard-code your **Auth Token** into code and do not check them into source control.
 > We recommend using the [Secrets Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) for local development.
 > Alternatively, you can use environment variables, a vault service, or other more secure techniques.
 
