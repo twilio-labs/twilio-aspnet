@@ -390,7 +390,7 @@ A couple of notes about the configuration:
 - Use `baseUrlOverride` in case you are in front of a reverse proxy or a tunnel like ngrok. The path of the current request will be appended to the `baseUrlOverride` for request validation.
 
 > **Warning**
-> Do not hard-code your **Auth Token** into code and do not check them into source code.
+> Do not hard-code your **Auth Token** into code and do not check them into source control.
 > Use the `UserSecretsConfigBuilder` for local development or [one of the other configuration builders](https://docs.microsoft.com/en-us/aspnet/config-builder).
 > Alternatively, you should encrypt the configuration sections containing secrets like the Auth Token.
 
