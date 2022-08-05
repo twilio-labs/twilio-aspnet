@@ -149,7 +149,7 @@ Here's the list of classes:
 - `VoiceRequest`: Holds data for incoming Voice Calls
 
 > **Note**
-> Only MVC Controllers and Razor Pages supports model binding to typed .NET objects. In Minimal APIs and other scenarios, you'll have to write code to extract the parameters yourself.
+> Only MVC Controllers and Razor Pages support model binding to typed .NET objects. In Minimal APIs and other scenarios, you'll have to write code to extract the parameters yourself.
 
 The following sample shows how to accept inbound SMS, respond, and track the status of the SMS response.
 
