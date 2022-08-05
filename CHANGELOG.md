@@ -2,7 +2,7 @@
 - Big breaking change to the `[ValidateRequest]` attribute. The attribute no longer accepts parameters nor properties. Instead, you have to configure the request validation as documented in the readme.
 - You can now add the Twilio REST client to ASP.NET Core's dependency injection container, using the `.AddTwilioClient` method. This Twilio client will use an `HttpClient` provided by an HTTP client factory. See readme for more details.
 - We no longer try to match the Twilio SDK version number, and instead go by our own versioning to better communicate breaking changes vs minor changes.
-- The projects are now build and packages are now pushed using GitHub Actions instead of AppVeyor.
+- The projects are now built and packages are now pushed using GitHub Actions instead of AppVeyor.
 - The projects are now built deterministically and support source link for better debugging.
 - More samples have been added to the readme.
 
