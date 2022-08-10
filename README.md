@@ -190,7 +190,7 @@ The code then responds with an SMS with the `status` and `method` parameter. Whe
 
 ### Add the Twilio client to the ASP.NET Core dependency injection container
 
-In ASP.NET Core, you can add the Twilio REST API client to ASP.NET Core's service using the `.AddTwilioClient` method, like this:
+In ASP.NET Core, you can add the Twilio REST API client to ASP.NET Core's services using the `.AddTwilioClient` method, like this:
 
 ```csharp
 using Twilio.AspNet.Core;
@@ -224,7 +224,7 @@ You can configure the Twilio client using the following configuration:
 
 A couple of notes:
 - `Twilio:Client:AuthToken` falls back on `Twilio:AuthToken`. You only need to configure one of them.
-- `Twilio:Client:CredentialType` has the following valid values: `Unspecified`, `AuthToken`, or `ApiKey`
+- `Twilio:Client:CredentialType` has the following valid values: `Unspecified`, `AuthToken`, or `ApiKey`.
 - `Twilio:Client:CredentialType` is optional and defaults to `Unspecified`. If `Unspecified`, whether you configured an API key or an Auth Token will be detected.
 
 If you do not wish to configure the Twilio client using .NET configuration, you can do so manually:
@@ -362,7 +362,7 @@ In your _Web.config_ you can configure request validation like shown below:
     </configSections>
     <twilio>
        <requestValidation 
-         authToken="your auth token here"
+         authToken="[YOUR_AUTH_TOKEN]"
          baseUrlOverride="https://??????.ngrok.io"
          allowLocal="true"
        />
