@@ -1,6 +1,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Twilio.TwiML;
 
 // ReSharper disable once CheckNamespace
 namespace Twilio.AspNet.Core.MinimalApi;
@@ -52,5 +53,21 @@ public class TwiMLResult : IResult
         httpContext.Response.ContentType = "application/xml";
         httpContext.Response.ContentLength = Encoding.UTF8.GetByteCount(twiML);
         return httpContext.Response.WriteAsync(twiML);
+    }
+}
+
+// ReSharper disable once InconsistentNaming
+public static class TwiMLExtensions
+{
+    // ReSharper disable once InconsistentNaming
+    public static TwiMLResult ToTwiMLResult(this VoiceResponse voiceResponse)
+    {
+        return new TwiMLResult(voiceResponse);
+    }
+
+    // ReSharper disable once InconsistentNaming
+    public static TwiMLResult ToTwiMLResult(this MessagingResponse messagingResponse)
+    {
+        return new TwiMLResult(messagingResponse);
     }
 }
