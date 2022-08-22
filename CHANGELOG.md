@@ -6,6 +6,8 @@
 - The projects are now built deterministically and support source link for better debugging.
 - More samples have been added to the readme.
 
+Read about these changes in more detail at the [v6 announcement post](https://www.twilio.com/blog/whats-new-in-twilio-helper-library-for-aspnet-v6). 
+
 ## 5.77.0 (2022-07-19)
 - Twilio.AspNet.Core and Twilio.AspNet.Common now use .NET Standard 2.0 and dropped older .NET Standard versions.
 - Microsoft.AspNetCore.Mvc.Core dependency has been updated to a version that is not vulnerable. For newer versions of .NET, a framework dependency is used instead.
