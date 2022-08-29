@@ -258,7 +258,6 @@ builder.Services
 By default when you call `.AddTwilioClient`, an HTTP client factory is configured that is used to provide an `HttpClient` to the Twilio REST client. If you'd like to provide your own HTTP client, you can do so by providing a callback like this:
 
 ```csharp
-```csharp
 using Twilio.AspNet.Core;
 
 var builder = WebApplication.CreateBuilder(args);
