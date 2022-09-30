@@ -59,7 +59,7 @@ namespace Twilio.AspNet.Core
                 string urlOverride = null;
                 if (BaseUrlOverride != null)
                 {
-                    urlOverride = $"{BaseUrlOverride}{filterContext.HttpContext.Request.Path}";
+                    urlOverride = $"{BaseUrlOverride}{filterContext.HttpContext.Request.Path}{filterContext.HttpContext.Request.QueryString}";
                 }
                 
                 var validator = new RequestValidationHelper();
