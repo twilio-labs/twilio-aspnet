@@ -42,6 +42,7 @@ namespace Twilio.AspNet.Mvc
         public override void ExecuteResult(ControllerContext controllerContext)
         {
             var response = controllerContext.HttpContext.Response;
+            var encoding = response.Output.Encoding.BodyName;
             response.ContentType = "application/xml";
 
             if (!string.IsNullOrEmpty(dataString))
@@ -58,11 +59,17 @@ namespace Twilio.AspNet.Mvc
             
             if (dataTwiml != null)
             {
-                response.Output.Write(dataTwiml.ToString(formattingOptions));
+                var twimlString = dataTwiml.ToString(formattingOptions);
+                if (encoding != "utf-8")
+                {
+                    twimlString = twimlString.Replace("utf-8", encoding);
+                }
+                
+                response.Output.Write(twimlString);
                 return;
             }
-            
-            response.Output.Write("<Response></Response>");
+
+            response.Output.Write($"<?xml version=\"1.0\" encoding=\"{encoding}\"?><Response></Response>");
         }
     }
 }

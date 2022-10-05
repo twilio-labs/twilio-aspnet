@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using Twilio.TwiML;
 
 namespace Twilio.AspNet.Mvc.UnitTests
 {
@@ -43,9 +44,7 @@ namespace Twilio.AspNet.Mvc.UnitTests
                 Request.Setup(x => x.Form).Returns(form);
             }
             
-            
-            var outputWriter = new StringWriter();
-            Response.Setup(x => x.Output).Returns(outputWriter);
+            Response.Setup(x => x.Output).Returns(new Utf8StringWriter());
         }
 
         public static string fakeUrl = "https://api.example.com/webhook";
