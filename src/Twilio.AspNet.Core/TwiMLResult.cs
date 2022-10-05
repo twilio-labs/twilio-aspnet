@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,10 +19,14 @@ namespace Twilio.AspNet.Core
             Data = twiml;
         }
 
-        public TwiMLResult(TwiML.TwiML response)
+        public TwiMLResult(TwiML.TwiML response) : this(response, SaveOptions.None)
+        {
+        }
+        
+        public TwiMLResult(TwiML.TwiML response, SaveOptions formattingOptions)
         {
             if (response != null)
-                Data = response.ToString();
+                Data = response.ToString(formattingOptions);
         }
 
         public async Task ExecuteResultAsync(ActionContext actionContext)

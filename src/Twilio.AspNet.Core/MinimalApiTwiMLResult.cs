@@ -1,5 +1,6 @@
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 
 // ReSharper disable once CheckNamespace
@@ -19,26 +20,32 @@ public static class ResultsExtensions
     // ReSharper disable once InconsistentNaming
     // ReSharper disable once UnusedParameter.Global
     public static TwiMLResult TwiML(this IResultExtensions results, TwiML.TwiML twimlResponse)
-        => new TwiMLResult(twimlResponse);
+        => new(twimlResponse);
 }
 
 /// <summary>
 /// Writes TwiML object to the HTTP response body
 /// </summary>
-// ReSharper disable once InconsistentNaming
 public class TwiMLResult : IResult
 {
-    // ReSharper disable once InconsistentNaming
     private string twiML;
 
     /// <summary>
     /// Creates a TwiMLResult object
     /// </summary>
     /// <param name="twimlResponse">The TwiML to write to the HTTP response body</param>
-    // ReSharper disable once InconsistentNaming
-    public TwiMLResult(TwiML.TwiML twimlResponse)
+    public TwiMLResult(TwiML.TwiML twimlResponse) : this(twimlResponse, SaveOptions.None)
     {
-        twiML = twimlResponse?.ToString();
+    }
+
+    /// <summary>
+    /// Creates a TwiMLResult object
+    /// </summary>
+    /// <param name="twimlResponse">The TwiML to write to the HTTP response body</param>
+    /// <param name="formattingOptions">Specifies how to format  XML</param>
+    public TwiMLResult(TwiML.TwiML twimlResponse, SaveOptions formattingOptions)
+    {
+        twiML = twimlResponse?.ToString(formattingOptions);
     }
 
     /// <summary>

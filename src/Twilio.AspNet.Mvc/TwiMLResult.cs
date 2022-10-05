@@ -1,15 +1,14 @@
-﻿using System.IO;
-using System.Text;
-using System.Web.Mvc;
-using System.Xml;
+﻿using System.Web.Mvc;
 using System.Xml.Linq;
 
 namespace Twilio.AspNet.Mvc
 {
-    // ReSharper disable once InconsistentNaming
     public class TwiMLResult : ActionResult
     {
-        public XDocument Data { get; protected set; }
+        private readonly string dataString;
+        private readonly XDocument dataDocument;
+        private readonly SaveOptions formattingOptions;
+        private readonly TwiML.TwiML dataTwiml;
 
         public TwiMLResult()
         {
@@ -17,53 +16,53 @@ namespace Twilio.AspNet.Mvc
 
         public TwiMLResult(string twiml)
         {
-            Data = LoadFromString(twiml, Encoding.UTF8);
+            this.dataString = twiml;
         }
 
-        public TwiMLResult(string twiml, Encoding encoding)
+        public TwiMLResult(XDocument twiml) : this(twiml, SaveOptions.None)
         {
-            Data = LoadFromString(twiml, encoding);
         }
 
-        public TwiMLResult(XDocument twiml)
+        public TwiMLResult(XDocument twiml, SaveOptions formattingOptions)
         {
-            Data = twiml;
+            this.dataDocument = twiml;
+            this.formattingOptions = formattingOptions;
         }
 
-        public TwiMLResult(TwiML.TwiML response)
+        public TwiMLResult(TwiML.TwiML response) : this(response, SaveOptions.None)
         {
-            if (response != null)
-                Data = LoadFromString(response.ToString(), Encoding.UTF8);
         }
 
-        public TwiMLResult(TwiML.TwiML response, Encoding encoding)
+        public TwiMLResult(TwiML.TwiML response, SaveOptions formattingOptions)
         {
-            if (response != null)
-                Data = LoadFromString(response.ToString(), encoding);
-        }
-
-        private static XDocument LoadFromString(string twiml, Encoding encoding)
-        {
-            var stream = new MemoryStream(encoding.GetBytes(twiml));
-
-            var settings = new XmlReaderSettings();
-            settings.DtdProcessing = DtdProcessing.Prohibit;
-
-            var reader = XmlReader.Create(stream, settings);
-            return XDocument.Load(reader);
+            this.dataTwiml = response;
+            this.formattingOptions = formattingOptions;
         }
 
         public override void ExecuteResult(ControllerContext controllerContext)
         {
-            var context = controllerContext.RequestContext.HttpContext;
-            context.Response.ContentType = "application/xml";
+            var response = controllerContext.HttpContext.Response;
+            response.ContentType = "application/xml";
 
-            if (Data == null)
+            if (!string.IsNullOrEmpty(dataString))
             {
-                Data = new XDocument(new XElement("Response"));
+                response.Output.Write(dataString);
+                return;
             }
-
-            Data.Save(context.Response.Output);
+            
+            if (dataDocument != null)
+            {
+                dataDocument.Save(response.Output, formattingOptions);
+                return;
+            }
+            
+            if (dataTwiml != null)
+            {
+                response.Output.Write(dataTwiml.ToString(formattingOptions));
+                return;
+            }
+            
+            response.Output.Write("<Response></Response>");
         }
     }
 }

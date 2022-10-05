@@ -1,37 +1,43 @@
-﻿using Xunit;
+﻿using System.Xml.Linq;
+using Twilio.TwiML;
+using Xunit;
 
 namespace Twilio.AspNet.Mvc.UnitTests
 {
     public class TwilioControllerTests
     {
-        [Fact]
-        public void TestVoiceResponseDefaultEncodingPass()
-        {
-            var response = GetVoiceResponse(TwiMLResultTests.UnicodeChars);
-
-            var result = new TwilioController().TwiML(response);
-
-            Assert.Contains(TwiMLResultTests.UnicodeChars, result.Data.ToString());
-        }
+        private readonly ContextMocks mocks = new ContextMocks(true);
 
         [Fact]
-        public void TestMessagingResponseDefaultEncodingPass()
+        public void TestVoiceResponse()
         {
-            var response = GetMessagingResponse(TwiMLResultTests.UnicodeChars);
+            var response = new VoiceResponse().Say("Ahoy!");
 
             var result = new TwilioController().TwiML(response);
+            result.ExecuteResult(mocks.ControllerContext.Object);
 
-            Assert.Contains(TwiMLResultTests.UnicodeChars, result.Data.ToString());
+            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                         "<Response>\n" +
+                         "  <Say>Ahoy!</Say>\n" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
         }
-
-        private static TwiML.VoiceResponse GetVoiceResponse(string content)
+        
+        [Fact]
+        public void TestVoiceResponseUnformatted()
         {
-            return new TwiML.VoiceResponse().Say(content);
-        }
+            var response = new VoiceResponse().Say("Ahoy!");
 
-        private static TwiML.MessagingResponse GetMessagingResponse(string content)
-        {
-            return new TwiML.MessagingResponse().Message(content);
+            var result = new TwilioController().TwiML(response, SaveOptions.DisableFormatting);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                         "<Response>" +
+                         "<Say>Ahoy!</Say>" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
         }
     }
 }
