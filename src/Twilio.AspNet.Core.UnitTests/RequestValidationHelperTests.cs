@@ -49,6 +49,7 @@ public class ContextMocks
         {
             Request.Setup(x => x.Method).Returns("POST");
             Request.Setup(x => x.Form).Returns(form);
+            Request.Setup(x => x.HasFormContentType).Returns(true);
         }
     }
 
