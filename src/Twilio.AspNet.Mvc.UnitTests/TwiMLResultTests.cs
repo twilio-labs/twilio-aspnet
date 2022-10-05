@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
 using System.Xml.Linq;
 using Twilio.TwiML;
 using Xunit;
@@ -45,6 +44,24 @@ namespace Twilio.AspNet.Mvc.UnitTests
         }
 
         [Fact]
+        public void TestVoiceResponseUnformattedUtf16()
+        {
+            // string writer has Utf16 encoding
+            mocks.Response.Setup(r => r.Output).Returns(new StringWriter());
+            var response = new VoiceResponse().Say("Ahoy!");
+
+            var result = new TwiMLResult(response, SaveOptions.DisableFormatting);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-16\"?>" +
+                         "<Response>" +
+                         "<Say>Ahoy!</Say>" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
+        }
+
+        [Fact]
         public void TestXmlNodeTwiml()
         {
             var response = new XDocument(
@@ -57,6 +74,28 @@ namespace Twilio.AspNet.Mvc.UnitTests
             result.ExecuteResult(mocks.ControllerContext.Object);
 
             Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                         "<Response>" +
+                         "<Say>Ahoy!</Say>" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
+        }
+
+        [Fact]
+        public void TestXmlNodeTwimlUtf16()
+        {
+            // string writer has Utf16 encoding
+            mocks.Response.Setup(r => r.Output).Returns(new StringWriter());
+            var response = new XDocument(
+                new XElement("Response",
+                    new XElement("Say", "Ahoy!")
+                )
+            );
+
+            var result = new TwiMLResult(response, SaveOptions.DisableFormatting);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-16\"?>" +
                          "<Response>" +
                          "<Say>Ahoy!</Say>" +
                          "</Response>",
