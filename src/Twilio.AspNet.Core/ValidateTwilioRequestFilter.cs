@@ -38,9 +38,7 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
             urlOverride = $"{BaseUrlOverride}{request.Path}{request.QueryString}";
         }
 
-        var validator = new RequestValidationHelper();
-
-        if (validator.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
+        if (RequestValidationHelper.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
         {
             return await next(efiContext);
         }

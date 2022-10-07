@@ -61,9 +61,7 @@ namespace Twilio.AspNet.Mvc
                 urlOverride = $"{BaseUrlOverride}{httpContext.Request.Path}{httpContext.Request.QueryString}";
             }
 
-            var validator = new RequestValidationHelper();
-
-            if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, urlOverride, AllowLocal))
+            if (!RequestValidationHelper.IsValidRequest(filterContext.HttpContext, AuthToken, urlOverride, AllowLocal))
             {
                 filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
