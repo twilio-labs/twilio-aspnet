@@ -46,16 +46,18 @@ app.MapGet("/minimal-sms", (string from) =>
     var response = new MessagingResponse();
     response.Message($"Ahoy {from}!");
     return Results.Extensions.TwiML(response);
-});
+})
+    .ValidateTwilioRequest();
 
 app.MapPost("/minimal-sms", async (HttpRequest request) =>
-{
-    var form = await request.ReadFormAsync();
-    var from = form["from"];
-    
-    var response = new MessagingResponse();
-    response.Message($"Ahoy {from}!");
-    return Results.Extensions.TwiML(response);
-});
+    {
+        var form = await request.ReadFormAsync();
+        var from = form["from"];
+
+        var response = new MessagingResponse();
+        response.Message($"Ahoy {from}!");
+        return Results.Extensions.TwiML(response);
+    })
+    .ValidateTwilioRequest();
 
 app.Run();
