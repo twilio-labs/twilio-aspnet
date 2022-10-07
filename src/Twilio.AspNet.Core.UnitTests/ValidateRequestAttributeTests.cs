@@ -1,9 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Twilio.AspNet.Core.UnitTests;
@@ -20,7 +29,7 @@ public class ValidateRequestAttributeTests
             BaseUrlOverride = "MY URL OVERRIDE"
         }
     };
-    
+
     [Fact]
     public void AddTwilioRequestValidation_With_Callback_Should_Match_Configuration()
     {
@@ -42,7 +51,7 @@ public class ValidateRequestAttributeTests
 
         Assert.Equal(expectedJson, actualJson);
     }
-    
+
     [Fact]
     public void AddTwilioRequestValidation_Should_Fallback_To_AuthToken()
     {
@@ -85,7 +94,7 @@ public class ValidateRequestAttributeTests
         Assert.Equal(ValidTwilioOptions.RequestValidation.AuthToken, attribute.AuthToken);
         Assert.Equal(ValidTwilioOptions.RequestValidation.BaseUrlOverride, attribute.BaseUrlOverride);
     }
-    
+
     [Fact]
     public void Creating_ValidateRequestAttribute_Without_AddTwilioClient_Should_Throw()
     {
@@ -93,8 +102,68 @@ public class ValidateRequestAttributeTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var attributeFactory = new ValidateRequestAttribute();
-        var exception = Assert.Throws<Exception>(() => (ValidateRequestAttribute.InternalValidateRequestAttribute) attributeFactory
-            .CreateInstance(serviceProvider));
+        var exception = Assert.Throws<Exception>(() =>
+            (ValidateRequestAttribute.InternalValidateRequestAttribute) attributeFactory
+                .CreateInstance(serviceProvider));
         Assert.Equal("RequestValidationOptions is not configured.", exception.Message);
+    }
+
+
+    [Fact]
+    public void ValidateRequestAttribute_Validates_Request_Successfully()
+    {
+        var attribute = new ValidateRequestAttribute.InternalValidateRequestAttribute(
+            authToken: ContextMocks.fakeAuthToken, 
+            null, 
+            false
+        );
+
+        var form = new FormCollection(new Dictionary<string, StringValues>()
+        {
+            {"key1", "value1"},
+            {"key2", "value2"}
+        });
+        var fakeContext = new ContextMocks(true, form).HttpContext.Object;
+
+        var actionExecutingContext = new ActionExecutingContext(
+            new ActionContext(fakeContext, new RouteData(), new ActionDescriptor()),
+            new List<IFilterMetadata>(),
+            new Dictionary<string, object?>(),
+            new object()
+        );
+        
+        attribute.OnActionExecuting(actionExecutingContext);
+        
+        Assert.Equal(null, actionExecutingContext.Result);
+    }
+
+    [Fact]
+    public void ValidateRequestFilter_Validates_Request_Forbid()
+    {
+        var attribute = new ValidateRequestAttribute.InternalValidateRequestAttribute(
+            authToken: "bad", 
+            null, 
+            false
+        );
+
+        var form = new FormCollection(new Dictionary<string, StringValues>()
+        {
+            {"key1", "value1"},
+            {"key2", "value2"}
+        });
+        var fakeContext = new ContextMocks(true, form).HttpContext.Object;
+
+        var actionExecutingContext = new ActionExecutingContext(
+            new ActionContext(fakeContext, new RouteData(), new ActionDescriptor()),
+            new List<IFilterMetadata>(),
+            new Dictionary<string, object?>(),
+            new object()
+        );
+        
+        attribute.OnActionExecuting(actionExecutingContext);
+
+        var statusCodeResult = (HttpStatusCodeResult)actionExecutingContext.Result!;
+        Assert.NotNull(statusCodeResult);
+        Assert.Equal((int)HttpStatusCode.Forbidden, statusCodeResult.StatusCode);
     }
 }
