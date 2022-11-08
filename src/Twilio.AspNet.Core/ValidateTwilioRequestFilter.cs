@@ -9,6 +9,9 @@ using Microsoft.Extensions.Options;
 
 namespace Twilio.AspNet.Core;
 
+/// <summary>
+/// Validates that incoming HTTP request originates from Twilio.
+/// </summary>
 public class ValidateTwilioRequestFilter : IEndpointFilter
 {
     internal string AuthToken { get; set; }
@@ -49,9 +52,19 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
 
 public static class TwilioFilterExtensions
 {
+    /// <summary>
+    /// Validates that incoming HTTP request originates from Twilio.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
     public static RouteHandlerBuilder ValidateTwilioRequest(this RouteHandlerBuilder builder)
         => builder.AddEndpointFilter<ValidateTwilioRequestFilter>();
     
+    /// <summary>
+    /// Validates that incoming HTTP request originates from Twilio.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
     public static RouteGroupBuilder ValidateTwilioRequest(this RouteGroupBuilder builder)
         => builder.AddEndpointFilter<ValidateTwilioRequestFilter>();
 }
