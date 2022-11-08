@@ -13,6 +13,7 @@ runs:
     uses: actions/setup-dotnet@v2
     with:
       dotnet-version: 7.0.x
+      dotnet-quality: ga
       
   - name: Update project versions
     run: |
