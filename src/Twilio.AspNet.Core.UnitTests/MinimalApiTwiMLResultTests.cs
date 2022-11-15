@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Twilio.AspNet.Core.MinimalApi;
 using Twilio.TwiML;
 using Xunit;
 

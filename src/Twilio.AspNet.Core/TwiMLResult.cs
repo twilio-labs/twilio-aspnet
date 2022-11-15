@@ -5,7 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Twilio.AspNet.Core
 {
-    public class TwiMLResult : IActionResult
+    /// <summary>
+    /// TwiMLResult writes TwiML to the HTTP response body
+    /// </summary>
+    public partial class TwiMLResult : IActionResult
     {
         public string Data { get; protected set; }
 
@@ -31,6 +34,11 @@ namespace Twilio.AspNet.Core
         public async Task ExecuteResultAsync(ActionContext actionContext)
         {
             var response = actionContext.HttpContext.Response;
+            await WriteTwiMLToResponse(response);
+        }
+        
+        private async Task WriteTwiMLToResponse(HttpResponse response)
+        {
             response.ContentType = "application/xml";
             if (Data == null)
             {

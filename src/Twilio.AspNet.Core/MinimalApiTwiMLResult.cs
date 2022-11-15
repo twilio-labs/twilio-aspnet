@@ -1,10 +1,8 @@
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 
-// ReSharper disable once CheckNamespace
-namespace Twilio.AspNet.Core.MinimalApi;
+namespace Twilio.AspNet.Core;
 
 /// <summary>
 /// Adds extension methods to Results.Extensions to write TwiML objects to the HTTP response body
@@ -26,38 +24,14 @@ public static class ResultsExtensions
 /// <summary>
 /// Writes TwiML object to the HTTP response body
 /// </summary>
-public class TwiMLResult : IResult
+public partial class TwiMLResult : IResult
 {
-    private string twiML;
-
-    /// <summary>
-    /// Creates a TwiMLResult object
-    /// </summary>
-    /// <param name="twimlResponse">The TwiML to write to the HTTP response body</param>
-    public TwiMLResult(TwiML.TwiML twimlResponse) : this(twimlResponse, SaveOptions.None)
-    {
-    }
-
-    /// <summary>
-    /// Creates a TwiMLResult object
-    /// </summary>
-    /// <param name="twimlResponse">The TwiML to write to the HTTP response body</param>
-    /// <param name="formattingOptions">Specifies how to format  XML</param>
-    public TwiMLResult(TwiML.TwiML twimlResponse, SaveOptions formattingOptions)
-    {
-        twiML = twimlResponse?.ToString(formattingOptions);
-    }
-
     /// <summary>
     /// Writes the TwiML to the HTTP response body
     /// </summary>
     /// <param name="httpContext">The HttpContext containing the Response to write the TwiML to</param>
     public Task ExecuteAsync(HttpContext httpContext)
     {
-        twiML ??= "<Response></Response>";
-
-        httpContext.Response.ContentType = "application/xml";
-        httpContext.Response.ContentLength = Encoding.UTF8.GetByteCount(twiML);
-        return httpContext.Response.WriteAsync(twiML);
+        return WriteTwiMLToResponse(httpContext.Response);
     }
 }
