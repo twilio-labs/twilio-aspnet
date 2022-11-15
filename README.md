@@ -273,7 +273,7 @@ Luckily, you can verify that an HTTP request originated from Twilio.
 The `Twilio.AspNet` library provides an attribute that will validate the request for you in MVC.
 The implementation differs between the `Twilio.AspNet.Core` and `Twilio.AspNet.Mvc` library.
 
-#### Validate requests in ASP.NET Core MVC
+#### Validate requests in ASP.NET Core
 
 Add the `.AddTwilioRequestValidation` method at startup:
 
@@ -326,7 +326,9 @@ builder.Services
 > We recommend using the [Secrets Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) for local development.
 > Alternatively, you can use environment variables, a vault service, or other more secure techniques.
 
-Now that request validation has been configured, use the `[ValidateRequest]` attribute.
+##### ASP.NET Core MVC
+
+Once request validation has been configured, you can use the `[ValidateRequest]` attribute in MVC.
 You can apply the attribute globally, to MVC areas, controllers, and actions.
 Here's an example where the attribute is applied to the `Index` action:
 
@@ -345,6 +347,31 @@ public class SmsController : TwilioController
         return TwiML(response);
     }
 }
+```
+
+##### ASP.NET Core Endpoints & Minimal APIs
+.NET 7 introduces the concept of endpoint filters which you can apply to any ASP.NET Core endpoint. 
+The helper library for ASP.NET Core added an endpoint filter to validate Twilio requests called `ValidateTwilioRequestFilter`.
+
+You can add this filter to any endpoint or endpoint group using the `ValidateTwilioRequest` method:
+
+```csharp
+// add filter to endpoint
+app.MapPost("/sms", () => ...)
+    .ValidateTwilioRequest();
+    
+// add filter to endpoint group
+var twilioGroup = app.MapGroup("/twilio");
+twilioGroup.ValidateTwilioRequest();
+twilioGroup.MapPost("/sms", () => ...);
+twilioGroup.MapPost("/voice", () => ...);
+```
+
+Alternatively, you can add the endpoint filter yourself:
+
+```csharp
+app.MapPost("/sms", () => ...)
+    .AddEndpointFilter<ValidateTwilioRequestFilter>();
 ```
 
 #### Validate requests in ASP.NET MVC on .NET Framework

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Twilio.Security;
 
@@ -9,7 +8,7 @@ namespace Twilio.AspNet.Core
     /// Class used to validate incoming requests from Twilio using 'Request Validation' as described
     /// in the Security section of the Twilio TwiML API documentation.
     /// </summary>
-    public class RequestValidationHelper
+    public static class RequestValidationHelper
     {
         /// <summary>
         /// Performs request validation using the current HTTP context passed in manually or from
@@ -18,7 +17,7 @@ namespace Twilio.AspNet.Core
         /// <param name="context">HttpContext to use for validation</param>
         /// <param name="authToken">AuthToken for the account used to sign the request</param>
         /// <param name="allowLocal">Skip validation for local requests</param>
-        public bool IsValidRequest(HttpContext context, string authToken, bool allowLocal = true)
+        public static bool IsValidRequest(HttpContext context, string authToken, bool allowLocal = true)
         {
             return IsValidRequest(context, authToken, null, allowLocal);
         }
@@ -31,7 +30,7 @@ namespace Twilio.AspNet.Core
         /// <param name="authToken">AuthToken for the account used to sign the request</param>
         /// <param name="urlOverride">The URL to use for validation, if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)</param>
         /// <param name="allowLocal">Skip validation for local requests</param>
-        public bool IsValidRequest(HttpContext context, string authToken, string urlOverride, bool allowLocal = true)
+        public static bool IsValidRequest(HttpContext context, string authToken, string urlOverride, bool allowLocal = true)
         {
             var request = context.Request;
 

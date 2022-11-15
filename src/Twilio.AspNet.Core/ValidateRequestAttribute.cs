@@ -57,15 +57,14 @@ namespace Twilio.AspNet.Core
             public override void OnActionExecuting(ActionExecutingContext filterContext)
             {
                 var httpContext = filterContext.HttpContext;
+                var request = httpContext.Request;
                 string urlOverride = null;
                 if (BaseUrlOverride != null)
                 {
-                    urlOverride = $"{BaseUrlOverride}{httpContext.Request.Path}{httpContext.Request.QueryString}";
+                    urlOverride = $"{BaseUrlOverride}{request.Path}{request.QueryString}";
                 }
                 
-                var validator = new RequestValidationHelper();
-
-                if (!validator.IsValidRequest(filterContext.HttpContext, AuthToken, urlOverride, AllowLocal))
+                if (!RequestValidationHelper.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
                 {
                     filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
                 }
