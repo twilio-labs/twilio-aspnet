@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Twilio.AspNet.Core
 {
     // ReSharper disable once InconsistentNaming
-    public class TwiMLResult : IActionResult
+    public partial class TwiMLResult : IActionResult
     {
         public string Data { get; protected set; }
 
@@ -27,6 +27,11 @@ namespace Twilio.AspNet.Core
         public async Task ExecuteResultAsync(ActionContext actionContext)
         {
             var response = actionContext.HttpContext.Response;
+            await ExecuteResultCore(response);
+        }
+
+        private async Task ExecuteResultCore(HttpResponse response)
+        {
             response.ContentType = "application/xml";
 
             if (Data == null)
