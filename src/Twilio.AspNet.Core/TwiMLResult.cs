@@ -27,10 +27,11 @@ namespace Twilio.AspNet.Core
         public async Task ExecuteResultAsync(ActionContext actionContext)
         {
             var response = actionContext.HttpContext.Response;
-            await ExecuteResultCore(response);
+            await WriteTwiMLToResponse(response);
         }
 
-        private async Task ExecuteResultCore(HttpResponse response)
+        // ReSharper disable once InconsistentNaming
+        private async Task WriteTwiMLToResponse(HttpResponse response)
         {
             response.ContentType = "application/xml";
 

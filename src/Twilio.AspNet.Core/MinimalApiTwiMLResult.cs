@@ -33,6 +33,6 @@ public partial class TwiMLResult : IResult
     /// <param name="httpContext">The HttpContext containing the Response to write the TwiML to</param>
     public Task ExecuteAsync(HttpContext httpContext)
     {
-        return ExecuteResultCore(httpContext.Response);
+        return WriteTwiMLToResponse(httpContext.Response);
     }
 }
