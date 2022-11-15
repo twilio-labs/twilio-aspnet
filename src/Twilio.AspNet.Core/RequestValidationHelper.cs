@@ -47,22 +47,14 @@ namespace Twilio.AspNet.Core
                 ? $"{request.Scheme}://{(request.IsHttps ? request.Host.Host : request.Host.ToUriComponent())}{request.Path}{request.QueryString}"
                 : urlOverride;
 
-            IFormCollection form = null;
-            try
-            {
-                form = request.Form;
-            }
-            catch
-            {
-                // ignore errors accessing invalid/non-existant form
-            }
+            var parameters = request.HasFormContentType ? 
+                request.Form.Keys.ToDictionary(k => k, k => request.Form[k].ToString())
+                : null;
             
             var validator = new RequestValidator(authToken);
             return validator.Validate(
                 url: fullUrl,
-                parameters: form?.Count > 0
-                    ? form.Keys.ToDictionary(k => k, k => form[k].ToString())
-                    : new Dictionary<string, string>(),
+                parameters: parameters,
                 expected: request.Headers["X-Twilio-Signature"]
             );
         }
