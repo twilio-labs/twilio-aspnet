@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Twilio.AspNet.Core;
 using Twilio.TwiML;
 
-namespace dotnet6.Controllers;
+namespace AspNetCore.Controllers;
 
 [ApiController]
 [Route("[controller]")]
