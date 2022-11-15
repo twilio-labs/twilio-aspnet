@@ -445,3 +445,55 @@ public class SmsController : TwilioController
 
 The `[ValidateRequest]` attribute only works for MVC. If you need to validate requests outside of MVC, you can use the `RequestValidationHelper` class provided by `Twilio.AspNet`.
 Alternatively, the `RequestValidator` class from the [Twilio SDK](https://github.com/twilio/twilio-csharp) can also help you with this.
+
+Here's a Minimal API example that validates the incoming request originated from Twilio:
+
+```csharp
+using System.Net;
+using Microsoft.Extensions.Options;
+using Twilio.AspNet.Core;
+using Twilio.AspNet.Core.MinimalApi;
+using Twilio.TwiML;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// adds TwilioRequestValidationOptions
+builder.Services.AddTwilioRequestValidation();
+
+var app = builder.Build();
+
+app.MapPost("/sms", (HttpContext httpContext) =>
+{
+    if (IsValidTwilioRequest(httpContext) == false)
+        return Results.StatusCode((int) HttpStatusCode.Forbidden);
+
+    var messagingResponse = new MessagingResponse();
+    messagingResponse.Message("Ahoy!");
+    return Results.Extensions.TwiML(messagingResponse);
+});
+
+app.Run();
+
+bool IsValidTwilioRequest(HttpContext httpContext)
+{
+    var options = httpContext.RequestServices
+        .GetService<IOptions<TwilioRequestValidationOptions>>()
+        ?.Value ?? throw new Exception("TwilioRequestValidationOptions missing.");
+
+    string? urlOverride = null;
+    if (options.BaseUrlOverride != null)
+    {
+        var request = httpContext.Request;
+        urlOverride = $"{options.BaseUrlOverride.TrimEnd('/')}{request.Path}{request.QueryString}";
+    }
+
+    var validator = new RequestValidationHelper();
+    return validator.IsValidRequest(httpContext, options.AuthToken, urlOverride, options.AllowLocal ?? true);
+}
+```
+
+`AddTwilioRequestValidation` adds the `TwilioRequestValidationOptions`, which is normally used for the `[ValidateRequest]` attribute,
+but in this sample it is used to retrieve the request validation configuration yourself.
+Then inside of the _/sms_ endpoint, the `IsValidTwilioRequest` method is used to validate the request. 
+`IsValidTwilioRequest` retrieves the request validation options from DI and performs the same logic as `[ValidateRequest]` would do for MVC requests.
+If the request is not valid, HTTP Status Code 403 is returned, otherwise, some TwiML is returned to Twilio.
