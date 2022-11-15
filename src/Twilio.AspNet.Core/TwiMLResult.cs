@@ -1,10 +1,13 @@
 ﻿using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Twilio.AspNet.Core
 {
-    // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// TwiMLResult writes TwiML to the HTTP response body
+    /// </summary>
     public partial class TwiMLResult : IActionResult
     {
         public string Data { get; protected set; }
@@ -18,10 +21,14 @@ namespace Twilio.AspNet.Core
             Data = twiml;
         }
 
-        public TwiMLResult(TwiML.TwiML response)
+        public TwiMLResult(TwiML.TwiML response) : this(response, SaveOptions.None)
+        {
+        }
+        
+        public TwiMLResult(TwiML.TwiML response, SaveOptions formattingOptions)
         {
             if (response != null)
-                Data = response.ToString();
+                Data = response.ToString(formattingOptions);
         }
 
         public async Task ExecuteResultAsync(ActionContext actionContext)
@@ -29,12 +36,10 @@ namespace Twilio.AspNet.Core
             var response = actionContext.HttpContext.Response;
             await WriteTwiMLToResponse(response);
         }
-
-        // ReSharper disable once InconsistentNaming
+        
         private async Task WriteTwiMLToResponse(HttpResponse response)
         {
             response.ContentType = "application/xml";
-
             if (Data == null)
             {
                 Data = "<Response></Response>";

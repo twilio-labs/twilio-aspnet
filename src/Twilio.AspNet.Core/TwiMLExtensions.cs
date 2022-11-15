@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Twilio.TwiML;
+﻿using Twilio.TwiML;
 
 namespace Twilio.AspNet.Core
 {
-    // ReSharper disable once InconsistentNaming
     public static class TwiMLExtensions
     {
-        // ReSharper disable once InconsistentNaming
-        public static TwiMLResult ToTwiMLResult(this VoiceResponse voiceResponse)
-        {
-            return new TwiMLResult(voiceResponse);
-        }
+        /// <summary>
+        /// Returns a properly formatted TwiML response
+        /// </summary>
+        /// <param name="voiceResponse"></param>
+        /// <returns></returns>
+        public static TwiMLResult ToTwiMLResult(this VoiceResponse voiceResponse) 
+            => new TwiMLResult(voiceResponse);
 
-        // ReSharper disable once InconsistentNaming
+        /// <summary>
+        /// Returns a properly formatted TwiML response
+        /// </summary>
+        /// <param name="messagingResponse"></param>
+        /// <returns></returns>
         public static TwiMLResult ToTwiMLResult(this MessagingResponse messagingResponse)
-        {
-            return new TwiMLResult(messagingResponse);
-        }
+            =>new TwiMLResult(messagingResponse);
     }
 }

@@ -1,93 +1,153 @@
-﻿using System.Text;
-using System.Xml;
+﻿using System;
+using System.IO;
+using System.Xml.Linq;
+using Twilio.TwiML;
 using Xunit;
 
 namespace Twilio.AspNet.Mvc.UnitTests
 {
-    // ReSharper disable once InconsistentNaming
-    public class TwiMLResultTests
+    public class TwiMLResultTest
     {
-        public const string AsciiChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        public const string UnicodeChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890äåéö";        
-
-        //string constructor
-        [Fact]
-        public void TestStringDefaultEncodingPass()
-        {
-            var responseString = GetVoiceResponse(UnicodeChars).ToString();
-
-            var result = new TwiMLResult(responseString);
-
-            Assert.Contains(UnicodeChars, result.Data.ToString());
-        }
+        private readonly ContextMocks mocks = new ContextMocks(true);
+        private static readonly string NewLine = Environment.NewLine;
 
         [Fact]
-        public void TestStringAsciiEncodingFail()
+        public void TestVoiceResponse()
         {
-            var responseString = GetVoiceResponse(UnicodeChars).ToString();
-
-            var result = new TwiMLResult(responseString, Encoding.ASCII);
-
-            Assert.Contains(AsciiChars, result.Data.ToString());
-            Assert.DoesNotContain(UnicodeChars, result.Data.ToString());
-        }
-
-        [Fact]
-        public void TestStringUnicodeEncodingUtf8()
-        {
-            var responseString = GetVoiceResponse(UnicodeChars).ToString();
-
-            var result = new TwiMLResult(responseString, Encoding.UTF8);
-
-            Assert.Contains(UnicodeChars, result.Data.ToString());
-        }
-
-        //voice response constructor
-        [Fact]
-        public void TestVoiceResponseDefaultEncodingPass()
-        {
-            var response = GetVoiceResponse(UnicodeChars);
+            var response = new VoiceResponse().Say("Ahoy!");
 
             var result = new TwiMLResult(response);
+            result.ExecuteResult(mocks.ControllerContext.Object);
 
-            Assert.Contains(UnicodeChars, result.Data.ToString());
+            Assert.Equal($"<?xml version=\"1.0\" encoding=\"utf-8\"?>{NewLine}" +
+                         $"<Response>{NewLine}" +
+                         $"  <Say>Ahoy!</Say>{NewLine}" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
         }
 
         [Fact]
-        public void TestVoiceResponseAsciiEncodingFail()
+        public void TestVoiceResponseUnformatted()
         {
-            var response = GetVoiceResponse(UnicodeChars);
+            var response = new VoiceResponse().Say("Ahoy!");
 
-            var result = new TwiMLResult(response, Encoding.ASCII);
+            var result = new TwiMLResult(response, SaveOptions.DisableFormatting);
+            result.ExecuteResult(mocks.ControllerContext.Object);
 
-            Assert.Contains(AsciiChars, result.Data.ToString());
-            Assert.DoesNotContain(UnicodeChars, result.Data.ToString());
+            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                         "<Response>" +
+                         "<Say>Ahoy!</Say>" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
         }
 
         [Fact]
-        public void TestVoiceResponseUnicodeEncodingUtf8()
+        public void TestVoiceResponseUnformattedUtf16()
         {
-            var response = GetVoiceResponse(UnicodeChars);
+            // string writer has Utf16 encoding
+            mocks.Response.Setup(r => r.Output).Returns(new StringWriter());
+            var response = new VoiceResponse().Say("Ahoy!");
 
-            var result = new TwiMLResult(response, Encoding.UTF8);
+            var result = new TwiMLResult(response, SaveOptions.DisableFormatting);
+            result.ExecuteResult(mocks.ControllerContext.Object);
 
-            Assert.Contains(UnicodeChars, result.Data.ToString());
+            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-16\"?>" +
+                         "<Response>" +
+                         "<Say>Ahoy!</Say>" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
         }
 
         [Fact]
-        public void TestVoiceResponseExplicitDefaultEncodingFail()
+        public void TestXmlNodeTwiml()
         {
-            var response = GetVoiceResponse(UnicodeChars);
+            var response = new XDocument(
+                new XElement("Response",
+                    new XElement("Say", "Ahoy!")
+                )
+            );
 
-            Assert.Throws<XmlException>(() =>
-            {
-                new TwiMLResult(response, Encoding.Default);
-            });
+            var result = new TwiMLResult(response, SaveOptions.DisableFormatting);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                         "<Response>" +
+                         "<Say>Ahoy!</Say>" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
         }
 
-        public TwiML.VoiceResponse GetVoiceResponse(string content)
+        [Fact]
+        public void TestXmlNodeTwimlUtf16()
         {
-            return new TwiML.VoiceResponse().Say(content);
+            // string writer has Utf16 encoding
+            mocks.Response.Setup(r => r.Output).Returns(new StringWriter());
+            var response = new XDocument(
+                new XElement("Response",
+                    new XElement("Say", "Ahoy!")
+                )
+            );
+
+            var result = new TwiMLResult(response, SaveOptions.DisableFormatting);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-16\"?>" +
+                         "<Response>" +
+                         "<Say>Ahoy!</Say>" +
+                         "</Response>",
+                mocks.Response.Object.Output.ToString()
+            );
+        }
+
+        [Fact]
+        public void TestStringTwiml()
+        {
+            var response = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                           "<Response>" +
+                           "<Say>Ahoy!</Say>" +
+                           "</Response>";
+
+            var result = new TwiMLResult(response);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal(response, mocks.Response.Object.Output.ToString());
+        }
+
+        [Fact]
+        public void TestNullTwiml()
+        {
+            var result = new TwiMLResult((TwiML.TwiML) null);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response></Response>",
+                mocks.Response.Object.Output.ToString()
+            );
+            mocks.Response.Object.Output.Dispose();
+            mocks.Response.Setup(r => r.Output).Returns(new Utf8StringWriter());
+            
+            result = new TwiMLResult((XDocument) null);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response></Response>",
+                mocks.Response.Object.Output.ToString()
+            );
+            mocks.Response.Object.Output.Dispose();
+            mocks.Response.Setup(r => r.Output).Returns(new Utf8StringWriter());
+            
+            result = new TwiMLResult((string) null);
+            result.ExecuteResult(mocks.ControllerContext.Object);
+
+            Assert.Equal(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response></Response>",
+                mocks.Response.Object.Output.ToString()
+            );
+            mocks.Response.Object.Output.Dispose();
         }
     }
 }

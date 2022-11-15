@@ -213,10 +213,10 @@ public class TwilioClientTests
         Assert.Equal(ValidTwilioOptions.Client.AccountSid, client.AccountSid);
         Assert.Equal(ValidTwilioOptions.Client.LogLevel, client.LogLevel);
         Assert.Equal(ValidTwilioOptions.Client.ApiKeySid,
-            typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)
+            typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetValue(client));
         Assert.Equal(ValidTwilioOptions.Client.ApiKeySecret,
-            typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)
+            typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetValue(client));
     }
 
@@ -236,10 +236,10 @@ public class TwilioClientTests
         Assert.Equal(ValidTwilioOptions.Client.AccountSid, client.AccountSid);
         Assert.Equal(ValidTwilioOptions.Client.LogLevel, client.LogLevel);
         Assert.Equal(ValidTwilioOptions.Client.AccountSid,
-            typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)
+            typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetValue(client));
         Assert.Equal(ValidTwilioOptions.Client.AuthToken,
-            typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)
+            typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetValue(client));
     }
     [Fact]
@@ -257,7 +257,7 @@ public class TwilioClientTests
         var twilioRestClient = scope.ServiceProvider.GetService<TwilioRestClient>();
         
         var actualHttpClient = (System.Net.Http.HttpClient) typeof(SystemNetHttpClient)
-            .GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)!
             .GetValue(twilioRestClient.HttpClient);
 
         Assert.NotNull(actualHttpClient);
@@ -271,6 +271,7 @@ public class TwilioClientTests
         serviceCollection.AddSingleton(BuildValidConfiguration());
 
         using var httpClient = new System.Net.Http.HttpClient();
+        // ReSharper disable once AccessToDisposedClosure
         serviceCollection.AddTwilioClient(_ => httpClient);
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -278,7 +279,7 @@ public class TwilioClientTests
 
         var twilioRestClient = scope.ServiceProvider.GetService<TwilioRestClient>();
         var httpClientFromTwilioClient = (System.Net.Http.HttpClient) typeof(SystemNetHttpClient)
-            .GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)!
             .GetValue(twilioRestClient.HttpClient);
 
         Assert.Equal(httpClient, httpClientFromTwilioClient);

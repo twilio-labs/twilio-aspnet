@@ -1,6 +1,6 @@
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-
 
 namespace Twilio.AspNet.Core;
 
@@ -18,13 +18,12 @@ public static class ResultsExtensions
     // ReSharper disable once InconsistentNaming
     // ReSharper disable once UnusedParameter.Global
     public static TwiMLResult TwiML(this IResultExtensions results, TwiML.TwiML twimlResponse)
-        => new TwiMLResult(twimlResponse);
+        => new(twimlResponse);
 }
 
 /// <summary>
 /// Writes TwiML object to the HTTP response body
 /// </summary>
-// ReSharper disable once InconsistentNaming
 public partial class TwiMLResult : IResult
 {
     /// <summary>

@@ -16,11 +16,11 @@ public class ContextMocks
     public Moq.Mock<HttpContext> HttpContext { get; set; }
     public Moq.Mock<HttpRequest> Request { get; set; }
 
-    public ContextMocks(bool isLocal, FormCollection? form = null, bool isProxied = false) : this("", isLocal, form, isProxied)
+    public ContextMocks(bool isLocal, FormCollection form = null, bool isProxied = false) : this("", isLocal, form, isProxied)
     {
     }
 
-    public ContextMocks(string urlOverride, bool isLocal, FormCollection? form = null, bool isProxied = false)
+    public ContextMocks(string urlOverride, bool isLocal, FormCollection form = null, bool isProxied = false)
     {
         var headers = new HeaderDictionary();
         headers.Add("X-Twilio-Signature", CalculateSignature(urlOverride, form));
@@ -56,7 +56,7 @@ public class ContextMocks
     public static string fakeUrl = "https://api.example.com/webhook";
     public static string fakeAuthToken = "thisisafakeauthtoken";
 
-    private string CalculateSignature(string urlOverride, FormCollection? form)
+    private string CalculateSignature(string urlOverride, FormCollection form)
     {
         var value = new StringBuilder();
         value.Append(string.IsNullOrEmpty(urlOverride) ? ContextMocks.fakeUrl : urlOverride);

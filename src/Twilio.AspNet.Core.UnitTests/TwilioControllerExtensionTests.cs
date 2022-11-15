@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -17,7 +18,7 @@ public class TwilioControllerExtensionTests
     [Fact]
     public async Task TwimlResult_Should_Write_VoiceResponse_To_ResponseBody()
     {
-        var twiml = new VoiceResponse().Say("Hello World");
+        var twiml = new VoiceResponse().Say("Ahoy!");
         var result = TwilioControllerExtensions.TwiML(Mock.Of<ControllerBase>(), twiml);
         var actionContext = CreateActionContext();
         await result.ExecuteResultAsync(actionContext);
@@ -27,11 +28,25 @@ public class TwilioControllerExtensionTests
         var responseBody = await reader.ReadToEndAsync();
         Assert.Equal(twiml.ToString(), responseBody);
     }
+    
+    [Fact]
+    public async Task TwimlResult_Should_Write_VoiceResponse_To_ResponseBody_Unformatted()
+    {
+        var twiml = new VoiceResponse().Say("Ahoy!");
+        var result = TwilioControllerExtensions.TwiML(Mock.Of<ControllerBase>(), twiml, SaveOptions.DisableFormatting);
+        var actionContext = CreateActionContext();
+        await result.ExecuteResultAsync(actionContext);
+
+        actionContext.HttpContext.Response.Body.Seek(0, SeekOrigin.Begin);
+        var reader = new StreamReader(actionContext.HttpContext.Response.Body);
+        var responseBody = await reader.ReadToEndAsync();
+        Assert.Equal(twiml.ToString(SaveOptions.DisableFormatting), responseBody);
+    }
 
     [Fact]
     public async Task TwimlResult_Should_Write_MessagingResponse_To_ResponseBody()
     {
-        var twiml = new MessagingResponse().Message("Hello World");
+        var twiml = new MessagingResponse().Message("Ahoy!");
         var result = TwilioControllerExtensions.TwiML(Mock.Of<ControllerBase>(), twiml);
         var actionContext = CreateActionContext();
         await result.ExecuteResultAsync(actionContext);
