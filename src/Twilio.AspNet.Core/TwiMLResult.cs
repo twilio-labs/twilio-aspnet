@@ -10,25 +10,20 @@ namespace Twilio.AspNet.Core
     /// </summary>
     public partial class TwiMLResult : IActionResult
     {
-        public string Data { get; protected set; }
+        private readonly TwiML.TwiML twiml;
+        private readonly SaveOptions formattingOptions;
 
-        public TwiMLResult()
-        {
-        }
-
-        public TwiMLResult(string twiml)
-        {
-            Data = twiml;
-        }
-
-        public TwiMLResult(TwiML.TwiML response) : this(response, SaveOptions.None)
+        /// <param name="twiml">The TwiML to respond with</param>
+        public TwiMLResult(TwiML.TwiML twiml) : this(twiml, SaveOptions.None)
         {
         }
         
-        public TwiMLResult(TwiML.TwiML response, SaveOptions formattingOptions)
+        /// <param name="twiml">The TwiML to respond with</param>
+        /// <param name="formattingOptions">Specifies how to format TwiML</param>
+        public TwiMLResult(TwiML.TwiML twiml, SaveOptions formattingOptions)
         {
-            if (response != null)
-                Data = response.ToString(formattingOptions);
+            this.twiml = twiml;
+            this.formattingOptions = formattingOptions;
         }
 
         public async Task ExecuteResultAsync(ActionContext actionContext)
@@ -40,12 +35,14 @@ namespace Twilio.AspNet.Core
         private async Task WriteTwiMLToResponse(HttpResponse response)
         {
             response.ContentType = "application/xml";
-            if (Data == null)
+            if (twiml == null)
             {
-                Data = "<Response></Response>";
+                await response.WriteAsync("<Response></Response>");
+                return;
             }
 
-            await response.WriteAsync(Data);
+            var data = twiml.ToString(formattingOptions);
+            await response.WriteAsync(data);
         }
     }
 }

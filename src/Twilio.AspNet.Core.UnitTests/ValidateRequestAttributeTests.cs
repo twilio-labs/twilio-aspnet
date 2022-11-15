@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -128,13 +126,13 @@ public class ValidateRequestAttributeTests
         var actionExecutingContext = new ActionExecutingContext(
             new ActionContext(fakeContext, new RouteData(), new ActionDescriptor()),
             new List<IFilterMetadata>(),
-            new Dictionary<string, object?>(),
+            new Dictionary<string, object>(),
             new object()
         );
         
         attribute.OnActionExecuting(actionExecutingContext);
         
-        Assert.Equal(null, actionExecutingContext.Result);
+        Assert.Null(actionExecutingContext.Result);
     }
 
     [Fact]
@@ -156,13 +154,13 @@ public class ValidateRequestAttributeTests
         var actionExecutingContext = new ActionExecutingContext(
             new ActionContext(fakeContext, new RouteData(), new ActionDescriptor()),
             new List<IFilterMetadata>(),
-            new Dictionary<string, object?>(),
+            new Dictionary<string, object>(),
             new object()
         );
         
         attribute.OnActionExecuting(actionExecutingContext);
 
-        var statusCodeResult = (HttpStatusCodeResult)actionExecutingContext.Result!;
+        var statusCodeResult = (StatusCodeResult)actionExecutingContext.Result!;
         Assert.NotNull(statusCodeResult);
         Assert.Equal((int)HttpStatusCode.Forbidden, statusCodeResult.StatusCode);
     }

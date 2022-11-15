@@ -62,85 +62,9 @@ namespace Twilio.AspNet.Mvc.UnitTests
         }
 
         [Fact]
-        public void TestXmlNodeTwiml()
-        {
-            var response = new XDocument(
-                new XElement("Response",
-                    new XElement("Say", "Ahoy!")
-                )
-            );
-
-            var result = new TwiMLResult(response, SaveOptions.DisableFormatting);
-            result.ExecuteResult(mocks.ControllerContext.Object);
-
-            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                         "<Response>" +
-                         "<Say>Ahoy!</Say>" +
-                         "</Response>",
-                mocks.Response.Object.Output.ToString()
-            );
-        }
-
-        [Fact]
-        public void TestXmlNodeTwimlUtf16()
-        {
-            // string writer has Utf16 encoding
-            mocks.Response.Setup(r => r.Output).Returns(new StringWriter());
-            var response = new XDocument(
-                new XElement("Response",
-                    new XElement("Say", "Ahoy!")
-                )
-            );
-
-            var result = new TwiMLResult(response, SaveOptions.DisableFormatting);
-            result.ExecuteResult(mocks.ControllerContext.Object);
-
-            Assert.Equal("<?xml version=\"1.0\" encoding=\"utf-16\"?>" +
-                         "<Response>" +
-                         "<Say>Ahoy!</Say>" +
-                         "</Response>",
-                mocks.Response.Object.Output.ToString()
-            );
-        }
-
-        [Fact]
-        public void TestStringTwiml()
-        {
-            var response = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                           "<Response>" +
-                           "<Say>Ahoy!</Say>" +
-                           "</Response>";
-
-            var result = new TwiMLResult(response);
-            result.ExecuteResult(mocks.ControllerContext.Object);
-
-            Assert.Equal(response, mocks.Response.Object.Output.ToString());
-        }
-
-        [Fact]
         public void TestNullTwiml()
         {
-            var result = new TwiMLResult((TwiML.TwiML) null);
-            result.ExecuteResult(mocks.ControllerContext.Object);
-
-            Assert.Equal(
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response></Response>",
-                mocks.Response.Object.Output.ToString()
-            );
-            mocks.Response.Object.Output.Dispose();
-            mocks.Response.Setup(r => r.Output).Returns(new Utf8StringWriter());
-            
-            result = new TwiMLResult((XDocument) null);
-            result.ExecuteResult(mocks.ControllerContext.Object);
-
-            Assert.Equal(
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response></Response>",
-                mocks.Response.Object.Output.ToString()
-            );
-            mocks.Response.Object.Output.Dispose();
-            mocks.Response.Setup(r => r.Output).Returns(new Utf8StringWriter());
-            
-            result = new TwiMLResult((string) null);
+            var result = new TwiMLResult(null);
             result.ExecuteResult(mocks.ControllerContext.Object);
 
             Assert.Equal(

@@ -105,19 +105,15 @@ namespace Twilio.AspNet.Core
             {
                 if (isApiKeyConfigured) options.CredentialType = CredentialType.ApiKey;
                 else if (isAuthTokenConfigured) options.CredentialType = CredentialType.AuthToken;
-                else
-                    throw new Exception(
-                        "Twilio:Client:CredentialType could not be determined. Configure as ApiKey or AuthToken.");
+                else throw new Exception("Twilio:Client:CredentialType could not be determined. Configure as ApiKey or AuthToken.");
             }
             else if (options.CredentialType == CredentialType.ApiKey && !isApiKeyConfigured)
             {
-                throw new Exception(
-                    "Twilio:Client:{AccountSid|ApiKeySid|ApiKeySecret} configuration required for CredentialType.ApiKey.");
+                throw new Exception("Twilio:Client:{AccountSid|ApiKeySid|ApiKeySecret} configuration required for CredentialType.ApiKey.");
             }
             else if (options.CredentialType == CredentialType.AuthToken && !isAuthTokenConfigured)
             {
-                throw new Exception(
-                    "Twilio:Client:{AccountSid|AuthToken} configuration required for CredentialType.AuthToken.");
+                throw new Exception("Twilio:Client:{AccountSid|AuthToken} configuration required for CredentialType.AuthToken.");
             }
         }
 

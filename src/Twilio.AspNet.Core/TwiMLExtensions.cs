@@ -9,7 +9,7 @@ namespace Twilio.AspNet.Core
         /// </summary>
         /// <param name="voiceResponse"></param>
         /// <returns></returns>
-        public static TwiMLResult ToTwiMLResult(this VoiceResponse voiceResponse) 
+        public static TwiMLResult ToTwiMLResult(this VoiceResponse voiceResponse)
             => new TwiMLResult(voiceResponse);
 
         /// <summary>
@@ -18,6 +18,6 @@ namespace Twilio.AspNet.Core
         /// <param name="messagingResponse"></param>
         /// <returns></returns>
         public static TwiMLResult ToTwiMLResult(this MessagingResponse messagingResponse)
-            =>new TwiMLResult(messagingResponse);
+            => new TwiMLResult(messagingResponse);
     }
 }

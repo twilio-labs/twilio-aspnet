@@ -3,7 +3,7 @@
     /// <summary>
     /// This class can be used as the parameter on your StatusCallback action. Incoming parameters will be bound here.
     /// </summary>
-    /// <remarks>http://www.twilio.com/docs/api/twiml/twilio_request#asynchronous</remarks>
+    /// <remarks>https://www.twilio.com/docs/voice/twiml#ending-the-call-callback-requests</remarks>
     public class StatusCallbackRequest : VoiceRequest
     {
         /// <summary>
