@@ -35,7 +35,15 @@
         /// This parameter is set when the IncomingPhoneNumber that received the call has had its VoiceCallerIdLookup value set to true.
         /// </summary>
         public string CallerName { get; set; }
-
+        
+        /// <summary>
+        /// A unique identifier for the call that created this leg. This parameter is not passed if this is the first leg of a call.
+        /// </summary>
+        public string ParentCallSid { get; set; }
+        
+        /// <summary>A token string needed to invoke a forwarded call.</summary>
+        public string CallToken { get; set; }
+        
         #region Gather & Record Parameters
        
         /// <summary>
