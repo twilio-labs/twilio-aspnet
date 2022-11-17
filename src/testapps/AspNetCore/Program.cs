@@ -1,5 +1,4 @@
 using Twilio.AspNet.Core;
-using Twilio.AspNet.Core.MinimalApi;
 using Twilio.TwiML;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -66,7 +67,7 @@ namespace Twilio.AspNet.Core
                 
                 if (!RequestValidationHelper.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
                 {
-                    filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                    filterContext.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
                 }
 
                 base.OnActionExecuting(filterContext);

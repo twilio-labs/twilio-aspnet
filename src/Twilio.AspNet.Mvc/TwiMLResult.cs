@@ -1,69 +1,42 @@
-﻿using System.IO;
-using System.Text;
-using System.Web.Mvc;
-using System.Xml;
+﻿using System.Web.Mvc;
 using System.Xml.Linq;
 
 namespace Twilio.AspNet.Mvc
 {
-    // ReSharper disable once InconsistentNaming
     public class TwiMLResult : ActionResult
     {
-        public XDocument Data { get; protected set; }
+        private readonly SaveOptions formattingOptions;
+        private readonly TwiML.TwiML dataTwiml;
 
-        public TwiMLResult()
+        public TwiMLResult(TwiML.TwiML response) : this(response, SaveOptions.None)
         {
         }
 
-        public TwiMLResult(string twiml)
+        public TwiMLResult(TwiML.TwiML response, SaveOptions formattingOptions)
         {
-            Data = LoadFromString(twiml, Encoding.UTF8);
-        }
-
-        public TwiMLResult(string twiml, Encoding encoding)
-        {
-            Data = LoadFromString(twiml, encoding);
-        }
-
-        public TwiMLResult(XDocument twiml)
-        {
-            Data = twiml;
-        }
-
-        public TwiMLResult(TwiML.TwiML response)
-        {
-            if (response != null)
-                Data = LoadFromString(response.ToString(), Encoding.UTF8);
-        }
-
-        public TwiMLResult(TwiML.TwiML response, Encoding encoding)
-        {
-            if (response != null)
-                Data = LoadFromString(response.ToString(), encoding);
-        }
-
-        private static XDocument LoadFromString(string twiml, Encoding encoding)
-        {
-            var stream = new MemoryStream(encoding.GetBytes(twiml));
-
-            var settings = new XmlReaderSettings();
-            settings.DtdProcessing = DtdProcessing.Prohibit;
-
-            var reader = XmlReader.Create(stream, settings);
-            return XDocument.Load(reader);
+            this.dataTwiml = response;
+            this.formattingOptions = formattingOptions;
         }
 
         public override void ExecuteResult(ControllerContext controllerContext)
         {
-            var context = controllerContext.RequestContext.HttpContext;
-            context.Response.ContentType = "application/xml";
+            var response = controllerContext.HttpContext.Response;
+            var encoding = response.Output.Encoding.BodyName;
+            response.ContentType = "application/xml";
 
-            if (Data == null)
+            if (dataTwiml == null)
             {
-                Data = new XDocument(new XElement("Response"));
+                response.Output.Write($"<?xml version=\"1.0\" encoding=\"{encoding}\"?><Response></Response>");
+                return;
             }
 
-            Data.Save(context.Response.Output);
+            var twimlString = dataTwiml.ToString(formattingOptions);
+            if (encoding != "utf-8")
+            {
+                twimlString = twimlString.Replace("utf-8", encoding);
+            }
+
+            response.Output.Write(twimlString);
         }
     }
 }

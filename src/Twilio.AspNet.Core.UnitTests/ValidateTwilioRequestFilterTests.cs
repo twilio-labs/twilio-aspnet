@@ -75,7 +75,7 @@ public class ValidateTwilioRequestFilterTests
 
         var result = await filter.InvokeAsync(
             new DefaultEndpointFilterInvocationContext(fakeContext), 
-            _ => ValueTask.FromResult<object?>(Results.Ok())
+            _ => ValueTask.FromResult<object>(Results.Ok())
         );
 
         Assert.IsType<Ok>(result);
@@ -103,7 +103,7 @@ public class ValidateTwilioRequestFilterTests
 
         var result = await filter.InvokeAsync(
             new DefaultEndpointFilterInvocationContext(fakeContext), 
-            _ => ValueTask.FromResult<object?>(Results.Ok())
+            _ => ValueTask.FromResult<object>(Results.Ok())
         );
 
         var statusCodeResult = (StatusCodeHttpResult)result!;

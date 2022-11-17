@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Xml.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Twilio.TwiML;
 
 namespace Twilio.AspNet.Core
@@ -14,9 +15,18 @@ namespace Twilio.AspNet.Core
         /// <param name="controller"></param>
         /// <param name="response"></param>
         /// <returns></returns>
-        // ReSharper disable once InconsistentNaming
         public static TwiMLResult TwiML(this ControllerBase controller, MessagingResponse response)
             => new TwiMLResult(response);
+        
+        /// <summary>
+        /// Returns a properly formatted TwiML response
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="response"></param>
+        /// <param name="formattingOptions"></param>
+        /// <returns></returns>
+        public static TwiMLResult TwiML(this ControllerBase controller, MessagingResponse response, SaveOptions formattingOptions)
+            => new TwiMLResult(response, formattingOptions);
 
         /// <summary>
         /// Returns a properly formatted TwiML response
@@ -24,8 +34,17 @@ namespace Twilio.AspNet.Core
         /// <param name="controller"></param>
         /// <param name="response"></param>
         /// <returns></returns>
-        // ReSharper disable once InconsistentNaming
         public static TwiMLResult TwiML(this ControllerBase controller, VoiceResponse response)
             => new TwiMLResult(response);
+
+        /// <summary>
+        /// Returns a properly formatted TwiML response
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="response"></param>
+        /// <param name="formattingOptions"></param>
+        /// <returns></returns>
+        public static TwiMLResult TwiML(this ControllerBase controller, VoiceResponse response, SaveOptions formattingOptions)
+            => new TwiMLResult(response, formattingOptions);
     }
 }

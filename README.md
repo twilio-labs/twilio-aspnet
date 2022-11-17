@@ -374,6 +374,46 @@ app.MapPost("/sms", () => ...)
     .AddEndpointFilter<ValidateTwilioRequestFilter>();
 ```
 
+##### ASP.NET Core Middleware
+When you can't use the `[ValidateRequest]` filter or `ValidateTwilioRequestFilter`, you can use the `ValidateTwilioRequestMiddleware` instead.
+You can add add the `ValidateTwilioRequestFilter` like this:
+
+```csharp
+app.UseTwilioRequestValidation();
+// or the equivalent: app.UseMiddleware<ValidateTwilioRequestMiddleware>();
+```
+
+This middleware will perform the validation for all requests. 
+If you don't want to apply the validation to all requests, you can use `app.UseWhen()` to run the middleware conditionally.
+
+Here's an example of how to validate requests that start with path _/twilio-media_, as to protect media files that only the Twilio Proxy should be able to access:
+
+```csharp
+using System.Net;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+using Twilio.AspNet.Core;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddTwilioRequestValidation();
+
+var app = builder.Build();
+
+app.UseWhen(
+    context => context.Request.Path.StartsWithSegments("/twilio-media", StringComparison.OrdinalIgnoreCase),
+    app => app.UseTwilioRequestValidation()
+);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "TwilioMedia")),
+    RequestPath = "/twilio-media"
+});
+
+app.Run();
+```
+
 #### Validate requests in ASP.NET MVC on .NET Framework
 
 In your _Web.config_ you can configure request validation like shown below:
@@ -441,7 +481,7 @@ public class SmsController : TwilioController
 }
 ```
 
-#### Validate requests outside of MVC
+#### Validate requests using the RequestValidationHelper
 
 The `[ValidateRequest]` attribute only works for MVC. If you need to validate requests outside of MVC, you can use the `RequestValidationHelper` class provided by `Twilio.AspNet`.
 Alternatively, the `RequestValidator` class from the [Twilio SDK](https://github.com/twilio/twilio-csharp) can also help you with this.
@@ -487,8 +527,7 @@ bool IsValidTwilioRequest(HttpContext httpContext)
         urlOverride = $"{options.BaseUrlOverride.TrimEnd('/')}{request.Path}{request.QueryString}";
     }
 
-    var validator = new RequestValidationHelper();
-    return validator.IsValidRequest(httpContext, options.AuthToken, urlOverride, options.AllowLocal ?? true);
+    return RequestValidationHelper.IsValidRequest(httpContext, options.AuthToken, urlOverride, options.AllowLocal ?? true);
 }
 ```
 

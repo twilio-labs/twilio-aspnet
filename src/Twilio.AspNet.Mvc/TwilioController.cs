@@ -1,5 +1,5 @@
-﻿using System.Text;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using System.Xml.Linq;
 using Twilio.TwiML;
 
 namespace Twilio.AspNet.Mvc
@@ -14,45 +14,33 @@ namespace Twilio.AspNet.Mvc
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
-        // ReSharper disable once InconsistentNaming
 		public TwiMLResult TwiML(MessagingResponse response)
-		{
-			return new TwiMLResult(response);
-		}
-
+			=> new TwiMLResult(response);
+        
         /// <summary>
         /// Returns a properly formatted TwiML response
         /// </summary>
         /// <param name="response"></param>
-        /// <param name="encoding">Encoding to use for Xml</param>
+        /// <param name="formattingOptions"></param>
         /// <returns></returns>
-        // ReSharper disable once InconsistentNaming
-        public TwiMLResult TwiML(MessagingResponse response, Encoding encoding)
-        {
-            return new TwiMLResult(response, encoding);
-        }
+        public TwiMLResult TwiML(MessagingResponse response, SaveOptions formattingOptions)
+	        => new TwiMLResult(response, formattingOptions);
 
         /// <summary>
         /// Returns a properly formatted TwiML response
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
-        // ReSharper disable once InconsistentNaming
         public TwiMLResult TwiML(VoiceResponse response)
-        {
-            return new TwiMLResult(response);
-        }
+			=> new TwiMLResult(response);
 
         /// <summary>
         /// Returns a properly formatted TwiML response
         /// </summary>
         /// <param name="response"></param>
-        /// <param name="encoding">Encoding to use for Xml</param>
+        /// <param name="formattingOptions"></param>
         /// <returns></returns>
-        // ReSharper disable once InconsistentNaming
-        public TwiMLResult TwiML(VoiceResponse response, Encoding encoding)
-        {
-            return new TwiMLResult(response, encoding);
-        }
-    }
+        public TwiMLResult TwiML(VoiceResponse response, SaveOptions formattingOptions)
+	        => new TwiMLResult(response, formattingOptions);
+	}
 }

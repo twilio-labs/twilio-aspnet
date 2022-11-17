@@ -1,13 +1,11 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Twilio.AspNet.Core.MinimalApi;
 using Twilio.TwiML;
 using Xunit;
 
 namespace Twilio.AspNet.Core.UnitTests;
 
-// ReSharper disable once InconsistentNaming
 public class MinimalApiTwiMLResultTests
 {
     [Fact]
@@ -32,6 +30,6 @@ public class MinimalApiTwiMLResultTests
         Assert.Equal(twiMlResponse.ToString(), responseBody);
     }
 
-    private static VoiceResponse GetVoiceResponse() => new VoiceResponse().Say("Hello World");
-    private static MessagingResponse GetMessagingResponse() => new MessagingResponse().Message("Hello World");
+    private static VoiceResponse GetVoiceResponse() => new VoiceResponse().Say("Ahoy!");
+    private static MessagingResponse GetMessagingResponse() => new MessagingResponse().Message("Ahoy!");
 }

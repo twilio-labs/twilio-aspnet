@@ -1,40 +1,48 @@
 ﻿using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Twilio.AspNet.Core
 {
-    // ReSharper disable once InconsistentNaming
-    public class TwiMLResult : IActionResult
+    /// <summary>
+    /// TwiMLResult writes TwiML to the HTTP response body
+    /// </summary>
+    public partial class TwiMLResult : IActionResult
     {
-        public string Data { get; protected set; }
+        private readonly TwiML.TwiML twiml;
+        private readonly SaveOptions formattingOptions;
 
-        public TwiMLResult()
+        /// <param name="twiml">The TwiML to respond with</param>
+        public TwiMLResult(TwiML.TwiML twiml) : this(twiml, SaveOptions.None)
         {
         }
-
-        public TwiMLResult(string twiml)
+        
+        /// <param name="twiml">The TwiML to respond with</param>
+        /// <param name="formattingOptions">Specifies how to format TwiML</param>
+        public TwiMLResult(TwiML.TwiML twiml, SaveOptions formattingOptions)
         {
-            Data = twiml;
-        }
-
-        public TwiMLResult(TwiML.TwiML response)
-        {
-            if (response != null)
-                Data = response.ToString();
+            this.twiml = twiml;
+            this.formattingOptions = formattingOptions;
         }
 
         public async Task ExecuteResultAsync(ActionContext actionContext)
         {
             var response = actionContext.HttpContext.Response;
+            await WriteTwiMLToResponse(response);
+        }
+        
+        private async Task WriteTwiMLToResponse(HttpResponse response)
+        {
             response.ContentType = "application/xml";
-
-            if (Data == null)
+            if (twiml == null)
             {
-                Data = "<Response></Response>";
+                await response.WriteAsync("<Response></Response>");
+                return;
             }
 
-            await response.WriteAsync(Data);
+            var data = twiml.ToString(formattingOptions);
+            await response.WriteAsync(data);
         }
     }
 }
