@@ -7,7 +7,12 @@ namespace Twilio.AspNet.Common
     public class SmsRequest : TwilioRequest
     {
         /// <summary>
-        /// A 34 character unique identifier for the message. May be used to later retrieve this message from the REST API
+        /// A 34 character unique identifier for the message. May be used to later retrieve this message from the REST API.
+        /// </summary>
+        public string MessageSid { get; set; }
+        
+        /// <summary>
+        /// Same value as MessageSid. Deprecated and included for backward compatibility.
         /// </summary>
         public string SmsSid { get; set; }
 
@@ -30,6 +35,15 @@ namespace Twilio.AspNet.Common
         /// A unique identifier of the messaging service
         /// </summary>
         public string MessagingServiceSid { get; set; }
-
+        
+        /// <summary>
+        /// The number of media items associated with your message
+        /// </summary>
+        public int NumMedia { get; set; }
+        
+        /// <summary>
+        /// The number of media items associated with a "Click to WhatsApp" advertisement.
+        /// </summary>
+        public int ReferralNumMedia { get; set; }
     }
 }

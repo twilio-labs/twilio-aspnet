@@ -26,7 +26,6 @@
         /// </remarks>
         public string To { get; set; }
 
-        
         /// <summary>
         /// The city of the caller
         /// </summary>
