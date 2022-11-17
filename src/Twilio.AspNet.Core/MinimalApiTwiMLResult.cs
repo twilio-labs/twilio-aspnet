@@ -1,5 +1,5 @@
-using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 
 namespace Twilio.AspNet.Core;
@@ -15,10 +15,21 @@ public static class ResultsExtensions
     /// <param name="results">Results extensions interface</param>
     /// <param name="twimlResponse">The TwiML to write to the HTTP response body</param>
     /// <returns>The TwiMLResult will write the TwiML to the HTTP response body</returns>
-    // ReSharper disable once InconsistentNaming
-    // ReSharper disable once UnusedParameter.Global
     public static TwiMLResult TwiML(this IResultExtensions results, TwiML.TwiML twimlResponse)
         => new(twimlResponse);
+    
+    /// <summary>
+    /// Returns a TwiMLResult
+    /// </summary>
+    /// <param name="results">Results extensions interface</param>
+    /// <param name="twimlResponse">The TwiML to write to the HTTP response body</param>
+    /// <param name="formattingOptions">Specifies how to format TwiML</param>
+    /// <returns>The TwiMLResult will write the TwiML to the HTTP response body</returns>
+    public static TwiMLResult TwiML(
+        this IResultExtensions results, 
+        TwiML.TwiML twimlResponse, 
+        SaveOptions formattingOptions
+    ) => new(twimlResponse, formattingOptions);
 }
 
 /// <summary>
