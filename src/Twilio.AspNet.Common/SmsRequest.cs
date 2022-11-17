@@ -3,7 +3,7 @@ namespace Twilio.AspNet.Common
     /// <summary>
     /// This class can be used as the parameter on your SMS action. Incoming parameters will be bound here.
     /// </summary>
-    /// <remarks>http://www.twilio.com/docs/api/twiml/sms/twilio_request</remarks>
+    /// <remarks>https://www.twilio.com/docs/messaging/guides/webhook-request</remarks>
     public class SmsRequest : TwilioRequest
     {
         /// <summary>

@@ -7,7 +7,7 @@
         /// status is failed or undelivered, the ErrorCode can give you more information 
         /// about the failure. If the message was delivered successfully, no ErrorCode 
         /// will be present. Find the possible values here:
-        /// https://www.twilio.com/docs/sms/api/message#delivery-related-errors
+        /// https://www.twilio.com/docs/sms/api/message-resource#delivery-related-errors
         /// </summary>
         public string ErrorCode { get; set; }
 

@@ -19,7 +19,7 @@ public class TwilioControllerExtensionTests
     public async Task TwimlResult_Should_Write_VoiceResponse_To_ResponseBody()
     {
         var twiml = new VoiceResponse().Say("Ahoy!");
-        var result = TwilioControllerExtensions.TwiML(Mock.Of<ControllerBase>(), twiml);
+        var result = Mock.Of<ControllerBase>().TwiML(twiml);
         var actionContext = CreateActionContext();
         await result.ExecuteResultAsync(actionContext);
 
@@ -33,7 +33,7 @@ public class TwilioControllerExtensionTests
     public async Task TwimlResult_Should_Write_VoiceResponse_To_ResponseBody_Unformatted()
     {
         var twiml = new VoiceResponse().Say("Ahoy!");
-        var result = TwilioControllerExtensions.TwiML(Mock.Of<ControllerBase>(), twiml, SaveOptions.DisableFormatting);
+        var result = Mock.Of<ControllerBase>().TwiML(twiml, SaveOptions.DisableFormatting);
         var actionContext = CreateActionContext();
         await result.ExecuteResultAsync(actionContext);
 
@@ -47,7 +47,7 @@ public class TwilioControllerExtensionTests
     public async Task TwimlResult_Should_Write_MessagingResponse_To_ResponseBody()
     {
         var twiml = new MessagingResponse().Message("Ahoy!");
-        var result = TwilioControllerExtensions.TwiML(Mock.Of<ControllerBase>(), twiml);
+        var result = Mock.Of<ControllerBase>().TwiML(twiml);
         var actionContext = CreateActionContext();
         await result.ExecuteResultAsync(actionContext);
 

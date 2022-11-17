@@ -3,7 +3,7 @@
     /// <summary>
     /// This class can be used as the parameter on your voice action. Incoming parameters will be bound here.
     /// </summary>
-    /// <remarks>http://www.twilio.com/docs/api/twiml/twilio_request</remarks>
+    /// <remarks>https://www.twilio.com/docs/usage/webhooks/voice-webhooks</remarks>
     public class VoiceRequest : TwilioRequest
     {
         /// <summary>

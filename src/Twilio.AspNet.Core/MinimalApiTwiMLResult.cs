@@ -30,8 +30,5 @@ public partial class TwiMLResult : IResult
     /// Writes the TwiML to the HTTP response body
     /// </summary>
     /// <param name="httpContext">The HttpContext containing the Response to write the TwiML to</param>
-    public Task ExecuteAsync(HttpContext httpContext)
-    {
-        return WriteTwiMLToResponse(httpContext.Response);
-    }
+    public Task ExecuteAsync(HttpContext httpContext) => WriteTwiMLToResponse(httpContext.Response);
 }

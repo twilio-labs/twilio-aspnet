@@ -5,29 +5,8 @@ namespace Twilio.AspNet.Mvc
 {
     public class TwiMLResult : ActionResult
     {
-        private readonly string dataString;
-        private readonly XDocument dataDocument;
         private readonly SaveOptions formattingOptions;
         private readonly TwiML.TwiML dataTwiml;
-
-        public TwiMLResult()
-        {
-        }
-
-        public TwiMLResult(string twiml)
-        {
-            this.dataString = twiml;
-        }
-
-        public TwiMLResult(XDocument twiml) : this(twiml, SaveOptions.None)
-        {
-        }
-
-        public TwiMLResult(XDocument twiml, SaveOptions formattingOptions)
-        {
-            this.dataDocument = twiml;
-            this.formattingOptions = formattingOptions;
-        }
 
         public TwiMLResult(TwiML.TwiML response) : this(response, SaveOptions.None)
         {
@@ -45,31 +24,19 @@ namespace Twilio.AspNet.Mvc
             var encoding = response.Output.Encoding.BodyName;
             response.ContentType = "application/xml";
 
-            if (!string.IsNullOrEmpty(dataString))
+            if (dataTwiml == null)
             {
-                response.Output.Write(dataString);
-                return;
-            }
-            
-            if (dataDocument != null)
-            {
-                dataDocument.Save(response.Output, formattingOptions);
-                return;
-            }
-            
-            if (dataTwiml != null)
-            {
-                var twimlString = dataTwiml.ToString(formattingOptions);
-                if (encoding != "utf-8")
-                {
-                    twimlString = twimlString.Replace("utf-8", encoding);
-                }
-                
-                response.Output.Write(twimlString);
+                response.Output.Write($"<?xml version=\"1.0\" encoding=\"{encoding}\"?><Response></Response>");
                 return;
             }
 
-            response.Output.Write($"<?xml version=\"1.0\" encoding=\"{encoding}\"?><Response></Response>");
+            var twimlString = dataTwiml.ToString(formattingOptions);
+            if (encoding != "utf-8")
+            {
+                twimlString = twimlString.Replace("utf-8", encoding);
+            }
+
+            response.Output.Write(twimlString);
         }
     }
 }
