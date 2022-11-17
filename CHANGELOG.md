@@ -1,3 +1,22 @@
+## 7.0.0
+New:
+- The new `ValidateTwilioRequest` extension method and `ValidateTwilioRequestFilter` adds Twilio request validation to your endpoints and Minimal APIs, only for ASP.NET Core 7.
+- The new `ValidateTwilioRequestMiddleware` adds Twilio request validation to the ASP.NET Core request pipeline. This is helpful for securing static files among other things that can't be secured using attributes and filters.
+- New `TwiMLResult` constructor overloads to specify formatting of the `TwiML`. The `TwiML` extension methods and methods on `TwilioController` also have the new formatting overloads.
+- `VoiceResponse` and `MessagingResponse` have a new extension method `ToTwiMLResult()` that will create a `TwiMLResult` instance for you.
+- `SmsRequest` and `VoiceRequest` have been updated with parameters that were missing.
+
+Breaking changes:
+- You can no longer pass in a `string` or `XDocument` into the `TwiMLResult` constructor. Read the v7 announcement post for recommended alternatives.
+- The public properties on `TwiMLResult` have been removed.
+- The `HttpRequest.IsLocal()` extension method has been removed.
+- The `Twilio.AspNet.Core.HttpStatusCodeResult` class has been removed in favor of the action results built into the framework.
+- The `Twilio.AspNet.Core.MinimalApi` namespace has been removed. Types from the namespace have moved to the `Twilio.AspNet.Core` namespace.
+- The `RequestValidationHelper` class is now static. You'll need to change your code to not instantiate this class and call its methods in a static manner.
+
+Other changes include updated documentation with more samples and performance improvements.
+Read about these changes in more detail at the [v7 announcement post](https://www.twilio.com/blog/whats-new-in-twilio-helper-library-for-aspnet-v7).
+
 ## 6.0.0 (2022-08-05)
 - Big breaking change to the `[ValidateRequest]` attribute. The attribute no longer accepts parameters nor properties. Instead, you have to configure the request validation as documented in the readme.
 - You can now add the Twilio REST client to ASP.NET Core's dependency injection container, using the `.AddTwilioClient` method. This Twilio client will use an `HttpClient` provided by an HTTP client factory. See readme for more details.
