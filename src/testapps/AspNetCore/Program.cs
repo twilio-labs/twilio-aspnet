@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using Twilio.AspNet.Core;
 using Twilio.TwiML;
 
@@ -44,7 +45,7 @@ app.MapGet("/minimal-sms", (string from) =>
 {
     var response = new MessagingResponse();
     response.Message($"Ahoy {from}!");
-    return Results.Extensions.TwiML(response);
+    return Results.Extensions.TwiML(response, SaveOptions.DisableFormatting);
 })
     .ValidateTwilioRequest();
 
