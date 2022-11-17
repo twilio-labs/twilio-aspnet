@@ -5,6 +5,7 @@ New:
 - New `TwiMLResult` constructor overloads to specify formatting of the `TwiML`. The `TwiML` extension methods and methods on `TwilioController` also have the new formatting overloads.
 - `VoiceResponse` and `MessagingResponse` have a new extension method `ToTwiMLResult()` that will create a `TwiMLResult` instance for you.
 - `SmsRequest` and `VoiceRequest` have been updated with parameters that were missing.
+- Library now depends on version 6 of the Twilio C# library.
 
 Breaking changes:
 - You can no longer pass in a `string` or `XDocument` into the `TwiMLResult` constructor. Read the v7 announcement post for recommended alternatives.
