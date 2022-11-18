@@ -1,4 +1,4 @@
-## 7.0.0
+## 7.0.0 (2022-11-18)
 New:
 - The new `ValidateTwilioRequest` extension method and `ValidateTwilioRequestFilter` adds Twilio request validation to your endpoints and Minimal APIs, only for ASP.NET Core 7.
 - The new `ValidateTwilioRequestMiddleware` adds Twilio request validation to the ASP.NET Core request pipeline. This is helpful for securing static files among other things that can't be secured using attributes and filters.
