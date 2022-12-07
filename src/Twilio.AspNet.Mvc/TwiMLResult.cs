@@ -31,7 +31,7 @@ namespace Twilio.AspNet.Mvc
             }
 
             var doc = dataTwiml.ToXDocument();
-            doc.Save(response.Output);
+            doc.Save(response.Output, formattingOptions);
         }
     }
 }

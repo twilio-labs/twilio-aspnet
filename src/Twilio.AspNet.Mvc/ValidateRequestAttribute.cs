@@ -56,7 +56,7 @@ namespace Twilio.AspNet.Mvc
         {
             var httpContext = filterContext.HttpContext;
             string urlOverride = null;
-            if (BaseUrlOverride != null)
+            if (!string.IsNullOrEmpty(BaseUrlOverride))
             {
                 urlOverride = $"{BaseUrlOverride}{httpContext.Request.Path}{httpContext.Request.QueryString}";
             }
