@@ -30,13 +30,8 @@ namespace Twilio.AspNet.Mvc
                 return;
             }
 
-            var twimlString = dataTwiml.ToString(formattingOptions);
-            if (encoding != "utf-8")
-            {
-                twimlString = twimlString.Replace("utf-8", encoding);
-            }
-
-            response.Output.Write(twimlString);
+            var doc = dataTwiml.ToXDocument();
+            doc.Save(response.Output);
         }
     }
 }
