@@ -28,7 +28,7 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
         AllowLocal = options.AllowLocal ?? true;
     }
 
-    public async ValueTask<object> InvokeAsync(
+    public ValueTask<object> InvokeAsync(
         EndpointFilterInvocationContext efiContext,
         EndpointFilterDelegate next
     )
@@ -43,10 +43,10 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
 
         if (RequestValidationHelper.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
         {
-            return await next(efiContext);
+            return next(efiContext);
         }
 
-        return Results.StatusCode((int) HttpStatusCode.Forbidden);
+        return ValueTask.FromResult((object)Results.StatusCode((int) HttpStatusCode.Forbidden));
     }
 }
 

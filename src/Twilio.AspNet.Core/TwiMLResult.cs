@@ -30,7 +30,8 @@ namespace Twilio.AspNet.Core
         public async Task ExecuteResultAsync(ActionContext actionContext)
         {
             var response = actionContext.HttpContext.Response;
-            await WriteTwiMLToResponse(response, actionContext.HttpContext.RequestAborted);
+            await WriteTwiMLToResponse(response, actionContext.HttpContext.RequestAborted)
+                .ConfigureAwait(false);
         }
 
         private async Task WriteTwiMLToResponse(HttpResponse response, CancellationToken cancellationToken)
@@ -38,16 +39,19 @@ namespace Twilio.AspNet.Core
             response.ContentType = "application/xml";
             if (twiml == null)
             {
-                await response.WriteAsync("<Response></Response>", cancellationToken);
+                await response.WriteAsync("<Response></Response>", cancellationToken)
+                    .ConfigureAwait(false);
                 return;
             }
 
             var doc = twiml.ToXDocument();
 
 #if NET5_0_OR_GREATER
-            await doc.SaveAsync(response.Body, formattingOptions, cancellationToken);
+            await doc.SaveAsync(response.Body, formattingOptions, cancellationToken)
+                .ConfigureAwait(false);
 #else
-            await response.WriteAsync(doc.ToString(formattingOptions), cancellationToken);
+            await response.WriteAsync(doc.ToString(formattingOptions), cancellationToken)
+                .ConfigureAwait(false);
 #endif
         }
     }

@@ -24,7 +24,7 @@ namespace Twilio.AspNet.Core
             this.options = options.Value ?? throw new Exception("RequestValidationOptions is not configured.");
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public Task InvokeAsync(HttpContext context)
         {
             var request = context.Request;
 
@@ -38,10 +38,10 @@ namespace Twilio.AspNet.Core
             if (!isValid)
             {
                 context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
-                return;
+                return Task.CompletedTask;
             }
 
-            await next(context);
+            return next(context);
         }
     }
 
