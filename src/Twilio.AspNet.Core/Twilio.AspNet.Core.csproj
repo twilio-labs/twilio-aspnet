@@ -30,7 +30,7 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Twilio" Version="6.1.0" />
+    <PackageReference Include="Twilio" Version="6.*" />
     <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
