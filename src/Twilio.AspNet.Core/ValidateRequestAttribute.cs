@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,18 +27,18 @@ namespace Twilio.AspNet.Core
             var options = serviceProvider.GetService<IOptions<TwilioRequestValidationOptions>>()?.Value;
             if (options == null) throw new Exception("RequestValidationOptions is not configured.");
 
-            return new InternalValidateRequestAttribute(
+            return new InternalValidateRequestFilter(
                 authToken: options.AuthToken,
                 baseUrlOverride: options.BaseUrlOverride?.TrimEnd('/'),
                 allowLocal: options.AllowLocal ?? true
             );
         }
 
-        internal class InternalValidateRequestAttribute : ActionFilterAttribute
+        internal class InternalValidateRequestFilter : IAsyncActionFilter
         {
-            internal string AuthToken { get; set; }
-            internal string BaseUrlOverride { get; set; }
-            internal bool AllowLocal { get; set; }
+            internal string AuthToken { get; }
+            internal string BaseUrlOverride { get; }
+            internal bool AllowLocal { get; }
 
             /// <summary>
             /// Initializes a new instance of the ValidateRequestAttribute class.
@@ -48,29 +49,32 @@ namespace Twilio.AspNet.Core
             /// if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)
             /// </param>
             /// <param name="allowLocal">Skip validation for local requests</param>
-            public InternalValidateRequestAttribute(string authToken, string baseUrlOverride, bool allowLocal)
+            public InternalValidateRequestFilter(string authToken, string baseUrlOverride, bool allowLocal)
             {
                 AuthToken = authToken;
                 BaseUrlOverride = baseUrlOverride;
                 AllowLocal = allowLocal;
             }
 
-            public override void OnActionExecuting(ActionExecutingContext filterContext)
+            public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
-                var httpContext = filterContext.HttpContext;
+                var httpContext = context.HttpContext;
                 var request = httpContext.Request;
                 string urlOverride = null;
                 if (BaseUrlOverride != null)
                 {
                     urlOverride = $"{BaseUrlOverride}{request.Path}{request.QueryString}";
                 }
-                
-                if (!RequestValidationHelper.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
+
+                var isValid = await RequestValidationHelper
+                    .IsValidRequestAsync(httpContext, AuthToken, urlOverride, AllowLocal).ConfigureAwait(false);
+                if (!isValid)
                 {
-                    filterContext.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
+                    context.Result = new StatusCodeResult((int) HttpStatusCode.Forbidden);
+                    return;
                 }
 
-                base.OnActionExecuting(filterContext);
+                await next();
             }
         }
     }

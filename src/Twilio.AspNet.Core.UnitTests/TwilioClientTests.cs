@@ -18,7 +18,7 @@ public class TwilioClientTests
     private static readonly TwilioOptions ValidTwilioOptions = new()
     {
         AuthToken = "My Twilio:AuthToken",
-        Client = new TwilioClientOptions()
+        Client = new TwilioClientOptions
         {
             AccountSid = "MyAccountSid!",
             AuthToken = "My Twilio:Client:AuthToken",
@@ -32,7 +32,7 @@ public class TwilioClientTests
 
     private static readonly TwilioOptions AuthTokenTwilioOptions = new()
     {
-        Client = new TwilioClientOptions()
+        Client = new TwilioClientOptions
         {
             AccountSid = "MyAccountSid!",
             AuthToken = "My Twilio:Client:AuthToken",
@@ -44,7 +44,7 @@ public class TwilioClientTests
 
     private static readonly TwilioOptions ApiKeyTwilioOptions = new()
     {
-        Client = new TwilioClientOptions()
+        Client = new TwilioClientOptions
         {
             AccountSid = "MyAccountSid!",
             ApiKeySid = "My API Key SID",

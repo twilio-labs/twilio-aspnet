@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -20,7 +21,7 @@ public class ValidateRequestAttributeTests
     private static readonly TwilioOptions ValidTwilioOptions = new()
     {
         AuthToken = "My Twilio:AuthToken",
-        RequestValidation = new TwilioRequestValidationOptions()
+        RequestValidation = new TwilioRequestValidationOptions
         {
             AuthToken = "My Twilio:RequestValidation:AuthToken",
             AllowLocal = false,
@@ -85,7 +86,7 @@ public class ValidateRequestAttributeTests
 
         var attributeFactory = new ValidateRequestAttribute();
         var attribute =
-            (ValidateRequestAttribute.InternalValidateRequestAttribute) attributeFactory
+            (ValidateRequestAttribute.InternalValidateRequestFilter) attributeFactory
                 .CreateInstance(serviceProvider);
 
         Assert.Equal(ValidTwilioOptions.RequestValidation.AllowLocal, attribute.AllowLocal);
@@ -101,22 +102,22 @@ public class ValidateRequestAttributeTests
 
         var attributeFactory = new ValidateRequestAttribute();
         var exception = Assert.Throws<Exception>(() =>
-            (ValidateRequestAttribute.InternalValidateRequestAttribute) attributeFactory
+            (ValidateRequestAttribute.InternalValidateRequestFilter) attributeFactory
                 .CreateInstance(serviceProvider));
         Assert.Equal("RequestValidationOptions is not configured.", exception.Message);
     }
 
 
     [Fact]
-    public void ValidateRequestAttribute_Validates_Request_Successfully()
+    public async Task ValidateRequestAttribute_Validates_Request_Successfully()
     {
-        var attribute = new ValidateRequestAttribute.InternalValidateRequestAttribute(
-            authToken: ContextMocks.fakeAuthToken, 
-            null, 
+        var attribute = new ValidateRequestAttribute.InternalValidateRequestFilter(
+            authToken: ContextMocks.fakeAuthToken,
+            null,
             false
         );
 
-        var form = new FormCollection(new Dictionary<string, StringValues>()
+        var form = new FormCollection(new Dictionary<string, StringValues>
         {
             {"key1", "value1"},
             {"key2", "value2"}
@@ -129,22 +130,27 @@ public class ValidateRequestAttributeTests
             new Dictionary<string, object>(),
             new object()
         );
-        
-        attribute.OnActionExecuting(actionExecutingContext);
-        
+        var actionExecutedContext = new ActionExecutedContext(
+            new ActionContext(fakeContext, new RouteData(), new ActionDescriptor()),
+            new List<IFilterMetadata>(),
+            new object()
+        );
+
+        await attribute.OnActionExecutionAsync(actionExecutingContext, () => Task.FromResult(actionExecutedContext));
+
         Assert.Null(actionExecutingContext.Result);
     }
 
     [Fact]
-    public void ValidateRequestFilter_Validates_Request_Forbid()
+    public async Task ValidateRequestFilter_Validates_Request_Forbid()
     {
-        var attribute = new ValidateRequestAttribute.InternalValidateRequestAttribute(
-            authToken: "bad", 
-            null, 
+        var attribute = new ValidateRequestAttribute.InternalValidateRequestFilter(
+            authToken: "bad",
+            null,
             false
         );
 
-        var form = new FormCollection(new Dictionary<string, StringValues>()
+        var form = new FormCollection(new Dictionary<string, StringValues>
         {
             {"key1", "value1"},
             {"key2", "value2"}
@@ -157,11 +163,16 @@ public class ValidateRequestAttributeTests
             new Dictionary<string, object>(),
             new object()
         );
-        
-        attribute.OnActionExecuting(actionExecutingContext);
+        var actionExecutedContext = new ActionExecutedContext(
+            new ActionContext(fakeContext, new RouteData(), new ActionDescriptor()),
+            new List<IFilterMetadata>(),
+            new object()
+        );
 
-        var statusCodeResult = (StatusCodeResult)actionExecutingContext.Result!;
+        await attribute.OnActionExecutionAsync(actionExecutingContext, () => Task.FromResult(actionExecutedContext));
+
+        var statusCodeResult = (StatusCodeResult) actionExecutingContext.Result!;
         Assert.NotNull(statusCodeResult);
-        Assert.Equal((int)HttpStatusCode.Forbidden, statusCodeResult.StatusCode);
+        Assert.Equal((int) HttpStatusCode.Forbidden, statusCodeResult.StatusCode);
     }
 }

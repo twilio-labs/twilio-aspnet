@@ -15,7 +15,7 @@ public class ValidateTwilioRequestFilterTests
     private static readonly TwilioOptions ValidTwilioOptions = new()
     {
         AuthToken = "My Twilio:AuthToken",
-        RequestValidation = new TwilioRequestValidationOptions()
+        RequestValidation = new TwilioRequestValidationOptions
         {
             AuthToken = "My Twilio:RequestValidation:AuthToken",
             AllowLocal = false,
@@ -67,7 +67,8 @@ public class ValidateTwilioRequestFilterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var filter = serviceProvider.GetRequiredService<ValidateTwilioRequestFilter>();
         
-        var form = new FormCollection(new Dictionary<string, StringValues>() {
+        var form = new FormCollection(new Dictionary<string, StringValues>
+        {
             {"key1", "value1"},
             {"key2", "value2"}
         });
@@ -95,7 +96,8 @@ public class ValidateTwilioRequestFilterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var filter = serviceProvider.GetRequiredService<ValidateTwilioRequestFilter>();
         
-        var form = new FormCollection(new Dictionary<string, StringValues>() {
+        var form = new FormCollection(new Dictionary<string, StringValues>
+        {
             {"key1", "value1"},
             {"key2", "value2"}
         });

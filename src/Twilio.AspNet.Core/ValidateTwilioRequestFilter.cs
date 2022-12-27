@@ -14,9 +14,9 @@ namespace Twilio.AspNet.Core;
 /// </summary>
 public class ValidateTwilioRequestFilter : IEndpointFilter
 {
-    internal string AuthToken { get; set; }
-    internal string BaseUrlOverride { get; set; }
-    internal bool AllowLocal { get; set; }
+    internal string AuthToken { get; }
+    internal string BaseUrlOverride { get; }
+    internal bool AllowLocal { get; }
 
     public ValidateTwilioRequestFilter(IServiceProvider serviceProvider)
     {
@@ -36,17 +36,19 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
         var httpContext = efiContext.HttpContext;
         var request = httpContext.Request;
         string urlOverride = null;
-        if (BaseUrlOverride != null)
+        if (!string.IsNullOrEmpty(BaseUrlOverride))
         {
             urlOverride = $"{BaseUrlOverride}{request.Path}{request.QueryString}";
         }
 
-        if (RequestValidationHelper.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
+        var isValid = await RequestValidationHelper.IsValidRequestAsync(httpContext, AuthToken, urlOverride, AllowLocal)
+            .ConfigureAwait(false);
+        if (!isValid)
         {
-            return await next(efiContext);
+            return Results.StatusCode((int) HttpStatusCode.Forbidden);
         }
-
-        return Results.StatusCode((int) HttpStatusCode.Forbidden);
+        
+        return await next(efiContext);
     }
 }
 

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Xunit;
@@ -15,7 +17,8 @@ public class ContextMocks
     public Moq.Mock<HttpContext> HttpContext { get; set; }
     public Moq.Mock<HttpRequest> Request { get; set; }
 
-    public ContextMocks(bool isLocal, FormCollection form = null, bool isProxied = false) : this("", isLocal, form, isProxied)
+    public ContextMocks(bool isLocal, FormCollection form = null, bool isProxied = false) : this("", isLocal, form,
+        isProxied)
     {
     }
 
@@ -48,6 +51,8 @@ public class ContextMocks
         {
             Request.Setup(x => x.Method).Returns("POST");
             Request.Setup(x => x.Form).Returns(form);
+            Request.Setup(x => x.ReadFormAsync(new CancellationToken()))
+                .Returns(() => Task.FromResult((IFormCollection)form));
             Request.Setup(x => x.HasFormContentType).Returns(true);
         }
     }
@@ -80,81 +85,84 @@ public class ContextMocks
 public class RequestValidationHelperTests
 {
     [Fact]
-    public void TestLocal()
+    public async Task TestLocal()
     {
-        var fakeContext = (new ContextMocks(true)).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, "bad-token", true);
+        var fakeContext = new ContextMocks(true).HttpContext.Object;
+        var result = await RequestValidationHelper.IsValidRequestAsync(fakeContext, "bad-token", true);
 
         Assert.True(result);
     }
 
     [Fact]
-    public void TestNoLocalDueToProxy()
+    public async Task TestNoLocalDueToProxy()
     {
-        var fakeContext = (new ContextMocks(true, isProxied: true)).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, "bad-token", true);
+        var fakeContext = new ContextMocks(true, isProxied: true).HttpContext.Object;
+        var result = await RequestValidationHelper.IsValidRequestAsync(fakeContext, "bad-token", true);
 
         Assert.False(result);
     }
 
     [Fact]
-    public void TestNoLocal()
+    public async Task TestNoLocal()
     {
-        var fakeContext = (new ContextMocks(true)).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, "bad-token", false);
+        var fakeContext = new ContextMocks(true).HttpContext.Object;
+        var result = await RequestValidationHelper.IsValidRequestAsync(fakeContext, "bad-token", false);
 
         Assert.False(result);
     }
 
     [Fact]
-    public void TestNoForm()
+    public async Task TestNoForm()
     {
-        var fakeContext = (new ContextMocks(true)).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
+        var fakeContext = new ContextMocks(true).HttpContext.Object;
+        var result = await RequestValidationHelper.IsValidRequestAsync(fakeContext, ContextMocks.fakeAuthToken, false);
 
         Assert.True(result);
     }
 
     [Fact]
-    public void TestBadForm()
+    public async Task TestBadForm()
     {
         var contextMocks = new ContextMocks(true);
         var fakeContext = contextMocks.HttpContext.Object;
         contextMocks.Request.Setup(x => x.Method).Returns("POST");
         contextMocks.Request.Setup(x => x.Form).Throws(new Exception("poof!"));
 
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
+        var result = await RequestValidationHelper.IsValidRequestAsync(fakeContext, ContextMocks.fakeAuthToken, false);
 
         Assert.True(result);
     }
 
     [Fact]
-    public void TestUrlOverrideFail()
+    public async Task TestUrlOverrideFail()
     {
-        var fakeContext = (new ContextMocks(true)).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, "https://example.com/", false);
+        var fakeContext = new ContextMocks(true).HttpContext.Object;
+        var result = await RequestValidationHelper.IsValidRequestAsync(fakeContext, ContextMocks.fakeAuthToken,
+            "https://example.com/", false);
 
         Assert.False(result);
     }
 
     [Fact]
-    public void TestUrlOverride()
+    public async Task TestUrlOverride()
     {
-        var fakeContext = (new ContextMocks("https://example.com/", true)).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, "https://example.com/", false);
+        var fakeContext = new ContextMocks("https://example.com/", true).HttpContext.Object;
+        var result = await RequestValidationHelper.IsValidRequestAsync(fakeContext, ContextMocks.fakeAuthToken,
+            "https://example.com/", false);
 
         Assert.True(result);
     }
 
     [Fact]
-    public void TestForm()
+    public async Task TestForm()
     {
-        var form = new FormCollection(new Dictionary<string, StringValues>() {
-                {"key1", "value1"},
-                {"key2", "value2"}
-            });
-        var fakeContext = (new ContextMocks(true, form)).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
+        var form = new FormCollection(new Dictionary<string, StringValues>
+        {
+            {"key1", "value1"},
+            {"key2", "value2"}
+        });
+        var fakeContext = new ContextMocks(true, form).HttpContext.Object;
+        var result = await RequestValidationHelper.IsValidRequestAsync(fakeContext, ContextMocks.fakeAuthToken, false);
 
         Assert.True(result);
     }

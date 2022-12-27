@@ -34,7 +34,7 @@ namespace Twilio.AspNet.Core
                 urlOverride = $"{options.BaseUrlOverride.TrimEnd('/')}{request.Path}{request.QueryString}";
             }
 
-            var isValid = RequestValidationHelper.IsValidRequest(context, options.AuthToken, urlOverride, options.AllowLocal ?? true);
+            var isValid = await RequestValidationHelper.IsValidRequestAsync(context, options.AuthToken, urlOverride, options.AllowLocal ?? true);
             if (!isValid)
             {
                 context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
