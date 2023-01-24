@@ -22,8 +22,9 @@ namespace Twilio.AspNet.Core
         
         public async Task InvokeAsync(HttpContext context)
         {
-            var options = context.RequestServices.GetRequiredService<IOptionsSnapshot<TwilioRequestValidationOptions>>().Value;
-            if (options == null) throw new Exception("TwilioRequestValidationOptions is not configured.");
+            var options = context.RequestServices
+                .GetRequiredService<IOptionsSnapshot<TwilioRequestValidationOptions>>().Value;
+
             var authToken = options.AuthToken;
             var baseUrlOverride = options.BaseUrlOverride;
             var allowLocal = options.AllowLocal ?? true;

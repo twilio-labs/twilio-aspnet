@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +18,7 @@ using Xunit;
 
 namespace Twilio.AspNet.Core.UnitTests;
 
-public class ValidateTwilioRequestMiddlewareTests
+public class ValidateTwilioRequestTests
 {
     private static readonly TwilioOptions ValidTwilioOptions = new()
     {
@@ -32,30 +31,15 @@ public class ValidateTwilioRequestMiddlewareTests
         }
     };
 
-    [Fact]
-    public async Task UseTwilioRequestValidation_Should_Validate_Request_Successfully()
+    [Theory]
+    [InlineData(typeof(ValidateRequestAttribute))]
+    [InlineData(typeof(ValidateTwilioRequestFilter))]
+    [InlineData(typeof(ValidateTwilioRequestMiddleware))]
+    public async Task Validate_Request_Successfully(Type type)
     {
-        using var host = await new HostBuilder()
-            .ConfigureWebHost(webBuilder => webBuilder
-                .UseTestServer()
-                .ConfigureServices(services =>
-                {
-                    services.AddTwilioRequestValidation((_, options) =>
-                    {
-                        options.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
-                        options.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
-                        options.BaseUrlOverride = ValidTwilioOptions.RequestValidation.BaseUrlOverride;
-                    });
-                    services.AddRouting();
-                })
-                .Configure(app =>
-                {
-                    app.UseTwilioRequestValidation();
-                    app.UseRouting();
-                    app.UseEndpoints(builder => { builder.MapPost("/sms", () => Results.Ok()); });
-                })
-            )
-            .StartAsync();
+        var validJson = JsonSerializer.Serialize(new { Twilio = ValidTwilioOptions });
+        using var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(validJson));
+        var host = await BuildHost(type, builder => builder.AddJsonStream(jsonStream));
 
         var server = host.GetTestServer();
         server.BaseAddress = new Uri("https://example.com/");
@@ -70,8 +54,7 @@ public class ValidateTwilioRequestMiddlewareTests
                 { "Body", "Ahoy!" }
             });
             c.Request.Headers.Add(
-                "X-Twilio-Signature",
-                CalculateSignature(
+                "X-Twilio-Signature", ValidationHelper.CalculateSignature(
                     $"{ValidTwilioOptions.RequestValidation.BaseUrlOverride}{c.Request.Path}",
                     ValidTwilioOptions.RequestValidation.AuthToken,
                     c.Request.Form
@@ -82,30 +65,15 @@ public class ValidateTwilioRequestMiddlewareTests
         Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
     }
 
-    [Fact]
-    public async Task UseTwilioRequestValidation_Should_Validate_Request_Forbid()
+    [Theory]
+    [InlineData(typeof(ValidateRequestAttribute))]
+    [InlineData(typeof(ValidateTwilioRequestFilter))]
+    [InlineData(typeof(ValidateTwilioRequestMiddleware))]
+    public async Task Validate_Request_Forbid(Type type)
     {
-        using var host = await new HostBuilder()
-            .ConfigureWebHost(webBuilder => webBuilder
-                .UseTestServer()
-                .ConfigureServices(services =>
-                {
-                    services.AddTwilioRequestValidation((_, options) =>
-                    {
-                        options.AllowLocal = ValidTwilioOptions.RequestValidation.AllowLocal;
-                        options.AuthToken = ValidTwilioOptions.RequestValidation.AuthToken;
-                        options.BaseUrlOverride = ValidTwilioOptions.RequestValidation.BaseUrlOverride;
-                    });
-                    services.AddRouting();
-                })
-                .Configure(app =>
-                {
-                    app.UseTwilioRequestValidation();
-                    app.UseRouting();
-                    app.UseEndpoints(builder => { builder.MapPost("/sms", () => Results.Ok()); });
-                })
-            )
-            .StartAsync();
+        var validJson = JsonSerializer.Serialize(new { Twilio = ValidTwilioOptions });
+        using var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(validJson));
+        var host = await BuildHost(type, builder => builder.AddJsonStream(jsonStream));
 
         var server = host.GetTestServer();
         server.BaseAddress = new Uri("https://example.com/");
@@ -125,32 +93,21 @@ public class ValidateTwilioRequestMiddlewareTests
         Assert.Equal(StatusCodes.Status403Forbidden, context.Response.StatusCode);
     }
 
-    [Fact]
-    public async Task UseTwilioRequestValidation_Should_Validate_Request_Successfully_With_AutoReload()
+    [Theory]
+    [InlineData(typeof(ValidateRequestAttribute))]
+    [InlineData(typeof(ValidateTwilioRequestFilter))]
+    [InlineData(typeof(ValidateTwilioRequestMiddleware))]
+    public async Task Validate_Request_With_ReloadOnChange(Type type)
     {
         const string optionsFile = "ValidateRequestMiddlewareAutoReload2.json";
         if (File.Exists(optionsFile)) File.Delete(optionsFile);
         var jsonText = JsonSerializer.Serialize(new { Twilio = ValidTwilioOptions });
         await File.WriteAllTextAsync(optionsFile, jsonText);
 
-        using var host = await new HostBuilder()
-            .ConfigureWebHost(webBuilder => webBuilder
-                .UseTestServer()
-                .ConfigureAppConfiguration(builder =>
-                    builder.AddJsonFile(optionsFile, optional: false, reloadOnChange: true))
-                .ConfigureServices(services =>
-                {
-                    services.AddTwilioRequestValidation();
-                    services.AddRouting();
-                })
-                .Configure(app =>
-                {
-                    app.UseTwilioRequestValidation();
-                    app.UseRouting();
-                    app.UseEndpoints(builder => { builder.MapPost("/sms", () => Results.Ok()); });
-                })
-            )
-            .StartAsync();
+        using var host = await BuildHost(
+            type,
+            builder => builder.AddJsonFile(optionsFile, optional: false, reloadOnChange: true)
+        );
 
         var server = host.GetTestServer();
         server.BaseAddress = new Uri("https://example.com/");
@@ -165,8 +122,7 @@ public class ValidateTwilioRequestMiddlewareTests
                 { "Body", "Ahoy!" }
             });
             c.Request.Headers.Add(
-                "X-Twilio-Signature",
-                CalculateSignature(
+                "X-Twilio-Signature", ValidationHelper.CalculateSignature(
                     $"{ValidTwilioOptions.RequestValidation.BaseUrlOverride}{c.Request.Path}",
                     ValidTwilioOptions.RequestValidation.AuthToken,
                     c.Request.Form
@@ -175,7 +131,7 @@ public class ValidateTwilioRequestMiddlewareTests
         });
 
         Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
-        
+
         TwilioOptions updatedOptions = new()
         {
             RequestValidation = new TwilioRequestValidationOptions
@@ -192,7 +148,7 @@ public class ValidateTwilioRequestMiddlewareTests
         // wait for the option change to be detected
         var monitor = host.Services.GetRequiredService<IOptionsMonitor<TwilioRequestValidationOptions>>();
         await monitor.WaitForOptionChange();
-        
+
         context = await server.SendAsync(c =>
         {
             c.Request.Method = HttpMethods.Post;
@@ -203,17 +159,16 @@ public class ValidateTwilioRequestMiddlewareTests
                 { "Body", "Ahoy!" }
             });
             c.Request.Headers.Add(
-                "X-Twilio-Signature",
-                CalculateSignature(
+                "X-Twilio-Signature", ValidationHelper.CalculateSignature(
                     $"{updatedOptions.RequestValidation.BaseUrlOverride}{c.Request.Path}",
                     updatedOptions.RequestValidation.AuthToken,
                     c.Request.Form
                 )
             );
         });
-        
+
         Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
-        
+
         updatedOptions = new()
         {
             RequestValidation = new TwilioRequestValidationOptions
@@ -229,7 +184,7 @@ public class ValidateTwilioRequestMiddlewareTests
 
         // wait for the option change to be detected
         await monitor.WaitForOptionChange();
-                
+
         context = await server.SendAsync(c =>
         {
             c.Request.Host = new HostString("localhost");
@@ -237,26 +192,53 @@ public class ValidateTwilioRequestMiddlewareTests
             c.Request.Path = "/sms";
             c.Request.Headers.Add("X-Twilio-Signature", "sdfsjf");
         });
-        
+
         Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
     }
-    
-    private string CalculateSignature(string url, string authToken, IFormCollection form)
-    {
-        var value = new StringBuilder(url);
-        if (form != null)
-        {
-            var sortedKeys = form.Keys.OrderBy(k => k, StringComparer.Ordinal).ToList();
-            foreach (var key in sortedKeys)
+
+    private static Task<IHost> BuildHost(Type type, Action<IConfigurationBuilder> buildConfig) => new HostBuilder()
+        .ConfigureWebHost(webBuilder => webBuilder
+            .UseTestServer()
+            .ConfigureAppConfiguration(buildConfig)
+            .ConfigureServices(services =>
             {
-                value.Append(key);
-                value.Append(form[key]);
-            }
-        }
+                services.AddTwilioRequestValidation();
+                if (type == typeof(ValidateRequestAttribute))
+                {
+                    services.AddControllers();
+                }
+                else
+                {
+                    services.AddRouting();
+                }
+            })
+            .Configure(app =>
+            {
+                app.UseTwilioRequestValidation();
+                app.UseRouting();
+                app.UseEndpoints(builder =>
+                {
+                    if (type == typeof(ValidateRequestAttribute))
+                    {
+                        builder.MapControllers();
+                    }
+                    else if (type == typeof(ValidateTwilioRequestFilter))
+                    {
+                        builder.MapPost("/sms", () => Results.Ok())
+                            .ValidateTwilioRequest();
+                    }
+                    else if (type == typeof(ValidateTwilioRequestMiddleware))
+                    {
+                        builder.MapPost("/sms", () => Results.Ok());
+                    }
+                });
+            })
+        )
+        .StartAsync();
+}
 
-        var sha1 = new HMACSHA1(Encoding.UTF8.GetBytes(authToken));
-        var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(value.ToString()));
-
-        return Convert.ToBase64String(hash);
-    }
+public class SmsController : Controller
+{
+    [HttpPost("/sms")]
+    public void Sms() => Ok();
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -14,34 +13,28 @@ namespace Twilio.AspNet.Core;
 /// </summary>
 public class ValidateTwilioRequestFilter : IEndpointFilter
 {
-    internal string AuthToken { get; }
-    internal string BaseUrlOverride { get; }
-    internal bool AllowLocal { get; }
-
-    public ValidateTwilioRequestFilter(IServiceProvider serviceProvider)
-    {
-        var options = serviceProvider.GetService<IOptionsSnapshot<TwilioRequestValidationOptions>>()?.Value;
-        if (options == null) throw new Exception("TwilioRequestValidationOptions is not configured.");
-        
-        AuthToken = options.AuthToken;
-        BaseUrlOverride = options.BaseUrlOverride?.TrimEnd('/');
-        AllowLocal = options.AllowLocal ?? true;
-    }
-
     public async ValueTask<object> InvokeAsync(
         EndpointFilterInvocationContext efiContext,
         EndpointFilterDelegate next
     )
     {
-        var httpContext = efiContext.HttpContext;
-        var request = httpContext.Request;
+        var context = efiContext.HttpContext;
+        var options = context.RequestServices
+            .GetRequiredService<IOptionsSnapshot<TwilioRequestValidationOptions>>().Value;
+            
+        var authToken = options.AuthToken;
+        var baseUrlOverride = options.BaseUrlOverride;
+        var allowLocal = options.AllowLocal ?? true;
+        
+        var request = context.Request;
+        
         string urlOverride = null;
-        if (BaseUrlOverride != null)
+        if (baseUrlOverride != null)
         {
-            urlOverride = $"{BaseUrlOverride}{request.Path}{request.QueryString}";
+            urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
         }
 
-        if (RequestValidationHelper.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
+        if (RequestValidationHelper.IsValidRequest(context, authToken, urlOverride, allowLocal))
         {
             return await next(efiContext);
         }
