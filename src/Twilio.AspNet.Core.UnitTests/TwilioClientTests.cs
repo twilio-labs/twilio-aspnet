@@ -27,7 +27,8 @@ public class TwilioClientTests
             ApiKeySecret = "My API Key Secret",
             CredentialType = CredentialType.ApiKey,
             Edge = "MY EDGE",
-            Region = "MY REGION"
+            Region = "MY REGION",
+            LogLevel = "debug"
         }
     };
 
@@ -39,7 +40,8 @@ public class TwilioClientTests
             AuthToken = "My Twilio:Client:AuthToken",
             CredentialType = CredentialType.AuthToken,
             Edge = "MY EDGE",
-            Region = "MY REGION"
+            Region = "MY REGION",
+            LogLevel = "debug"
         }
     };
 
@@ -52,7 +54,8 @@ public class TwilioClientTests
             ApiKeySecret = "My API Key Secret",
             CredentialType = CredentialType.ApiKey,
             Edge = "MY EDGE",
-            Region = "MY REGION"
+            Region = "MY REGION",
+            LogLevel = "debug"
         }
     };
 
@@ -70,6 +73,7 @@ public class TwilioClientTests
             options.ApiKeySecret = client.ApiKeySecret;
             options.Edge = client.Edge;
             options.Region = client.Region;
+            options.LogLevel = client.LogLevel;
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -347,14 +351,14 @@ public class TwilioClientTests
         using var scope = serviceProvider.CreateScope();
 
         var client = scope.ServiceProvider.GetRequiredService<TwilioRestClient>();
-        Assert.Equal(ValidTwilioOptions.Client.Region, client.Region);
-        Assert.Equal(ValidTwilioOptions.Client.Edge, client.Edge);
-        Assert.Equal(ValidTwilioOptions.Client.AccountSid, client.AccountSid);
-        Assert.Equal(ValidTwilioOptions.Client.LogLevel, client.LogLevel);
-        Assert.Equal(ValidTwilioOptions.Client.ApiKeySid,
+        Assert.Equal(ApiKeyTwilioOptions.Client.Region, client.Region);
+        Assert.Equal(ApiKeyTwilioOptions.Client.Edge, client.Edge);
+        Assert.Equal(ApiKeyTwilioOptions.Client.AccountSid, client.AccountSid);
+        Assert.Equal(ApiKeyTwilioOptions.Client.LogLevel, client.LogLevel);
+        Assert.Equal(ApiKeyTwilioOptions.Client.ApiKeySid,
             typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetValue(client));
-        Assert.Equal(ValidTwilioOptions.Client.ApiKeySecret,
+        Assert.Equal(ApiKeyTwilioOptions.Client.ApiKeySecret,
             typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetValue(client));
     }
@@ -370,16 +374,89 @@ public class TwilioClientTests
         using var scope = serviceProvider.CreateScope();
 
         var client = scope.ServiceProvider.GetRequiredService<TwilioRestClient>();
-        Assert.Equal(ValidTwilioOptions.Client.Region, client.Region);
-        Assert.Equal(ValidTwilioOptions.Client.Edge, client.Edge);
-        Assert.Equal(ValidTwilioOptions.Client.AccountSid, client.AccountSid);
-        Assert.Equal(ValidTwilioOptions.Client.LogLevel, client.LogLevel);
-        Assert.Equal(ValidTwilioOptions.Client.AccountSid,
+        Assert.Equal(AuthTokenTwilioOptions.Client.Region, client.Region);
+        Assert.Equal(AuthTokenTwilioOptions.Client.Edge, client.Edge);
+        Assert.Equal(AuthTokenTwilioOptions.Client.AccountSid, client.AccountSid);
+        Assert.Equal(AuthTokenTwilioOptions.Client.LogLevel, client.LogLevel);
+        Assert.Equal(AuthTokenTwilioOptions.Client.AccountSid,
             typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetValue(client));
-        Assert.Equal(ValidTwilioOptions.Client.AuthToken,
+        Assert.Equal(AuthTokenTwilioOptions.Client.AuthToken,
             typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetValue(client));
+    }
+    
+    [Fact]
+    public async Task AddTwilioClient_Should_Use_Reloaded_Configuration()
+    {
+        const string optionsFile = "AddTwilioClientAutoReload.json";
+        if (File.Exists(optionsFile)) File.Delete(optionsFile);
+        var jsonText = JsonSerializer.Serialize(new { Twilio = ValidTwilioOptions });
+        await File.WriteAllTextAsync(optionsFile, jsonText);
+
+        var serviceCollection = new ServiceCollection();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile(optionsFile, optional: false, reloadOnChange: true)
+            .Build();
+
+        serviceCollection.AddSingleton<IConfiguration>(configuration);
+        serviceCollection.AddTwilioClient();
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var client = scope.ServiceProvider.GetRequiredService<TwilioRestClient>();
+        
+            Assert.Equal(ValidTwilioOptions.Client.Region, client.Region);
+            Assert.Equal(ValidTwilioOptions.Client.Edge, client.Edge);
+            Assert.Equal(ValidTwilioOptions.Client.AccountSid, client.AccountSid);
+            Assert.Equal(ValidTwilioOptions.Client.LogLevel, client.LogLevel);
+            Assert.Equal(ValidTwilioOptions.Client.ApiKeySid,
+                typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
+                    .GetValue(client));
+            Assert.Equal(ValidTwilioOptions.Client.ApiKeySecret,
+                typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
+                    .GetValue(client));
+        }
+        
+        TwilioOptions updatedOptions = new()
+        {
+            Client = new TwilioClientOptions
+            {
+                AccountSid = "MyAccountSid updated!",
+                AuthToken = "My Twilio:Client:AuthToken updated",
+                ApiKeySid = "My API Key SID updated",
+                ApiKeySecret = "My API Key Secret updated",
+                CredentialType = CredentialType.AuthToken,
+                Edge = "MY EDGE updated",
+                Region = "MY REGION updated",
+                LogLevel = null
+            }
+        };
+
+        jsonText = JsonSerializer.Serialize(new { Twilio = updatedOptions });
+        await File.WriteAllTextAsync(optionsFile, jsonText);
+        
+        // wait for the option change to be detected
+        var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<TwilioClientOptions>>();
+        await monitor.WaitForOptionChange();
+
+        // IOptionsSnapshot is calculated per scope
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var client = scope.ServiceProvider.GetRequiredService<TwilioRestClient>();
+        
+            Assert.Equal(updatedOptions.Client.Region, client.Region);
+            Assert.Equal(updatedOptions.Client.Edge, client.Edge);
+            Assert.Equal(updatedOptions.Client.AccountSid, client.AccountSid);
+            Assert.Equal(updatedOptions.Client.LogLevel, client.LogLevel);
+            Assert.Equal(updatedOptions.Client.AccountSid,
+                typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
+                    .GetValue(client));
+            Assert.Equal(updatedOptions.Client.AuthToken,
+                typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
+                    .GetValue(client));
+        }
     }
 
     [Fact]

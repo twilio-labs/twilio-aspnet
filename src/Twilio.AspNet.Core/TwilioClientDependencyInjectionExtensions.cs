@@ -142,7 +142,7 @@ namespace Twilio.AspNet.Core
                 twilioHttpClient = new SystemNetHttpClient(httpClient);
             }
 
-            var options = provider.GetRequiredService<IOptions<TwilioClientOptions>>().Value;
+            var options = provider.GetRequiredService<IOptionsSnapshot<TwilioClientOptions>>().Value;
 
             TwilioRestClient client;
             switch (options.CredentialType)

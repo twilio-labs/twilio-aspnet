@@ -12,7 +12,7 @@ namespace Twilio.AspNet.Core
     /// </summary>
     public class ValidateRequestAttribute : Attribute, IFilterFactory
     {
-        public bool IsReusable => true;
+        public bool IsReusable => false;
 
         /// <summary>
         /// Initializes a new instance of the ValidateRequestAttribute class.
@@ -23,7 +23,7 @@ namespace Twilio.AspNet.Core
 
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            var options = serviceProvider.GetService<IOptions<TwilioRequestValidationOptions>>()?.Value;
+            var options = serviceProvider.GetService<IOptionsSnapshot<TwilioRequestValidationOptions>>()?.Value;
             if (options == null) throw new Exception("RequestValidationOptions is not configured.");
 
             return new InternalValidateRequestAttribute(

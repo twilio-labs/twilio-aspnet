@@ -11,14 +11,15 @@ public static class Extensions
     {
         var tcs = new TaskCompletionSource<T>();
         var cts = new CancellationTokenSource();
-        IDisposable disposable = monitor.OnChange(options =>
+        IDisposable disposable = null;
+        disposable = monitor.OnChange(options =>
         {
             disposable.Dispose();
             cts.Cancel();
             tcs.SetResult(options);
         });
 
-        Task.Delay(TimeSpan.FromMilliseconds(1_000), cts.Token)
+        Task.Delay(TimeSpan.FromSeconds(1), cts.Token)
             .ContinueWith(_ =>
             {
                 disposable.Dispose();

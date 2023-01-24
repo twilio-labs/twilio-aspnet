@@ -257,6 +257,60 @@ public class ValidateRequestAttributeTests
                 .CreateInstance(serviceProvider));
         Assert.Equal("RequestValidationOptions is not configured.", exception.Message);
     }
+    
+    [Fact]
+    public async Task ValidateRequestAttribute_Should_Use_Reloaded_Configuration()
+    {
+        const string optionsFile = "ValidateRequestAttributeAutoReload.json";
+        if (File.Exists(optionsFile)) File.Delete(optionsFile);
+        var jsonText = JsonSerializer.Serialize(new { Twilio = ValidTwilioOptions });
+        await File.WriteAllTextAsync(optionsFile, jsonText);
+
+        var serviceCollection = new ServiceCollection();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile(optionsFile, optional: false, reloadOnChange: true)
+            .Build();
+
+        serviceCollection.AddSingleton<IConfiguration>(configuration);
+        serviceCollection.AddTwilioRequestValidation();
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        
+        var attributeFactory = new ValidateRequestAttribute();
+        var attribute = (ValidateRequestAttribute.InternalValidateRequestAttribute)attributeFactory
+            .CreateInstance(serviceProvider);
+        
+        Assert.Equal(ValidTwilioOptions.RequestValidation.AuthToken, attribute.AuthToken);
+        Assert.Equal(ValidTwilioOptions.RequestValidation.BaseUrlOverride, attribute.BaseUrlOverride);
+        Assert.Equal(ValidTwilioOptions.RequestValidation.AllowLocal, attribute.AllowLocal);
+
+        
+        TwilioOptions updatedOptions = new()
+        {
+            RequestValidation = new TwilioRequestValidationOptions
+            {
+                AuthToken = "My Twilio:RequestValidation:Updated Auth Token",
+                AllowLocal = true,
+                BaseUrlOverride = "Different URL"
+            }
+        };
+
+        jsonText = JsonSerializer.Serialize(new { Twilio = updatedOptions });
+        await File.WriteAllTextAsync(optionsFile, jsonText);
+        
+        // wait for the option change to be detected
+        var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<TwilioRequestValidationOptions>>();
+        await monitor.WaitForOptionChange();
+
+        // IOptionsSnapshot is calculated per scope
+        using var scope = serviceProvider.CreateScope();
+        attribute = (ValidateRequestAttribute.InternalValidateRequestAttribute)attributeFactory
+            .CreateInstance(scope.ServiceProvider);
+        
+        Assert.Equal(updatedOptions.RequestValidation.AuthToken, attribute.AuthToken);
+        Assert.Equal(updatedOptions.RequestValidation.BaseUrlOverride, attribute.BaseUrlOverride);
+        Assert.Equal(updatedOptions.RequestValidation.AllowLocal,attribute.AllowLocal);
+    }
 
     [Fact]
     public void ValidateRequestAttribute_Validates_Request_Successfully()

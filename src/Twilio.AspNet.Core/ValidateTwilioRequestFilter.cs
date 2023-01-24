@@ -14,14 +14,14 @@ namespace Twilio.AspNet.Core;
 /// </summary>
 public class ValidateTwilioRequestFilter : IEndpointFilter
 {
-    internal string AuthToken { get; set; }
-    internal string BaseUrlOverride { get; set; }
-    internal bool AllowLocal { get; set; }
+    internal string AuthToken { get; }
+    internal string BaseUrlOverride { get; }
+    internal bool AllowLocal { get; }
 
     public ValidateTwilioRequestFilter(IServiceProvider serviceProvider)
     {
-        var options = serviceProvider.GetService<IOptions<TwilioRequestValidationOptions>>()?.Value;
-        if (options == null) throw new Exception("RequestValidationOptions is not configured.");
+        var options = serviceProvider.GetService<IOptionsSnapshot<TwilioRequestValidationOptions>>()?.Value;
+        if (options == null) throw new Exception("TwilioRequestValidationOptions is not configured.");
         
         AuthToken = options.AuthToken;
         BaseUrlOverride = options.BaseUrlOverride?.TrimEnd('/');
