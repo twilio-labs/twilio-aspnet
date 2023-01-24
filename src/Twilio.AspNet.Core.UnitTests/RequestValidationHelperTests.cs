@@ -82,7 +82,7 @@ public class RequestValidationHelperTests
     [Fact]
     public void TestLocal()
     {
-        var fakeContext = (new ContextMocks(true)).HttpContext.Object;
+        var fakeContext = new ContextMocks(true).HttpContext.Object;
         var result = RequestValidationHelper.IsValidRequest(fakeContext, "bad-token", true);
 
         Assert.True(result);
@@ -91,7 +91,7 @@ public class RequestValidationHelperTests
     [Fact]
     public void TestNoLocalDueToProxy()
     {
-        var fakeContext = (new ContextMocks(true, isProxied: true)).HttpContext.Object;
+        var fakeContext = new ContextMocks(true, isProxied: true).HttpContext.Object;
         var result = RequestValidationHelper.IsValidRequest(fakeContext, "bad-token", true);
 
         Assert.False(result);
@@ -100,7 +100,7 @@ public class RequestValidationHelperTests
     [Fact]
     public void TestNoLocal()
     {
-        var fakeContext = (new ContextMocks(true)).HttpContext.Object;
+        var fakeContext = new ContextMocks(true).HttpContext.Object;
         var result = RequestValidationHelper.IsValidRequest(fakeContext, "bad-token", false);
 
         Assert.False(result);
@@ -109,7 +109,7 @@ public class RequestValidationHelperTests
     [Fact]
     public void TestNoForm()
     {
-        var fakeContext = (new ContextMocks(true)).HttpContext.Object;
+        var fakeContext = new ContextMocks(true).HttpContext.Object;
         var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
 
         Assert.True(result);
@@ -131,7 +131,7 @@ public class RequestValidationHelperTests
     [Fact]
     public void TestUrlOverrideFail()
     {
-        var fakeContext = (new ContextMocks(true)).HttpContext.Object;
+        var fakeContext = new ContextMocks(true).HttpContext.Object;
         var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, "https://example.com/", false);
 
         Assert.False(result);
@@ -140,7 +140,7 @@ public class RequestValidationHelperTests
     [Fact]
     public void TestUrlOverride()
     {
-        var fakeContext = (new ContextMocks("https://example.com/", true)).HttpContext.Object;
+        var fakeContext = new ContextMocks("https://example.com/", true).HttpContext.Object;
         var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, "https://example.com/", false);
 
         Assert.True(result);
@@ -149,11 +149,12 @@ public class RequestValidationHelperTests
     [Fact]
     public void TestForm()
     {
-        var form = new FormCollection(new Dictionary<string, StringValues>() {
+        var form = new FormCollection(new Dictionary<string, StringValues>
+        {
                 {"key1", "value1"},
                 {"key2", "value2"}
             });
-        var fakeContext = (new ContextMocks(true, form)).HttpContext.Object;
+        var fakeContext = new ContextMocks(true, form).HttpContext.Object;
         var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
 
         Assert.True(result);

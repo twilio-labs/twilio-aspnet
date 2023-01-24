@@ -1,13 +1,14 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Twilio.AspNet.Core
 {
     public static class RequestValidationDependencyInjectionExtensions
     {
         public static IServiceCollection AddTwilioRequestValidation(this IServiceCollection services)
-            => AddTwilioRequestValidation(services, ConfigureDefaultRequestValidation);
+            => AddTwilioRequestValidation(services, null);
 
 
         public static IServiceCollection AddTwilioRequestValidation(
@@ -15,33 +16,53 @@ namespace Twilio.AspNet.Core
             Action<IServiceProvider, TwilioRequestValidationOptions> configureRequestValidationOptions
         )
         {
-            services.AddOptions<TwilioRequestValidationOptions>()
-                .Configure<IServiceProvider>((options, serviceProvider) =>
+            var optionsBuilder = services.AddOptions<TwilioRequestValidationOptions>();
+            if (configureRequestValidationOptions != null)
+            {
+                optionsBuilder.Configure<IServiceProvider>((options, serviceProvider) =>
+                    configureRequestValidationOptions(serviceProvider, options));
+            }
+            else
+            {
+                optionsBuilder.Configure<IConfiguration>((opts, config) =>
                 {
-                    configureRequestValidationOptions(serviceProvider, options);
-                    SanitizeTwilioRequestValidationOptions(options);
+                    var section = config.GetSection("Twilio");
+                    if (section.Exists() == false)
+                    {
+                        throw new Exception("Twilio options not configured.");
+                    }
+
+                    ChangeEmptyStringToNull(section);
+                    section.Bind(opts);
+                    section = config.GetSection("Twilio:RequestValidation");
+                    if (section.Exists())
+                    {
+                        ChangeEmptyStringToNull(section);
+                        section.Bind(opts);
+                    }
                 });
+                optionsBuilder.Services.AddSingleton<
+                    IOptionsChangeTokenSource<TwilioRequestValidationOptions>,
+                    ConfigurationChangeTokenSource<TwilioRequestValidationOptions>
+                >();
+
+                optionsBuilder.Validate(
+                    options => string.IsNullOrEmpty(options.AuthToken) == false,
+                    "Twilio:AuthToken or Twilio:RequestValidation:AuthToken option is required."
+                );
+            }
 
             return services;
         }
 
-        private static void ConfigureDefaultRequestValidation(
-            IServiceProvider serviceProvider,
-            TwilioRequestValidationOptions options
-        )
+        private static void ChangeEmptyStringToNull(IConfigurationSection configSection)
         {
-            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            configuration.GetSection("Twilio:RequestValidation").Bind(options);
-
-            // if Twilio:RequestValidation:AuthToken is not set, fallback on Twilio:AuthToken
-            if (string.IsNullOrEmpty(options.AuthToken)) options.AuthToken = configuration["Twilio:AuthToken"];
-        }
-
-        private static void SanitizeTwilioRequestValidationOptions(TwilioRequestValidationOptions options)
-        {
-            // properties can be empty strings, but should be set to null if so
-            if (options.AuthToken == "") options.AuthToken = null;
-            if (options.BaseUrlOverride == "") options.BaseUrlOverride = null;
+            if (configSection == null) return;
+            if (configSection.Value == "") configSection.Value = null;
+            foreach (var childConfigSection in configSection.GetChildren())
+            {
+                ChangeEmptyStringToNull(childConfigSection);
+            }
         }
     }
 }
