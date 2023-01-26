@@ -29,7 +29,7 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
         var request = context.Request;
         
         string urlOverride = null;
-        if (baseUrlOverride != null)
+        if (!string.IsNullOrEmpty(baseUrlOverride))
         {
             urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
         }

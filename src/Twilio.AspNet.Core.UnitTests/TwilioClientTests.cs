@@ -114,6 +114,42 @@ public class TwilioClientTests
     }
 
     [Fact]
+    public void AddTwilioClient_From_ConfigurationSection_Should_Match_Configuration()
+    {
+        var serviceCollection = new ServiceCollection();
+        var validJson = JsonSerializer.Serialize(new { Twilio = ValidTwilioOptions });
+        using var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(validJson));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonStream(jsonStream)
+            .Build();
+
+        serviceCollection.AddTwilioClient(configuration.GetSection("Twilio:Client"));
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptions<TwilioClientOptions>>().Value;
+
+        var expectedJson = JsonSerializer.Serialize(ValidTwilioOptions.Client);
+        var actualJson = JsonSerializer.Serialize(options);
+
+        Assert.Equal(expectedJson, actualJson);
+    }
+    
+    [Fact]
+    public void AddTwilioClient_From_Options_Should_Match_Configuration()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddTwilioClient(ValidTwilioOptions.Client);
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptions<TwilioClientOptions>>().Value;
+
+        var expectedJson = JsonSerializer.Serialize(ValidTwilioOptions.Client);
+        var actualJson = JsonSerializer.Serialize(options);
+
+        Assert.Equal(expectedJson, actualJson);
+    }
+    
+    [Fact]
     public async Task AddTwilioClient_Should_Use_Reloaded_Configuration()
     {
         const string optionsFile = "AddTwilioClientAutoReload.json";
@@ -184,7 +220,7 @@ public class TwilioClientTests
     }
 
     [Fact]
-    public void AddTwilioClient_Without_HttpClientProvider_Should_Named_HttpClient()
+    public void AddTwilioClient_Should_Add_Named_HttpClient()
     {
         var host = BuildValidHost();
         using var scope = host.Services.CreateScope();
@@ -196,33 +232,6 @@ public class TwilioClientTests
             .GetValue(twilioRestClient.HttpClient);
 
         Assert.NotNull(actualHttpClient);
-    }
-
-    [Fact]
-    public void AddTwilioClient_With_HttpClientProvider_Should_Use_HttpClient()
-    {
-        var validJson = JsonSerializer.Serialize(new { Twilio = ValidTwilioOptions });
-        using var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(validJson));
-        var configuration = new ConfigurationBuilder()
-            .AddJsonStream(jsonStream)
-            .Build();
-
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(configuration);
-
-        using var httpClient = new System.Net.Http.HttpClient();
-        // ReSharper disable once AccessToDisposedClosure
-        serviceCollection.AddTwilioClient(_ => httpClient);
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        using var scope = serviceProvider.CreateScope();
-
-        var twilioRestClient = scope.ServiceProvider.GetService<TwilioRestClient>();
-        var httpClientFromTwilioClient = (System.Net.Http.HttpClient)typeof(SystemNetHttpClient)
-            .GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .GetValue(twilioRestClient.HttpClient);
-
-        Assert.Equal(httpClient, httpClientFromTwilioClient);
     }
 
     [Fact]

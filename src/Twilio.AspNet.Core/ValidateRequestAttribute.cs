@@ -23,7 +23,7 @@ namespace Twilio.AspNet.Core
 
             var request = context.Request;
             string urlOverride = null;
-            if (baseUrlOverride != null)
+            if (!string.IsNullOrEmpty(baseUrlOverride))
             {
                 urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
             }

@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -32,7 +31,7 @@ namespace Twilio.AspNet.Core
             var request = context.Request;
 
             string urlOverride = null;
-            if (baseUrlOverride != null)
+            if (!string.IsNullOrEmpty(baseUrlOverride))
             {
                 urlOverride = $"{baseUrlOverride.TrimEnd('/')}{request.Path}{request.QueryString}";
             }

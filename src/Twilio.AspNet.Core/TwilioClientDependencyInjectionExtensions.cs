@@ -13,62 +13,124 @@ namespace Twilio.AspNet.Core
         internal const string TwilioHttpClientName = "Twilio";
 
         public static IServiceCollection AddTwilioClient(this IServiceCollection services)
-            => AddTwilioClient(services, null, null);
+        {
+            var optionsBuilder = services.AddOptions<TwilioClientOptions>();
+
+            ConfigureDefaultOptions(optionsBuilder);
+            PostConfigure(optionsBuilder);
+            Validate(optionsBuilder);
+            AddServices(services);
+
+            return services;
+        }
 
         public static IServiceCollection AddTwilioClient(
             this IServiceCollection services,
-            Action<IServiceProvider, TwilioClientOptions> configureTwilioClientOptions
+            IConfiguration namedConfigurationSection
         )
-            => AddTwilioClient(services, configureTwilioClientOptions, null);
+        {
+            var optionsBuilder = services.AddOptions<TwilioClientOptions>();
+            optionsBuilder.Bind(namedConfigurationSection);
+            PostConfigure(optionsBuilder);
+            Validate(optionsBuilder);
+            AddServices(services);
+
+            return services;
+        }
 
         public static IServiceCollection AddTwilioClient(
             this IServiceCollection services,
-            Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient
+            Action<TwilioClientOptions> configureOptions
         )
-            => AddTwilioClient(services, null, provideHttpClient);
+            => AddTwilioClient(services, (_, options) => configureOptions(options));
+
 
         public static IServiceCollection AddTwilioClient(
             this IServiceCollection services,
-            Action<IServiceProvider, TwilioClientOptions> configureTwilioClientOptions,
-            Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient
+            Action<IServiceProvider, TwilioClientOptions> configureOptions
         )
         {
             var optionsBuilder = services.AddOptions<TwilioClientOptions>();
 
-            if (configureTwilioClientOptions != null)
-            {
-                optionsBuilder.Configure<IServiceProvider>((options, serviceProvider) =>
-                    configureTwilioClientOptions(serviceProvider, options));
-            }
-            else
-            {
-                optionsBuilder.Configure<IConfiguration>((opts, config) =>
-                {
-                    var section = config.GetSection("Twilio");
-                    if (section.Exists() == false)
-                    {
-                        throw new Exception("Twilio options not configured.");
-                    }
-                    
-                    ChangeEmptyStringToNull(section);
-                    section.Bind(opts);
-                    section = config.GetSection("Twilio:Client");
-                    if (section.Exists() == false)
-                    {
-                        throw new Exception("Twilio:Client options not configured.");
-                    }
-                    
-                    ChangeEmptyStringToNull(section);
-                    section.Bind(opts);
-                });
-                optionsBuilder.Services.AddSingleton<
-                    IOptionsChangeTokenSource<TwilioClientOptions>,
-                    ConfigurationChangeTokenSource<TwilioClientOptions>
-                >();
-            }
+            optionsBuilder.Configure<IServiceProvider>((options, provider) => configureOptions(provider, options));
+            PostConfigure(optionsBuilder);
+            Validate(optionsBuilder);
+            AddServices(services);
 
-            optionsBuilder.PostConfigure(SanitizeTwilioClientOptions);
-            
+            return services;
+        }
+
+
+        public static IServiceCollection AddTwilioClient(
+            this IServiceCollection services,
+            TwilioClientOptions options
+        )
+        {
+            var optionsBuilder = services.AddOptions<TwilioClientOptions>();
+
+            optionsBuilder.Configure<IServiceProvider>((optionsToConfigure, _) =>
+            {
+                optionsToConfigure.AccountSid = options.AccountSid;
+                optionsToConfigure.AuthToken = options.AuthToken;
+                optionsToConfigure.ApiKeySid = options.ApiKeySid;
+                optionsToConfigure.ApiKeySecret = options.ApiKeySecret;
+                optionsToConfigure.CredentialType = options.CredentialType;
+                optionsToConfigure.Edge = options.Edge;
+                optionsToConfigure.Region = options.Region;
+                optionsToConfigure.LogLevel = options.LogLevel;
+            });
+            PostConfigure(optionsBuilder);
+            Validate(optionsBuilder);
+            AddServices(services);
+
+            return services;
+        }
+
+        private static void ConfigureDefaultOptions(OptionsBuilder<TwilioClientOptions> optionsBuilder)
+        {
+            optionsBuilder.Configure<IConfiguration>((opts, config) =>
+            {
+                var section = config.GetSection("Twilio");
+                if (section.Exists() == false)
+                {
+                    throw new Exception("Twilio options not configured.");
+                }
+
+                ChangeEmptyStringToNull(section);
+                section.Bind(opts);
+                section = config.GetSection("Twilio:Client");
+                if (section.Exists() == false)
+                {
+                    throw new Exception("Twilio:Client options not configured.");
+                }
+
+                ChangeEmptyStringToNull(section);
+                section.Bind(opts);
+            });
+            optionsBuilder.Services.AddSingleton<
+                IOptionsChangeTokenSource<TwilioClientOptions>,
+                ConfigurationChangeTokenSource<TwilioClientOptions>
+            >();
+        }
+
+        private static void PostConfigure(OptionsBuilder<TwilioClientOptions> optionsBuilder)
+            => optionsBuilder.PostConfigure(ConfigureCredentialType);
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddHttpClient(TwilioHttpClientName)
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    // same options as the Twilio C# SDK
+                    AllowAutoRedirect = false
+                });
+
+            services.AddScoped<ITwilioRestClient>(CreateTwilioClient);
+            services.AddScoped<TwilioRestClient>(CreateTwilioClient);
+        }
+
+        private static void Validate(OptionsBuilder<TwilioClientOptions> optionsBuilder)
+        {
             optionsBuilder.Validate(
                 options => options.CredentialType != CredentialType.Unspecified,
                 "Twilio:Client:CredentialType could not be determined. Configure as ApiKey or AuthToken."
@@ -93,54 +155,26 @@ namespace Twilio.AspNet.Core
                     return true;
                 }, "Twilio:Client:{AccountSid|AuthToken} options required for CredentialType.AuthToken."
             );
-
-            if (provideHttpClient == null)
-            {
-                provideHttpClient = ProvideDefaultHttpClient;
-
-                services.AddHttpClient(TwilioHttpClientName)
-                    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-                    {
-                        // same options as the Twilio C# SDK
-                        AllowAutoRedirect = false
-                    });
-            }
-
-            services.AddScoped<ITwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
-            services.AddScoped<TwilioRestClient>(provider => CreateTwilioClient(provider, provideHttpClient));
-
-            return services;
         }
 
-        private static void SanitizeTwilioClientOptions(TwilioClientOptions options)
+        private static void ConfigureCredentialType(TwilioClientOptions options)
         {
+            if (options.CredentialType != CredentialType.Unspecified) return;
+
             var isApiKeyConfigured = options.AccountSid != null &&
                                      options.ApiKeySid != null &&
                                      options.ApiKeySecret != null;
             var isAuthTokenConfigured = options.AccountSid != null &&
                                         options.AuthToken != null;
 
-            if (options.CredentialType == CredentialType.Unspecified)
-            {
-                if (isApiKeyConfigured) options.CredentialType = CredentialType.ApiKey;
-                else if (isAuthTokenConfigured) options.CredentialType = CredentialType.AuthToken;
-            }
+            if (isApiKeyConfigured) options.CredentialType = CredentialType.ApiKey;
+            else if (isAuthTokenConfigured) options.CredentialType = CredentialType.AuthToken;
         }
 
-        private static System.Net.Http.HttpClient ProvideDefaultHttpClient(IServiceProvider serviceProvider)
-            => serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(TwilioHttpClientName);
-
-        private static TwilioRestClient CreateTwilioClient(
-            IServiceProvider provider,
-            Func<IServiceProvider, System.Net.Http.HttpClient> provideHttpClient
-        )
+        private static TwilioRestClient CreateTwilioClient(IServiceProvider provider)
         {
-            Twilio.Http.HttpClient twilioHttpClient = null;
-            if (provideHttpClient != null)
-            {
-                var httpClient = provideHttpClient(provider);
-                twilioHttpClient = new SystemNetHttpClient(httpClient);
-            }
+            var httpClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient(TwilioHttpClientName);
+            Twilio.Http.HttpClient twilioHttpClient = new SystemNetHttpClient(httpClient);
 
             var options = provider.GetRequiredService<IOptionsSnapshot<TwilioClientOptions>>().Value;
 
@@ -167,6 +201,7 @@ namespace Twilio.AspNet.Core
                         edge: options.Edge
                     );
                     break;
+                case CredentialType.Unspecified:
                 default:
                     throw new Exception("This code should be unreachable");
             }
@@ -178,7 +213,6 @@ namespace Twilio.AspNet.Core
 
             return client;
         }
-
 
         private static void ChangeEmptyStringToNull(IConfigurationSection configSection)
         {

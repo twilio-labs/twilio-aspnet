@@ -73,6 +73,49 @@ public class AddTwilioRequestValidationOptionsTests
 
         Assert.Equal(expectedJson, actualJson);
     }
+    
+    [Fact]
+    public void AddTwilioRequestValidation_From_ConfigurationSection_Should_Match_Configuration()
+    {
+        var serviceCollection = new ServiceCollection();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new[]
+            {
+                new KeyValuePair<string, string>(
+                    "Twilio:AuthToken", ValidTwilioOptions.RequestValidation.AuthToken),
+                new KeyValuePair<string, string>(
+                    "Twilio:BaseUrlOverride", ValidTwilioOptions.RequestValidation.BaseUrlOverride),
+                new KeyValuePair<string, string>(
+                    "Twilio:AllowLocal", ValidTwilioOptions.RequestValidation.AllowLocal.ToString())
+            })
+            .Build();
+
+        serviceCollection.AddSingleton<IConfiguration>(configuration);
+        serviceCollection.AddTwilioRequestValidation(configuration.GetSection("Twilio"));
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptions<TwilioRequestValidationOptions>>().Value;
+
+        var expectedJson = JsonSerializer.Serialize(ValidTwilioOptions.RequestValidation);
+        var actualJson = JsonSerializer.Serialize(options);
+
+        Assert.Equal(expectedJson, actualJson);
+    }
+    
+    [Fact]
+    public void AddTwilioRequestValidation_From_Options_Should_Match_Configuration()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddTwilioRequestValidation(ValidTwilioOptions.RequestValidation);
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptions<TwilioRequestValidationOptions>>().Value;
+
+        var expectedJson = JsonSerializer.Serialize(ValidTwilioOptions.RequestValidation);
+        var actualJson = JsonSerializer.Serialize(options);
+
+        Assert.Equal(expectedJson, actualJson);
+    }
 
     [Fact]
     public void AddTwilioRequestValidation_Should_Fallback_To_AuthToken()
