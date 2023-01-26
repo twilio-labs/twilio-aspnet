@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <Version>0.0.0-alpha</Version>
     <PackageId>Twilio.AspNet.Core</PackageId>
@@ -21,45 +21,31 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <IsNetStandard20Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'netstandard2.0'))</IsNetStandard20Compatible>
-    <IsNet50Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net5.0'))</IsNet50Compatible>
-    <IsNet60Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net6.0'))</IsNet60Compatible>
     <IsNet70Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net7.0'))</IsNet70Compatible>
   </PropertyGroup>
   <PropertyGroup Condition="'$(CI)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Twilio" Version="6.*" />
+    <PackageReference Include="Twilio" Version="6.2.2" />
     <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
+    
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.2" />
+    
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Twilio.AspNet.Core.UnitTests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />  
-  </ItemGroup>
-  <ItemGroup Condition="$(IsNetStandard20Compatible)">
-    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
-  </ItemGroup>
-  <ItemGroup Condition="$(IsNet50Compatible)">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  <ItemGroup Condition="!$(IsNet60Compatible)">
-    <Compile Remove="MinimalApiTwiMLResult.cs" />
-  </ItemGroup>
   <ItemGroup Condition="!$(IsNet70Compatible)">
     <Compile Remove="ValidateTwilioRequestFilter.cs" />
-  </ItemGroup>
-  <ItemGroup Condition="!$(IsNetStandard20Compatible)">
-    <Compile Remove="TwilioClientDependencyInjectionExtensions.cs" />
-    <Compile Remove="RequestValidationDependencyInjectionExtensions.cs" />
   </ItemGroup>
 </Project>
