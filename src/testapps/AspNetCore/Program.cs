@@ -1,14 +1,15 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using System.Xml.Linq;
 using Twilio.AspNet.Core;
 using Twilio.TwiML;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpClient();
-
 builder.Services
     .AddTwilioClient()
     .AddTwilioRequestValidation();
+
+builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
