@@ -28,7 +28,7 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
         AllowLocal = options.AllowLocal ?? true;
     }
 
-    public async ValueTask<object> InvokeAsync(
+    public ValueTask<object> InvokeAsync(
         EndpointFilterInvocationContext efiContext,
         EndpointFilterDelegate next
     )
@@ -36,17 +36,17 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
         var httpContext = efiContext.HttpContext;
         var request = httpContext.Request;
         string urlOverride = null;
-        if (BaseUrlOverride != null)
+        if (!string.IsNullOrEmpty(BaseUrlOverride))
         {
             urlOverride = $"{BaseUrlOverride}{request.Path}{request.QueryString}";
         }
 
         if (RequestValidationHelper.IsValidRequest(httpContext, AuthToken, urlOverride, AllowLocal))
         {
-            return await next(efiContext);
+            return next(efiContext);
         }
 
-        return Results.StatusCode((int) HttpStatusCode.Forbidden);
+        return ValueTask.FromResult((object)Results.StatusCode((int) HttpStatusCode.Forbidden));
     }
 }
 
