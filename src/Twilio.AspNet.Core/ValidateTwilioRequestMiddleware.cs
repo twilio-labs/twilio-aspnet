@@ -2,8 +2,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Twilio.AspNet.Core
 {
@@ -21,23 +19,7 @@ namespace Twilio.AspNet.Core
         
         public async Task InvokeAsync(HttpContext context)
         {
-            var options = context.RequestServices
-                .GetRequiredService<IOptionsSnapshot<TwilioRequestValidationOptions>>().Value;
-
-            var authToken = options.AuthToken;
-            var baseUrlOverride = options.BaseUrlOverride;
-            var allowLocal = options.AllowLocal ?? true;
-            
-            var request = context.Request;
-
-            string urlOverride = null;
-            if (!string.IsNullOrEmpty(baseUrlOverride))
-            {
-                urlOverride = $"{baseUrlOverride.TrimEnd('/')}{request.Path}{request.QueryString}";
-            }
-
-            var isValid = RequestValidationHelper.IsValidRequest(context, authToken, urlOverride, allowLocal);
-            if (!isValid)
+            if (!RequestValidationHelper.IsValidRequest(context))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return;

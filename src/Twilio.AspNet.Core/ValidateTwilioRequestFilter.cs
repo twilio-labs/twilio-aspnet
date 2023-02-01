@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Twilio.AspNet.Core;
 
@@ -18,23 +16,7 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
         EndpointFilterDelegate next
     )
     {
-        var context = efiContext.HttpContext;
-        var options = context.RequestServices
-            .GetRequiredService<IOptionsSnapshot<TwilioRequestValidationOptions>>().Value;
-            
-        var authToken = options.AuthToken;
-        var baseUrlOverride = options.BaseUrlOverride;
-        var allowLocal = options.AllowLocal ?? true;
-        
-        var request = context.Request;
-        
-        string urlOverride = null;
-        if (!string.IsNullOrEmpty(baseUrlOverride))
-        {
-            urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
-        }
-
-        if (RequestValidationHelper.IsValidRequest(context, authToken, urlOverride, allowLocal))
+        if (RequestValidationHelper.IsValidRequest(efiContext.HttpContext))
         {
             return await next(efiContext);
         }

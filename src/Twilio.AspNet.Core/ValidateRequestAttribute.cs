@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Twilio.AspNet.Core
 {
@@ -14,21 +12,7 @@ namespace Twilio.AspNet.Core
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var context = filterContext.HttpContext;
-            var options = context.RequestServices
-                .GetRequiredService<IOptionsSnapshot<TwilioRequestValidationOptions>>().Value;
-            
-            var authToken = options.AuthToken;
-            var baseUrlOverride = options.BaseUrlOverride;
-            var allowLocal = options.AllowLocal ?? true;
-
-            var request = context.Request;
-            string urlOverride = null;
-            if (!string.IsNullOrEmpty(baseUrlOverride))
-            {
-                urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
-            }
-
-            if (!RequestValidationHelper.IsValidRequest(context, authToken, urlOverride, allowLocal))
+            if (!RequestValidationHelper.IsValidRequest(context))
             {
                 filterContext.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
             }
