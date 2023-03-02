@@ -1,5 +1,7 @@
 using System;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Twilio.AspNet.Core.UnitTests;
@@ -42,7 +44,9 @@ public class ContextMocks
         if (form != null)
         {
             Request.Setup(x => x.Method).Returns("POST");
-            Request.Setup(x => x.Form).Returns(form);
+            Request.Setup(x => x.Form).Returns(form); 
+            Request.Setup(x => x.ReadFormAsync(new CancellationToken()))
+                .Returns(() => Task.FromResult((IFormCollection)form));
             Request.Setup(x => x.HasFormContentType).Returns(true);
         }
     }

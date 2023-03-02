@@ -19,13 +19,13 @@ namespace Twilio.AspNet.Core
         
         public async Task InvokeAsync(HttpContext context)
         {
-            if (!RequestValidationHelper.IsValidRequest(context))
+            if (await RequestValidationHelper.IsValidRequestAsync(context).ConfigureAwait(false))
             {
-                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                await next(context);
                 return;
             }
-
-            await next(context);
+            
+            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
         }
     }
 

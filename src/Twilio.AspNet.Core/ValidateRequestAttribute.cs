@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -7,17 +9,22 @@ namespace Twilio.AspNet.Core
     /// <summary>
     /// Represents an attribute that is used to prevent forgery of a request.
     /// </summary>
-    public class ValidateRequestAttribute : ActionFilterAttribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class ValidateRequestAttribute : Attribute, IAsyncActionFilter
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public async Task OnActionExecutionAsync(
+            ActionExecutingContext filterContext,
+            ActionExecutionDelegate next
+        )
         {
             var context = filterContext.HttpContext;
-            if (!RequestValidationHelper.IsValidRequest(context))
+            if (await RequestValidationHelper.IsValidRequestAsync(context).ConfigureAwait(false))
             {
-                filterContext.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
+                await next();
+                return;
             }
 
-            base.OnActionExecuting(filterContext);
+            filterContext.Result = new StatusCodeResult((int)HttpStatusCode.Forbidden);
         }
     }
 }

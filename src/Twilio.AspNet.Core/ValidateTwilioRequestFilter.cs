@@ -16,12 +16,12 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
         EndpointFilterDelegate next
     )
     {
-        if (RequestValidationHelper.IsValidRequest(efiContext.HttpContext))
+        if (await RequestValidationHelper.IsValidRequestAsync(efiContext.HttpContext).ConfigureAwait(false))
         {
             return await next(efiContext);
         }
 
-        return Results.StatusCode((int) HttpStatusCode.Forbidden);
+        return Results.StatusCode((int)HttpStatusCode.Forbidden);
     }
 }
 
@@ -34,7 +34,7 @@ public static class TwilioFilterExtensions
     /// <returns></returns>
     public static RouteHandlerBuilder ValidateTwilioRequest(this RouteHandlerBuilder builder)
         => builder.AddEndpointFilter<ValidateTwilioRequestFilter>();
-    
+
     /// <summary>
     /// Validates that incoming HTTP request originates from Twilio.
     /// </summary>

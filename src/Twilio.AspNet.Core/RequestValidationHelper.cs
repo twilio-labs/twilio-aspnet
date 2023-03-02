@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -18,21 +20,61 @@ namespace Twilio.AspNet.Core
         /// the ASP.NET MVC ValidateRequestAttribute
         /// </summary>
         /// <param name="context">HttpContext to use for validation</param>
-        internal static bool IsValidRequest(HttpContext context)
+        internal static async Task<bool> IsValidRequestAsync(HttpContext context)
         {
             var options = context.RequestServices
                 .GetRequiredService<IOptionsSnapshot<TwilioRequestValidationOptions>>().Value;
-            
+
             var authToken = options.AuthToken;
             var baseUrlOverride = options.BaseUrlOverride;
             var allowLocal = options.AllowLocal;
-        
+
             var request = context.Request;
-        
+
             string urlOverride = null;
             if (!string.IsNullOrEmpty(baseUrlOverride))
             {
                 urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
+            }
+
+            return await IsValidRequestAsync(context, authToken, urlOverride, allowLocal).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Performs request validation using the current HTTP context passed in manually or from
+        /// the ASP.NET MVC ValidateRequestAttribute
+        /// </summary>
+        /// <param name="context">HttpContext to use for validation</param>
+        /// <param name="authToken">AuthToken for the account used to sign the request</param>
+        /// <param name="allowLocal">
+        /// Skip validation for local requests. 
+        /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
+        /// </param>
+        public static Task<bool> IsValidRequestAsync(HttpContext context, string authToken, bool allowLocal = false)
+            => IsValidRequestAsync(context, authToken, null, allowLocal);
+
+        /// <summary>
+        /// Performs request validation using the current HTTP context passed in manually or from
+        /// the ASP.NET MVC ValidateRequestAttribute
+        /// </summary>
+        /// <param name="context">HttpContext to use for validation</param>
+        /// <param name="authToken">AuthToken for the account used to sign the request</param>
+        /// <param name="urlOverride">The URL to use for validation, if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)</param>
+        /// <param name="allowLocal">
+        /// Skip validation for local requests. 
+        /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
+        /// </param>
+        public static async Task<bool> IsValidRequestAsync(
+            HttpContext context, 
+            string authToken, 
+            string urlOverride, 
+            bool allowLocal = false
+        )
+        {
+            if (context.Request.HasFormContentType)
+            {
+                // this will load the form async, but then cache is in context.Request.Form which is used later
+                await context.Request.ReadFormAsync(context.RequestAborted).ConfigureAwait(false);
             }
 
             return IsValidRequest(context, authToken, urlOverride, allowLocal);
@@ -83,9 +125,11 @@ namespace Twilio.AspNet.Core
                 ? $"{request.Scheme}://{(request.IsHttps ? request.Host.Host : request.Host.ToUriComponent())}{request.Path}{request.QueryString}"
                 : urlOverride;
 
-            var parameters = request.HasFormContentType
-                ? request.Form.Keys.ToDictionary(k => k, k => request.Form[k].ToString())
-                : null;
+            Dictionary<string, string> parameters = null;
+            if (request.HasFormContentType)
+            {
+                parameters = request.Form.ToDictionary(kv => kv.Key, kv => kv.Value.ToString());
+            }
 
             var validator = new RequestValidator(authToken);
             return validator.Validate(
