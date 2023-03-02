@@ -17,8 +17,11 @@ namespace Twilio.AspNet.Mvc
         /// </summary>
         /// <param name="context">HttpContext to use for validation</param>
         /// <param name="authToken">AuthToken for the account used to sign the request</param>
-        /// <param name="allowLocal">Skip validation for local requests</param>
-        public static bool IsValidRequest(HttpContextBase context, string authToken, bool allowLocal = true)
+        /// <param name="allowLocal">
+        /// Skip validation for local requests. 
+        /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
+        /// </param>
+        public static bool IsValidRequest(HttpContextBase context, string authToken, bool allowLocal = false) 
             => IsValidRequest(context, authToken, null, allowLocal);
 
         /// <summary>
@@ -28,8 +31,11 @@ namespace Twilio.AspNet.Mvc
         /// <param name="context">HttpContext to use for validation</param>
         /// <param name="authToken">AuthToken for the account used to sign the request</param>
         /// <param name="urlOverride">The URL to use for validation, if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)</param>
-        /// <param name="allowLocal">Skip validation for local requests</param>
-        public static bool IsValidRequest(HttpContextBase context, string authToken, string urlOverride, bool allowLocal = true)
+        /// <param name="allowLocal">
+        /// Skip validation for local requests. 
+        /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
+        /// </param>
+        public static bool IsValidRequest(HttpContextBase context, string authToken, string urlOverride, bool allowLocal = false)
         {
             if (allowLocal && context.Request.IsLocal && !context.Request.Headers.AllKeys.Contains("X-Forwarded-For"))
             {
