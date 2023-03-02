@@ -8,6 +8,7 @@ namespace Twilio.AspNet.Mvc
     /// <summary>
     /// Represents an attribute that is used to prevent forgery of a request.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Module)]
     public class ValidateRequestAttribute : ActionFilterAttribute
     {
         protected internal string AuthToken { get; set; }
@@ -49,7 +50,7 @@ namespace Twilio.AspNet.Mvc
             AllowLocal = allowLocalAppSetting != null
                 ? bool.Parse(allowLocalAppSetting)
                 : requestValidationConfiguration?.AllowLocal
-                  ?? true;
+                ?? false;
         }
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
