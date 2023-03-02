@@ -29,7 +29,7 @@ namespace Twilio.AspNet.Core
             return new InternalValidateRequestAttribute(
                 authToken: options.AuthToken,
                 baseUrlOverride: options.BaseUrlOverride?.TrimEnd('/'),
-                allowLocal: options.AllowLocal ?? true
+                allowLocal: options.AllowLocal
             );
         }
 
@@ -47,7 +47,10 @@ namespace Twilio.AspNet.Core
             /// The Base URL (protocol + hostname) to use for validation,
             /// if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)
             /// </param>
-            /// <param name="allowLocal">Skip validation for local requests</param>
+            /// <param name="allowLocal">
+            /// Skip validation for local requests. 
+            /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
+            /// </param>
             public InternalValidateRequestAttribute(string authToken, string baseUrlOverride, bool allowLocal)
             {
                 AuthToken = authToken;

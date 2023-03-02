@@ -25,7 +25,7 @@ public class ValidateTwilioRequestFilter : IEndpointFilter
         
         AuthToken = options.AuthToken;
         BaseUrlOverride = options.BaseUrlOverride?.TrimEnd('/');
-        AllowLocal = options.AllowLocal ?? true;
+        AllowLocal = options.AllowLocal;
     }
 
     public async ValueTask<object> InvokeAsync(
