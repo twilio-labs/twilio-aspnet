@@ -1,4 +1,4 @@
-# Twilio helper library for ASP.NET
+﻿# Twilio helper library for ASP.NET
 
 [![Build](https://github.com/twilio-labs/twilio-aspnet/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/twilio-labs/twilio-aspnet/actions/workflows/ci.yml)
 
@@ -293,7 +293,7 @@ Then configure the request validation:
     "AuthToken": "[YOUR_AUTH_TOKEN]",
     "RequestValidation": {
       "AuthToken": "[YOUR_AUTH_TOKEN]",
-      "AllowLocal": true,
+      "AllowLocal": false,
       "BaseUrlOverride": "https://??????.ngrok.io"
     }
   }
@@ -316,7 +316,7 @@ builder.Services
   .AddTwilioRequestValidation((serviceProvider, options) =>
   {
     options.AuthToken = "[YOUR_AUTH_TOKEN]";
-    options.AllowLocal = true;
+    options.AllowLocal = false;
     options.BaseUrlOverride = "https://??????.ngrok.io";
   });
 ```
@@ -430,7 +430,7 @@ In your _Web.config_ you can configure request validation like shown below:
        <requestValidation 
          authToken="[YOUR_AUTH_TOKEN]"
          baseUrlOverride="https://??????.ngrok.io"
-         allowLocal="true"
+         allowLocal="false"
        />
     </twilio>
 </configuration>
@@ -444,7 +444,7 @@ You can also configure request validation using app settings:
     <appSettings>
       <add key="twilio:requestValidation:authToken" value="[YOUR_AUTH_TOKEN]"/>
       <add key="twilio:requestValidation:baseUrlOverride" value="https://??????.ngrok.io"/>
-      <add key="twilio:requestValidation:allowLocal" value="true"/>
+      <add key="twilio:requestValidation:allowLocal" value="false"/>
     </appSettings>
 </configuration>
 ```
@@ -452,7 +452,7 @@ You can also configure request validation using app settings:
 If you configure request validation using both ways, app setting will overwrite the `twilio/requestValidation` configuration element.
 
 A couple of notes about the configuration:
-- `allowLocal` will skip validation when the HTTP request originated from localhost.
+- `allowLocal` will skip validation when the HTTP request originated from localhost. ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
 - Use `baseUrlOverride` in case you are in front of a reverse proxy or a tunnel like ngrok. The path of the current request will be appended to the `baseUrlOverride` for request validation.
 
 > **Warning**
@@ -527,7 +527,7 @@ bool IsValidTwilioRequest(HttpContext httpContext)
         urlOverride = $"{options.BaseUrlOverride.TrimEnd('/')}{request.Path}{request.QueryString}";
     }
 
-    return RequestValidationHelper.IsValidRequest(httpContext, options.AuthToken, urlOverride, options.AllowLocal ?? true);
+    return RequestValidationHelper.IsValidRequest(httpContext, options.AuthToken, urlOverride, options.AllowLocal);
 }
 ```
 
