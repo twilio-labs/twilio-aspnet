@@ -302,7 +302,7 @@ Then configure the request validation:
 
 A couple of notes about the configuration:
 - `Twilio:RequestValidation:AuthToken` falls back on `Twilio:AuthToken`. You only need to configure one of them.
-- `AllowLocal` will skip validation when the HTTP request originated from localhost.
+- `AllowLocal` will skip validation when the HTTP request originated from localhost. ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
 - Use `BaseUrlOverride` in case your app is behind a reverse proxy or a tunnel like ngrok. The path of the current request will be appended to the `BaseUrlOverride` for request validation.
 
 You can also manually configure the request validation:

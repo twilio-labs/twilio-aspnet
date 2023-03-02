@@ -30,9 +30,7 @@ namespace Twilio.AspNet.Mvc
     {
 
         [ConfigurationProperty("requestValidation", IsRequired = false)]
-        public RequestValidationConfigurationSection RequestValidation
-        {
-            get { return (RequestValidationConfigurationSection)Sections["requestValidation"]; }
-        }
+        public RequestValidationConfigurationSection RequestValidation 
+            => (RequestValidationConfigurationSection)Sections["requestValidation"];
     }
 }

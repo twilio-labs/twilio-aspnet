@@ -5,11 +5,11 @@ using Twilio.Security;
 
 namespace Twilio.AspNet.Mvc
 {
-	/// <summary>
-	/// Class used to validate incoming requests from Twilio using 'Request Validation' as described
-	/// in the Security section of the Twilio TwiML API documentation.
-	/// </summary>
-	public static class RequestValidationHelper
+    /// <summary>
+    /// Class used to validate incoming requests from Twilio using 'Request Validation' as described
+    /// in the Security section of the Twilio TwiML API documentation.
+    /// </summary>
+    public static class RequestValidationHelper
     {
         /// <summary>
         /// Performs request validation using the current HTTP context passed in manually or from
@@ -21,10 +21,8 @@ namespace Twilio.AspNet.Mvc
         /// Skip validation for local requests. 
         /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
         /// </param>
-        public static bool IsValidRequest(HttpContextBase context, string authToken, bool allowLocal = false)
-        {
-            return IsValidRequest(context, authToken, null, allowLocal);
-        }
+        public static bool IsValidRequest(HttpContextBase context, string authToken, bool allowLocal = false) 
+            => IsValidRequest(context, authToken, null, allowLocal);
 
         /// <summary>
         /// Performs request validation using the current HTTP context passed in manually or from
