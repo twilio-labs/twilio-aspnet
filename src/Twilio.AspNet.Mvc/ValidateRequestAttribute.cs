@@ -49,7 +49,7 @@ namespace Twilio.AspNet.Mvc
             AllowLocal = allowLocalAppSetting != null
                 ? bool.Parse(allowLocalAppSetting)
                 : requestValidationConfiguration?.AllowLocal
-                  ?? false;
+                ?? false;
         }
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)

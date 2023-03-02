@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Twilio.Security;
 
 namespace Twilio.AspNet.Core
@@ -11,6 +13,31 @@ namespace Twilio.AspNet.Core
     /// </summary>
     public static class RequestValidationHelper
     {
+        /// <summary>
+        /// Performs request validation using the current HTTP context passed in manually or from
+        /// the ASP.NET MVC ValidateRequestAttribute
+        /// </summary>
+        /// <param name="context">HttpContext to use for validation</param>
+        internal static bool IsValidRequest(HttpContext context)
+        {
+            var options = context.RequestServices
+                .GetRequiredService<IOptionsSnapshot<TwilioRequestValidationOptions>>().Value;
+            
+            var authToken = options.AuthToken;
+            var baseUrlOverride = options.BaseUrlOverride;
+            var allowLocal = options.AllowLocal;
+        
+            var request = context.Request;
+        
+            string urlOverride = null;
+            if (!string.IsNullOrEmpty(baseUrlOverride))
+            {
+                urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
+            }
+
+            return IsValidRequest(context, authToken, urlOverride, allowLocal);
+        }
+        
         /// <summary>
         /// Performs request validation using the current HTTP context passed in manually or from
         /// the ASP.NET MVC ValidateRequestAttribute
