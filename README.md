@@ -10,7 +10,7 @@ This library helps you respond to webhooks, adds the Twilio client to the depend
 [![NuGet Badge](https://buildstats.info/nuget/Twilio.AspNet.Core)](https://www.nuget.org/packages/Twilio.AspNet.Core/) 
 ### Requirements
 
-Requires .NET (Core) 2.0 or later.
+Requires .NET 6.0 or later.
 
 ### Installation
 Run the following command to install the package using the .NET CLI:
@@ -253,16 +253,23 @@ builder.Services
 > We recommend using the [Secrets Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) for local development.
 > Alternatively, you can use environment variables, a vault service, or other more secure techniques.
 
-#### Use your own HTTP client
+#### Customize the HTTP client
 
-By default when you call `.AddTwilioClient`, an HTTP client factory is configured that is used to provide an `HttpClient` to the Twilio REST client. If you'd like to provide your own HTTP client, you can do so by providing a callback like this:
+By default when you call `.AddTwilioClient`, an HTTP client factory is configured that is used to provide an `HttpClient` to the Twilio REST client. 
+If you'd like to customize this HTTP client, you can do so by overriding the "Twilio" HTTP client factory, after invoking `.AddTwilioClient`:
 
 ```csharp
-using Twilio.AspNet.Core;
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddTwilioClient(provider => new HttpClient())
+builder.Services.AddTwilioClient();
+builder.Services.AddHttpClient("Twilio")
+    .ConfigureHttpClient(client =>
+    {
+        client.BaseAddress = new Uri("YOUR_PROXY_ADDRESS");
+    })
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        // same options as the Twilio C# SDK
+        AllowAutoRedirect = false
+    });
 ```
 
 ### Validate Twilio HTTP requests
@@ -304,6 +311,30 @@ A couple of notes about the configuration:
 - `Twilio:RequestValidation:AuthToken` falls back on `Twilio:AuthToken`. You only need to configure one of them.
 - `AllowLocal` will skip validation when the HTTP request originated from localhost. ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
 - Use `BaseUrlOverride` in case your app is behind a reverse proxy or a tunnel like ngrok. The path of the current request will be appended to the `BaseUrlOverride` for request validation.
+
+> **Info**
+> Instead of configuring the `BaseUrlOverride`, you can use the forwarded headers middleware to set the correct scheme, port, host, etc. on the current HTTP request.
+
+```csharp
+using Microsoft.AspNetCore.HttpOverrides;
+using Twilio.AspNet.Core;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddTwilioRequestValidation();
+builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.All);
+// more service configuration
+
+var app = builder.Build();
+
+app.UseForwardedHeaders();
+
+// more request pipeline configuration
+
+app.Run();
+```
+
+As a result, you don't have to configure `BaseUrlOverride` whenever you restart ngrok, or change reverse proxy URLs. Follow [Microsoft's guidance to configure the forwarded header middleware](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer#forwarded-headers-middleware-options) securely.
 
 You can also manually configure the request validation:
 

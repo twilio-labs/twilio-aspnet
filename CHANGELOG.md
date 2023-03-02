@@ -1,3 +1,19 @@
+## 8.0.0 (2023-03-02)
+New:
+- The `RequestValidationHelper` for `Twilio.AspNet.Core` now has async an async version to validate HTTP requests: `IsValidRequestAsync`.
+
+Enhancements:
+- `Twilio.AspNet.Core` automatically updates configuration for Twilio request validation and Twilio clients when the underlying configuration sources are updated without requiring an application restart.
+- `Twilio.AspNet.Core` validates the configuration when invoking `AddTwilioClient` and `AddTwilioRequestValidation`.
+- `AddTwilioClient` and `AddTwilioRequestValidation` have more overloads to configure these features as desired.
+- The request validation filters and middleware now load the form asynchronously.
+- Updated `Twilio` dependency to 6.2.4.
+
+Breaking changes:
+- The `AllowLocal` setting for request validation filters and middleware, now defaults to `false` instead of `true`.  ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
+- The overloads for `AddTwilioClient` where you could provide a lambda to provide an `HttpClient` have been removed. To customize the `HttpClient`, override the HTTP client factory with name "Twilio", after invoking `AddTwilio`. See [README.md](./README.md#customize-the-http-client). 
+- The `Twilio.AspNet.Core` library dropped support for .NET versions prior to .NET 6, as these versions no longer supported by Microsoft.
+
 ## 7.0.0 (2022-11-18)
 New:
 - The new `ValidateTwilioRequest` extension method and `ValidateTwilioRequestFilter` adds Twilio request validation to your endpoints and Minimal APIs, only for ASP.NET Core 7.
