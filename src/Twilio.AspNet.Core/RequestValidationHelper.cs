@@ -25,7 +25,7 @@ namespace Twilio.AspNet.Core
             
             var authToken = options.AuthToken;
             var baseUrlOverride = options.BaseUrlOverride;
-            var allowLocal = options.AllowLocal ?? true;
+            var allowLocal = options.AllowLocal;
         
             var request = context.Request;
         
@@ -44,8 +44,11 @@ namespace Twilio.AspNet.Core
         /// </summary>
         /// <param name="context">HttpContext to use for validation</param>
         /// <param name="authToken">AuthToken for the account used to sign the request</param>
-        /// <param name="allowLocal">Skip validation for local requests</param>
-        public static bool IsValidRequest(HttpContext context, string authToken, bool allowLocal = true)
+        /// <param name="allowLocal">
+        /// Skip validation for local requests. 
+        /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
+        /// </param>
+        public static bool IsValidRequest(HttpContext context, string authToken, bool allowLocal = false)
             => IsValidRequest(context, authToken, null, allowLocal);
 
         /// <summary>
@@ -55,12 +58,15 @@ namespace Twilio.AspNet.Core
         /// <param name="context">HttpContext to use for validation</param>
         /// <param name="authToken">AuthToken for the account used to sign the request</param>
         /// <param name="urlOverride">The URL to use for validation, if different from Request.Url (sometimes needed if web site is behind a proxy or load-balancer)</param>
-        /// <param name="allowLocal">Skip validation for local requests</param>
+        /// <param name="allowLocal">
+        /// Skip validation for local requests. 
+        /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
+        /// </param>
         public static bool IsValidRequest(
             HttpContext context, 
             string authToken, 
             string urlOverride, 
-            bool allowLocal = true
+            bool allowLocal = false
         )
         {
             var request = context.Request;

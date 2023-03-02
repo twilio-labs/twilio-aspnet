@@ -22,7 +22,7 @@ namespace Twilio.AspNet.Core
     public class TwilioRequestValidationOptions
     {
         public string AuthToken { get; set; }
-        public bool? AllowLocal { get; set; }
+        public bool AllowLocal { get; set; }
         public string BaseUrlOverride { get; set; }
     }
 
