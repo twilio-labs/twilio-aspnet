@@ -88,23 +88,32 @@ namespace Twilio.AspNet.Core
 
         private static void ConfigureDefaultOptions(OptionsBuilder<TwilioClientOptions> optionsBuilder)
         {
-            optionsBuilder.Configure<IConfiguration>((opts, config) =>
+            optionsBuilder.Configure<IConfiguration>((options, config) =>
             {
-                var section = config.GetSection("Twilio");
-                if (section.Exists() == false)
+                var twilioSection = config.GetSection("Twilio");
+                if (twilioSection.Exists() == false)
                 {
                     throw new Exception("Twilio options not configured.");
                 }
-
-                section.Bind(opts);
-                section = config.GetSection("Twilio:Client");
-                if (section.Exists() == false)
+                
+                var clientSection = config.GetSection("Twilio:Client");
+                if (clientSection.Exists() == false)
                 {
                     throw new Exception("Twilio:Client options not configured.");
                 }
 
-                section.Bind(opts);
-                NullEmptyStrings(opts);
+                clientSection.Bind(options);
+                if (options.AccountSid == "") options.AccountSid = null;
+                if (options.AuthToken == "") options.AuthToken = null;
+                if (options.ApiKeySid == "") options.ApiKeySid = null;
+                if (options.ApiKeySecret == "") options.ApiKeySecret = null;
+                if (options.Region == "") options.Region = null;
+                if (options.Edge == "") options.Edge = null;
+                if (options.LogLevel == "") options.LogLevel = null;
+
+                var authTokenFallback = twilioSection["AuthToken"];
+                if (options.AuthToken == null && string.IsNullOrEmpty(authTokenFallback) == false) 
+                    options.AuthToken = authTokenFallback;
             });
             optionsBuilder.Services.AddSingleton<
                 IOptionsChangeTokenSource<TwilioClientOptions>,
@@ -211,38 +220,6 @@ namespace Twilio.AspNet.Core
             }
 
             return client;
-        }
-
-        private static void NullEmptyStrings(TwilioClientOptions opts) 
-        { 
-            if(opts.AccountSid != null && opts.AccountSid.Length == 0)
-            {
-                opts.AccountSid = null;
-            }
-            if (opts.AuthToken != null && opts.AuthToken.Length == 0)
-            {
-                opts.AuthToken = null;
-            }
-            if (opts.ApiKeySid != null && opts.ApiKeySid.Length == 0)
-            {
-                opts.ApiKeySid = null;
-            }
-            if (opts.ApiKeySecret != null && opts.ApiKeySecret.Length == 0)
-            {
-                opts.ApiKeySecret = null;
-            }
-            if (opts.Region != null && opts.Region.Length == 0)
-            {
-                opts.Region = null;
-            }
-            if (opts.Edge != null && opts.Edge.Length == 0)
-            {
-                opts.Edge = null;
-            }
-            if (opts.LogLevel != null && opts.LogLevel.Length == 0)
-            {
-                opts.LogLevel = null;
-            }
         }
     }
 }

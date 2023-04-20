@@ -10,21 +10,22 @@ namespace Twilio.AspNet.Core
         public static IServiceCollection AddTwilioRequestValidation(this IServiceCollection services)
         {
             var optionsBuilder = services.AddOptions<TwilioRequestValidationOptions>();
-            optionsBuilder.Configure<IConfiguration>((opts, config) =>
+            optionsBuilder.Configure<IConfiguration>((options, config) =>
             {
-                var section = config.GetSection("Twilio");
-                if (section.Exists() == false)
+                var twilioSection = config.GetSection("Twilio");
+                if (twilioSection.Exists() == false)
                 {
                     throw new Exception("Twilio options not configured.");
                 }
 
-                section.Bind(opts);
-                section = config.GetSection("Twilio:RequestValidation");
-                if (section.Exists())
-                {
-                    section.Bind(opts);
-                }
-                NullEmptyStrings(opts);
+                var requestValidationSection = config.GetSection("Twilio:RequestValidation");
+                requestValidationSection.Bind(options);
+                if (options.AuthToken == "") options.AuthToken = null;
+                if (options.BaseUrlOverride == "") options.BaseUrlOverride = null;
+
+                var authTokenFallback = twilioSection["AuthToken"];
+                if (options.AuthToken == null && string.IsNullOrEmpty(authTokenFallback) == false) 
+                    options.AuthToken = authTokenFallback;
             });
             
             optionsBuilder.Services.AddSingleton<
@@ -89,18 +90,6 @@ namespace Twilio.AspNet.Core
                 options => string.IsNullOrEmpty(options.AuthToken) == false,
                 "Twilio:AuthToken or Twilio:RequestValidation:AuthToken option is required."
             );
-        }
-
-        private static void NullEmptyStrings(TwilioRequestValidationOptions opts)
-        {
-            if (opts.AuthToken != null && opts.AuthToken.Length == 0)
-            {
-                opts.AuthToken = null;
-            }
-            if (opts.BaseUrlOverride != null && opts.BaseUrlOverride.Length == 0)
-            {
-                opts.BaseUrlOverride = null;
-            }
         }
     }
 }
