@@ -19,18 +19,18 @@ env:
       
 jobs:
   build:
+    uses: ./.github/workflows/CI.yml
     if: contains('["Swimburger","dprothero"]', github.actor)
     name: Build, test, and pack
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - uses: ./.github/actions/build
-        name: Build, test, and pack libraries
-        with:
-          libraryVersion: ${{ inputs.libraryVersion }}
+    permissions:
+      checks: write
+    with:
+      libraryVersion: ${{ inputs.libraryVersion }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
 
-  Release:
+  release:
+    if: contains('["Swimburger","dprothero"]', github.actor)
     runs-on: ubuntu-latest
     needs: [build]
     steps:
