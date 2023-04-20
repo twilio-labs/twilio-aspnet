@@ -18,14 +18,13 @@ namespace Twilio.AspNet.Core
                     throw new Exception("Twilio options not configured.");
                 }
 
-                ChangeEmptyStringToNull(section);
                 section.Bind(opts);
                 section = config.GetSection("Twilio:RequestValidation");
                 if (section.Exists())
                 {
-                    ChangeEmptyStringToNull(section);
                     section.Bind(opts);
                 }
+                NullEmptyStrings(opts);
             });
             
             optionsBuilder.Services.AddSingleton<
@@ -92,13 +91,15 @@ namespace Twilio.AspNet.Core
             );
         }
 
-        private static void ChangeEmptyStringToNull(IConfigurationSection configSection)
+        private static void NullEmptyStrings(TwilioRequestValidationOptions opts)
         {
-            if (configSection == null) return;
-            if (configSection.Value == "") configSection.Value = null;
-            foreach (var childConfigSection in configSection.GetChildren())
+            if (opts.AuthToken != null && opts.AuthToken.Length == 0)
             {
-                ChangeEmptyStringToNull(childConfigSection);
+                opts.AuthToken = null;
+            }
+            if (opts.BaseUrlOverride != null && opts.BaseUrlOverride.Length == 0)
+            {
+                opts.BaseUrlOverride = null;
             }
         }
     }

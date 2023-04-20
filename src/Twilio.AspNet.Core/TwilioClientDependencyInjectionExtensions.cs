@@ -96,7 +96,6 @@ namespace Twilio.AspNet.Core
                     throw new Exception("Twilio options not configured.");
                 }
 
-                ChangeEmptyStringToNull(section);
                 section.Bind(opts);
                 section = config.GetSection("Twilio:Client");
                 if (section.Exists() == false)
@@ -104,8 +103,8 @@ namespace Twilio.AspNet.Core
                     throw new Exception("Twilio:Client options not configured.");
                 }
 
-                ChangeEmptyStringToNull(section);
                 section.Bind(opts);
+                NullEmptyStrings(opts);
             });
             optionsBuilder.Services.AddSingleton<
                 IOptionsChangeTokenSource<TwilioClientOptions>,
@@ -214,13 +213,35 @@ namespace Twilio.AspNet.Core
             return client;
         }
 
-        private static void ChangeEmptyStringToNull(IConfigurationSection configSection)
-        {
-            if (configSection == null) return;
-            if (configSection.Value == "") configSection.Value = null;
-            foreach (var childConfigSection in configSection.GetChildren())
+        private static void NullEmptyStrings(TwilioClientOptions opts) 
+        { 
+            if(opts.AccountSid != null && opts.AccountSid.Length == 0)
             {
-                ChangeEmptyStringToNull(childConfigSection);
+                opts.AccountSid = null;
+            }
+            if (opts.AuthToken != null && opts.AuthToken.Length == 0)
+            {
+                opts.AuthToken = null;
+            }
+            if (opts.ApiKeySid != null && opts.ApiKeySid.Length == 0)
+            {
+                opts.ApiKeySid = null;
+            }
+            if (opts.ApiKeySecret != null && opts.ApiKeySecret.Length == 0)
+            {
+                opts.ApiKeySecret = null;
+            }
+            if (opts.Region != null && opts.Region.Length == 0)
+            {
+                opts.Region = null;
+            }
+            if (opts.Edge != null && opts.Edge.Length == 0)
+            {
+                opts.Edge = null;
+            }
+            if (opts.LogLevel != null && opts.LogLevel.Length == 0)
+            {
+                opts.LogLevel = null;
             }
         }
     }
