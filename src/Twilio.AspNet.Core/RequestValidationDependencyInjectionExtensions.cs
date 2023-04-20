@@ -10,22 +10,22 @@ namespace Twilio.AspNet.Core
         public static IServiceCollection AddTwilioRequestValidation(this IServiceCollection services)
         {
             var optionsBuilder = services.AddOptions<TwilioRequestValidationOptions>();
-            optionsBuilder.Configure<IConfiguration>((opts, config) =>
+            optionsBuilder.Configure<IConfiguration>((options, config) =>
             {
-                var section = config.GetSection("Twilio");
-                if (section.Exists() == false)
+                var twilioSection = config.GetSection("Twilio");
+                if (twilioSection.Exists() == false)
                 {
                     throw new Exception("Twilio options not configured.");
                 }
 
-                ChangeEmptyStringToNull(section);
-                section.Bind(opts);
-                section = config.GetSection("Twilio:RequestValidation");
-                if (section.Exists())
-                {
-                    ChangeEmptyStringToNull(section);
-                    section.Bind(opts);
-                }
+                var requestValidationSection = config.GetSection("Twilio:RequestValidation");
+                requestValidationSection.Bind(options);
+                if (options.AuthToken == "") options.AuthToken = null;
+                if (options.BaseUrlOverride == "") options.BaseUrlOverride = null;
+
+                var authTokenFallback = twilioSection["AuthToken"];
+                if (options.AuthToken == null && string.IsNullOrEmpty(authTokenFallback) == false) 
+                    options.AuthToken = authTokenFallback;
             });
             
             optionsBuilder.Services.AddSingleton<
@@ -90,16 +90,6 @@ namespace Twilio.AspNet.Core
                 options => string.IsNullOrEmpty(options.AuthToken) == false,
                 "Twilio:AuthToken or Twilio:RequestValidation:AuthToken option is required."
             );
-        }
-
-        private static void ChangeEmptyStringToNull(IConfigurationSection configSection)
-        {
-            if (configSection == null) return;
-            if (configSection.Value == "") configSection.Value = null;
-            foreach (var childConfigSection in configSection.GetChildren())
-            {
-                ChangeEmptyStringToNull(childConfigSection);
-            }
         }
     }
 }
