@@ -26,8 +26,7 @@ jobs:
       checks: write
     with:
       libraryVersion: ${{ inputs.libraryVersion }}
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit
 
   release:
     if: contains('["Swimburger","dprothero"]', github.actor)
