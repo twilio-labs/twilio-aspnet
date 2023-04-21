@@ -19,7 +19,7 @@ env:
       
 jobs:
   build:
-    uses: ./CI.yml
+    uses: ./.github/workflows/ci.yml
     if: contains('["Swimburger","dprothero"]', github.actor)
     name: Build, test, and pack
     permissions:
