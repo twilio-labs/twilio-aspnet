@@ -42,15 +42,15 @@ namespace Twilio.AspNet.Mvc
                         ?? requestValidationConfiguration?.AuthToken
                         ?? throw new Exception("Twilio Auth Token not configured");
 
-            BaseUrlOverride = appSettings["twilio:requestValidation:baseUrlOverride"]
-                              ?? requestValidationConfiguration?.BaseUrlOverride;
-            if (BaseUrlOverride != null) BaseUrlOverride = BaseUrlOverride.TrimEnd('/');
+            BaseUrlOverride = (appSettings["twilio:requestValidation:baseUrlOverride"]
+                               ?? requestValidationConfiguration?.BaseUrlOverride)
+                ?.TrimEnd('/');
 
             var allowLocalAppSetting = appSettings["twilio:requestValidation:allowLocal"];
             AllowLocal = allowLocalAppSetting != null
                 ? bool.Parse(allowLocalAppSetting)
                 : requestValidationConfiguration?.AllowLocal
-                ?? false;
+                  ?? false;
         }
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
