@@ -20,21 +20,17 @@ namespace Twilio.AspNet.Core
 
                 var requestValidationSection = config.GetSection("Twilio:RequestValidation");
                 requestValidationSection.Bind(options);
-                if (options.AuthToken == "") options.AuthToken = null;
-                if (options.BaseUrlOverride == "") options.BaseUrlOverride = null;
 
                 var authTokenFallback = twilioSection["AuthToken"];
-                if (options.AuthToken == null && string.IsNullOrEmpty(authTokenFallback) == false) 
+                if (string.IsNullOrEmpty(options.AuthToken) && !string.IsNullOrEmpty(authTokenFallback))
                     options.AuthToken = authTokenFallback;
             });
-            
             optionsBuilder.Services.AddSingleton<
                 IOptionsChangeTokenSource<TwilioRequestValidationOptions>,
                 ConfigurationChangeTokenSource<TwilioRequestValidationOptions>
             >();
-
-            Validate(optionsBuilder);
-
+            Sanitize(optionsBuilder); 
+            Validate(optionsBuilder); 
             return services;
         }
 
@@ -46,6 +42,7 @@ namespace Twilio.AspNet.Core
             var optionsBuilder = services.AddOptions<TwilioRequestValidationOptions>();
             optionsBuilder.Bind(namedConfigurationSection);
             Validate(optionsBuilder);
+            Sanitize(optionsBuilder);
             return services;
         }
 
@@ -55,7 +52,7 @@ namespace Twilio.AspNet.Core
             Action<TwilioRequestValidationOptions> configureOptions
         )
             => AddTwilioRequestValidation(services, (_, options) => configureOptions(options));
-        
+
         public static IServiceCollection AddTwilioRequestValidation(
             this IServiceCollection services,
             Action<IServiceProvider, TwilioRequestValidationOptions> configureOptions
@@ -63,6 +60,7 @@ namespace Twilio.AspNet.Core
         {
             var optionsBuilder = services.AddOptions<TwilioRequestValidationOptions>();
             optionsBuilder.Configure<IServiceProvider>((options, provider) => configureOptions(provider, options));
+            Sanitize(optionsBuilder);
             Validate(optionsBuilder);
             return services;
         }
@@ -79,9 +77,19 @@ namespace Twilio.AspNet.Core
                 optionsToConfigure.AllowLocal = options.AllowLocal;
                 optionsToConfigure.BaseUrlOverride = options.BaseUrlOverride;
             });
-            
+            Sanitize(optionsBuilder);
             Validate(optionsBuilder);
             return services;
+        }
+
+        private static void Sanitize(OptionsBuilder<TwilioRequestValidationOptions> optionsBuilder)
+        {
+            optionsBuilder.PostConfigure(options =>
+            {
+                if (options.AuthToken == "") options.AuthToken = null;
+                if (options.BaseUrlOverride == "") options.BaseUrlOverride = null;
+                if (options.BaseUrlOverride != null) options.BaseUrlOverride = options.BaseUrlOverride.TrimEnd('/');
+            });
         }
 
         private static void Validate(OptionsBuilder<TwilioRequestValidationOptions> optionsBuilder)

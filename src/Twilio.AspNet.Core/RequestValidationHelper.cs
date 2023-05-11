@@ -35,7 +35,7 @@ namespace Twilio.AspNet.Core
             string urlOverride = null;
             if (!string.IsNullOrEmpty(baseUrlOverride))
             {
-                urlOverride = $"{baseUrlOverride.AsSpan().TrimEnd('/')}{request.Path}{request.QueryString}";
+                urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
             }
 
             return await IsValidRequestAsync(context, authToken, urlOverride, allowLocal).ConfigureAwait(false);
