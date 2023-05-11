@@ -27,7 +27,7 @@ public class ValidateTwilioRequestTests
         {
             AuthToken = "My Twilio:RequestValidation:AuthToken",
             AllowLocal = false,
-            BaseUrlOverride = "https://example.localhost"
+            BaseUrlOverride = "https://example.localhost/"
         }
     };
 
@@ -55,7 +55,7 @@ public class ValidateTwilioRequestTests
             });
             c.Request.Headers.Add(
                 "X-Twilio-Signature", ValidationHelper.CalculateSignature(
-                    $"{ValidTwilioOptions.RequestValidation.BaseUrlOverride}{c.Request.Path}",
+                    $"{ValidTwilioOptions.RequestValidation.BaseUrlOverride.TrimEnd('/')}{c.Request.Path}",
                     ValidTwilioOptions.RequestValidation.AuthToken,
                     c.Request.Form
                 )

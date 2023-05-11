@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Twilio.AspNet.Core
             string urlOverride = null;
             if (!string.IsNullOrEmpty(baseUrlOverride))
             {
-                urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
+                urlOverride = $"{baseUrlOverride.AsSpan().TrimEnd('/')}{request.Path}{request.QueryString}";
             }
 
             return await IsValidRequestAsync(context, authToken, urlOverride, allowLocal).ConfigureAwait(false);
