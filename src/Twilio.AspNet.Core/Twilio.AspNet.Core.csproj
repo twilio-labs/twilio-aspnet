@@ -27,7 +27,7 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Twilio" Version="6.2.4" />
+    <PackageReference Include="Twilio" Version="7.1.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
     
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
