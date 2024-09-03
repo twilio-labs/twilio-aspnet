@@ -33,17 +33,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4.1.7
         name: Download Twilio.AspNet.Common NuGet Package
         with:
           name: Twilio.AspNet.Common NuGet Package
           
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4.1.7
         name: Download Twilio.AspNet.Core NuGet Package
         with:
           name: Twilio.AspNet.Core NuGet Package
           
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4.1.7
         name: Download Twilio.AspNet.Mvc NuGet Package
         with:
           name: Twilio.AspNet.Mvc NuGet Package
