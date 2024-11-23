@@ -3,6 +3,7 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetFramework>net462</TargetFramework>
+        <LangVersion>13</LangVersion>
         <Version>0.0.0-alpha</Version>
         <PackageId>Twilio.AspNet.Mvc</PackageId>
         <PackageVersion>0.0.0-alpha</PackageVersion>
@@ -47,6 +48,10 @@
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Twilio" Version="7.7.0" />
         <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">

@@ -81,11 +81,10 @@ public class TwilioClientOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
+            .AddInMemoryCollection([
                 new KeyValuePair<string, string>("Twilio:AuthToken", ValidTwilioOptions.AuthToken),
                 new KeyValuePair<string, string>("Twilio:Client:AccountSid", ValidTwilioOptions.Client.AccountSid)
-            })
+            ])
             .Build();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
@@ -164,11 +163,10 @@ public class TwilioClientOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
+            .AddInMemoryCollection([
                 new KeyValuePair<string, string>("Twilio:Client:AccountSid", "AccountSid"),
-                new KeyValuePair<string, string>("Twilio:Client:AuthToken", "AuthToken"),
-            }).Build();
+                new KeyValuePair<string, string>("Twilio:Client:AuthToken", "AuthToken")
+            ]).Build();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddTwilioClient();
 
@@ -187,12 +185,11 @@ public class TwilioClientOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
+            .AddInMemoryCollection([
                 new KeyValuePair<string, string>("Twilio:Client:AccountSid", "AccountSid"),
                 new KeyValuePair<string, string>("Twilio:Client:ApiKeySid", "ApiKeySid"),
-                new KeyValuePair<string, string>("Twilio:Client:ApiKeySecret", "ApiKeySecret"),
-            }).Build();
+                new KeyValuePair<string, string>("Twilio:Client:ApiKeySecret", "ApiKeySecret")
+            ]).Build();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddTwilioClient();
 

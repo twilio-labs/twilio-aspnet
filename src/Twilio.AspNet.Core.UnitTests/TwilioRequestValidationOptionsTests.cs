@@ -50,8 +50,7 @@ public class AddTwilioRequestValidationOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
+            .AddInMemoryCollection([
                 new KeyValuePair<string, string>("Twilio:AuthToken", ValidTwilioOptions.AuthToken),
                 new KeyValuePair<string, string>(
                     "Twilio:RequestValidation:AuthToken", ValidTwilioOptions.RequestValidation.AuthToken),
@@ -59,7 +58,7 @@ public class AddTwilioRequestValidationOptionsTests
                     "Twilio:RequestValidation:BaseUrlOverride", ValidTwilioOptions.RequestValidation.BaseUrlOverride),
                 new KeyValuePair<string, string>(
                     "Twilio:RequestValidation:AllowLocal", ValidTwilioOptions.RequestValidation.AllowLocal.ToString())
-            })
+            ])
             .Build();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
@@ -79,15 +78,14 @@ public class AddTwilioRequestValidationOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
+            .AddInMemoryCollection([
                 new KeyValuePair<string, string>(
                     "Twilio:AuthToken", ValidTwilioOptions.RequestValidation.AuthToken),
                 new KeyValuePair<string, string>(
                     "Twilio:BaseUrlOverride", ValidTwilioOptions.RequestValidation.BaseUrlOverride),
                 new KeyValuePair<string, string>(
                     "Twilio:AllowLocal", ValidTwilioOptions.RequestValidation.AllowLocal.ToString())
-            })
+            ])
             .Build();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
@@ -122,10 +120,9 @@ public class AddTwilioRequestValidationOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
+            .AddInMemoryCollection([
                 new KeyValuePair<string, string>("Twilio:AuthToken", ValidTwilioOptions.AuthToken)
-            })
+            ])
             .Build();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
@@ -158,11 +155,10 @@ public class AddTwilioRequestValidationOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
+            .AddInMemoryCollection([
                 new KeyValuePair<string, string>("Twilio", null),
                 new KeyValuePair<string, string>("Twilio:RequestValidation:AuthToken", null)
-            }).Build();
+            ]).Build();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddTwilioRequestValidation();
