@@ -9,7 +9,7 @@
     <Description>Twilio request classes for handling Twilio webhooks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Refer to the changelog at https://github.com/twilio-labs/twilio-aspnet/blob/main/CHANGELOG.md</PackageReleaseNotes>
-    <Copyright>Copyright 2022 (c) Twilio, Inc. All rights reserved.</Copyright>
+    <Copyright>Copyright 2024 (c) Twilio, Inc. All rights reserved.</Copyright>
     <PackageTags>twilio;twiml;sms;voice;telephony;phone;aspnet</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/twilio/twilio-aspnet</PackageProjectUrl>
@@ -30,7 +30,7 @@
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

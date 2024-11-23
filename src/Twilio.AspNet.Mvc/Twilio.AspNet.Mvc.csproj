@@ -10,7 +10,7 @@
         <Description>Twilio helper library for ASP.NET MVC on .NET Framework.</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageReleaseNotes>Refer to the changelog at https://github.com/twilio-labs/twilio-aspnet/blob/main/CHANGELOG.md</PackageReleaseNotes>
-        <Copyright>Copyright 2022 (c) Twilio, Inc. All rights reserved.</Copyright>
+        <Copyright>Copyright 2024 (c) Twilio, Inc. All rights reserved.</Copyright>
         <PackageTags>twilio;twiml;sms;voice;telephony;phone;aspnet</PackageTags>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/twilio-labs/twilio-aspnet</PackageProjectUrl>
@@ -29,9 +29,7 @@
     <ItemGroup>
         <Reference Include="System" />
         <Reference Include="System.ComponentModel.Composition" />
-        <Reference Include="System.Configuration">
-            <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\System.Configuration.dll</HintPath>
-        </Reference>
+        <Reference Include="System.Configuration" />
         <Reference Include="System.Core" />
         <Reference Include="System.IO.Compression" />
         <Reference Include="System.Net" />
@@ -49,14 +47,14 @@
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Twilio" Version="6.2.4" />
+        <PackageReference Include="Twilio" Version="7.7.0" />
         <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.9" />
-        <PackageReference Include="NuGet.Build.Tasks.Pack" Version="6.5.0">
+        <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
+        <PackageReference Include="NuGet.Build.Tasks.Pack" Version="6.12.1">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>

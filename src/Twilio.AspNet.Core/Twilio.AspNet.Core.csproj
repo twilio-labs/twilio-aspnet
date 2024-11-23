@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net7.0;net8.0;net9.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <Version>0.0.0-alpha</Version>
     <PackageId>Twilio.AspNet.Core</PackageId>
@@ -9,7 +9,7 @@
     <Description>Twilio helper library for ASP.NET Core</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Refer to the changelog at https://github.com/twilio-labs/twilio-aspnet/blob/main/CHANGELOG.md</PackageReleaseNotes>
-    <Copyright>Copyright 2022 (c) Twilio, Inc. All rights reserved.</Copyright>
+    <Copyright>Copyright 2024 (c) Twilio, Inc. All rights reserved.</Copyright>
     <PackageTags>twilio;twiml;sms;voice;telephony;phone;aspnet</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/twilio-labs/twilio-aspnet</PackageProjectUrl>
@@ -21,31 +21,27 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <IsNet70Compatible>$([MSBuild]::IsTargetFrameworkCompatible($(TargetFramework), 'net7.0'))</IsNet70Compatible>
   </PropertyGroup>
   <PropertyGroup Condition="'$(CI)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Twilio" Version="6.2.4" />
+    <PackageReference Include="Twilio" Version="7.7.0" />
     <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
-    
+
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.3" />
-    
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    
+
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Twilio.AspNet.Core.UnitTests</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup>
-  <ItemGroup Condition="!$(IsNet70Compatible)">
-    <Compile Remove="ValidateTwilioRequestFilter.cs" />
   </ItemGroup>
 </Project>
