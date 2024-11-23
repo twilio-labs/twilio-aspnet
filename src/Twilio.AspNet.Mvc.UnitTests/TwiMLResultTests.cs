@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using Twilio.TwiML;
 using Xunit;
 
@@ -64,7 +62,7 @@ public class TwiMLResultTest
     [Fact]
     public void TestNullTwiml()
     {
-        var result = new TwiMLResult(null);
+        var result = new TwiMLResult(null!);
         result.ExecuteResult(_mocks.ControllerContext.Object);
 
         Assert.Equal(

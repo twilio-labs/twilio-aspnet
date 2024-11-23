@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
@@ -16,11 +14,11 @@ public class ContextMocks
     public Moq.Mock<HttpResponseBase> Response { get; set; }
     public Moq.Mock<ControllerContext> ControllerContext { get; set; }
 
-    public ContextMocks(bool isLocal, NameValueCollection form = null) : this("", isLocal, form)
+    public ContextMocks(bool isLocal, NameValueCollection? form = null) : this("", isLocal, form)
     {
     }
 
-    public ContextMocks(string urlOverride, bool isLocal, NameValueCollection form = null)
+    public ContextMocks(string urlOverride, bool isLocal, NameValueCollection? form = null)
     {
         var headers = new NameValueCollection();
         headers.Add("X-Twilio-Signature", CalculateSignature(urlOverride, form));
@@ -37,7 +35,7 @@ public class ContextMocks
         Request.Setup(x => x.IsLocal).Returns(isLocal);
         Request.Setup(x => x.Headers).Returns(headers);
         Request.Setup(x => x.Url).Returns(new Uri(FakeUrl));
-        if (form != null)
+        if (form is not null)
         {
             Request.Setup(x => x.HttpMethod).Returns("POST");
             Request.Setup(x => x.Form).Returns(form);
@@ -49,12 +47,12 @@ public class ContextMocks
     public const string FakeUrl = "https://api.example.com/webhook";
     public const string FakeAuthToken = "thisisafakeauthtoken";
         
-    private string CalculateSignature(string urlOverride, NameValueCollection form)
+    private string CalculateSignature(string? urlOverride, NameValueCollection? form)
     {
         var value = new StringBuilder();
         value.Append(string.IsNullOrEmpty(urlOverride) ? FakeUrl : urlOverride);
 
-        if (form != null)
+        if (form is not null)
         {
             var sortedKeys = form.AllKeys.OrderBy(k => k, StringComparer.Ordinal).ToList();
             foreach (var key in sortedKeys)

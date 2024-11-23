@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +34,7 @@ public partial class TwiMLResult : IActionResult
     private async Task WriteTwiMLToResponse(HttpResponse response)
     {
         response.ContentType = "application/xml";
-        if (_twiml == null)
+        if (_twiml is null)
         {
             await response.WriteAsync("<Response></Response>");
             return;

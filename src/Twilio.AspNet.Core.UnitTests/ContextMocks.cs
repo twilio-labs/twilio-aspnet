@@ -1,7 +1,4 @@
-using System;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Twilio.AspNet.Core.UnitTests;
@@ -11,12 +8,12 @@ public class ContextMocks
     public Moq.Mock<HttpContext> HttpContext { get; set; }
     public Moq.Mock<HttpRequest> Request { get; set; }
 
-    public ContextMocks(bool isLocal, FormCollection form = null, bool isProxied = false) : this("", isLocal, form,
+    public ContextMocks(bool isLocal, FormCollection? form = null, bool isProxied = false) : this("", isLocal, form,
         isProxied)
     {
     }
 
-    public ContextMocks(string urlOverride, bool isLocal, FormCollection form = null, bool isProxied = false)
+    public ContextMocks(string urlOverride, bool isLocal, FormCollection? form = null, bool isProxied = false)
     {
         var headers = new HeaderDictionary();
         headers.Add("X-Twilio-Signature", CalculateSignature(urlOverride, form));
@@ -41,7 +38,7 @@ public class ContextMocks
         Request.Setup(x => x.Host).Returns(new HostString(uri.Host));
         Request.Setup(x => x.Path).Returns(new PathString(uri.AbsolutePath));
 
-        if (form == null) return;
+        if (form is null) return;
         Request.Setup(x => x.Method).Returns("POST");
         Request.Setup(x => x.Form).Returns(form);
         Request.Setup(x => x.ReadFormAsync(new CancellationToken()))
@@ -52,7 +49,7 @@ public class ContextMocks
     public const string FakeUrl = "https://api.example.com/webhook";
     public const string FakeAuthToken = "thisisafakeauthtoken";
 
-    private static string CalculateSignature(string urlOverride, FormCollection form)
+    private static string CalculateSignature(string? urlOverride, FormCollection? form)
         => ValidationHelper.CalculateSignature(
             string.IsNullOrEmpty(urlOverride) ? FakeUrl : urlOverride,
             FakeAuthToken,

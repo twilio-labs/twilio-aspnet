@@ -11,7 +11,7 @@ public class StatusCallbackRequest : VoiceRequest
     /// </summary>
     public float CallDuration { get; set; }
 
-    public string Called { get; set; }
-    public string Caller { get; set; }
+    public string? Called { get; set; } 
+    public string? Caller { get; set; }
     public float Duration { get; set; }
 }

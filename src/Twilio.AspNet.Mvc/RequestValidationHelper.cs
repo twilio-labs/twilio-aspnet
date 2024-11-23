@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-using System.Linq;
 using System.Web;
 using Twilio.Security;
 
@@ -35,7 +34,7 @@ public static class RequestValidationHelper
     /// Skip validation for local requests. 
     /// ⚠️ Only use this during development, as this will make your application vulnerable to Server-Side Request Forgery.
     /// </param>
-    public static bool IsValidRequest(HttpContextBase context, string authToken, string urlOverride, bool allowLocal = false)
+    public static bool IsValidRequest(HttpContextBase context, string authToken, string? urlOverride, bool allowLocal = false)
     {
         if (allowLocal && context.Request.IsLocal && !context.Request.Headers.AllKeys.Contains("X-Forwarded-For"))
         {
@@ -46,8 +45,8 @@ public static class RequestValidationHelper
         var validator = new RequestValidator(authToken);
         return validator.Validate(
             url: fullUrl,
-            parameters: context.Request?.Form ?? new NameValueCollection(),
-            expected: context.Request?.Headers["X-Twilio-Signature"]
+            parameters: context.Request.Form ?? new NameValueCollection(),
+            expected: context.Request.Headers["X-Twilio-Signature"]
         );
     }
 }

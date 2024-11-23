@@ -24,7 +24,7 @@ public class TwiMLResult : ActionResult
         var encoding = response.Output.Encoding.BodyName;
         response.ContentType = "application/xml";
 
-        if (_dataTwiml == null)
+        if (_dataTwiml is null)
         {
             response.Output.Write($"<?xml version=\"1.0\" encoding=\"{encoding}\"?><Response></Response>");
             return;

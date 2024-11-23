@@ -1,5 +1,3 @@
-using System;
-using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -89,7 +87,7 @@ public static class TwilioClientDependencyInjectionExtensions
             {
                 throw new Exception("Twilio options not configured.");
             }
-                
+
             var clientSection = config.GetSection("Twilio:Client");
             if (clientSection.Exists() == false)
             {
@@ -99,7 +97,7 @@ public static class TwilioClientDependencyInjectionExtensions
             clientSection.Bind(options);
 
             var authTokenFallback = twilioSection["AuthToken"];
-            if (string.IsNullOrEmpty(options.AuthToken) && !string.IsNullOrEmpty(authTokenFallback)) 
+            if (string.IsNullOrEmpty(options.AuthToken) && !string.IsNullOrEmpty(authTokenFallback))
                 options.AuthToken = authTokenFallback;
         });
         optionsBuilder.Services.AddSingleton<
@@ -128,7 +126,7 @@ public static class TwilioClientDependencyInjectionExtensions
 
     private static void Sanitize(TwilioClientOptions options)
     {
-        if (options.AccountSid == "") options.AccountSid = null;
+        if (options.AccountSid == "") options.AccountSid = null!;
         if (options.AuthToken == "") options.AuthToken = null;
         if (options.ApiKeySid == "") options.ApiKeySid = null;
         if (options.ApiKeySecret == "") options.ApiKeySecret = null;
@@ -136,7 +134,7 @@ public static class TwilioClientDependencyInjectionExtensions
         if (options.Edge == "") options.Edge = null;
         if (options.LogLevel == "") options.LogLevel = null;
     }
-        
+
     private static void Validate(OptionsBuilder<TwilioClientOptions> optionsBuilder)
     {
         optionsBuilder.Validate(
@@ -166,11 +164,8 @@ public static class TwilioClientDependencyInjectionExtensions
     {
         if (options.CredentialType != CredentialType.Unspecified) return;
 
-        var isApiKeyConfigured = options.AccountSid != null &&
-                                 options.ApiKeySid != null &&
-                                 options.ApiKeySecret != null;
-        var isAuthTokenConfigured = options.AccountSid != null &&
-                                    options.AuthToken != null;
+        var isApiKeyConfigured = options is { AccountSid: not null, ApiKeySid: not null, ApiKeySecret: not null };
+        var isAuthTokenConfigured = options is { AccountSid: not null, AuthToken: not null };
 
         if (isApiKeyConfigured) options.CredentialType = CredentialType.ApiKey;
         else if (isAuthTokenConfigured) options.CredentialType = CredentialType.AuthToken;
@@ -211,7 +206,7 @@ public static class TwilioClientDependencyInjectionExtensions
                 throw new Exception("This code should be unreachable");
         }
 
-        if (options.LogLevel != null)
+        if (options.LogLevel is not null)
         {
             client.LogLevel = options.LogLevel;
         }

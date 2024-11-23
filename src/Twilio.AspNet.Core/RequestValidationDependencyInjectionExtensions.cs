@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -86,9 +85,9 @@ public static class RequestValidationDependencyInjectionExtensions
     {
         optionsBuilder.PostConfigure(options =>
         {
-            if (options.AuthToken == "") options.AuthToken = null;
+            if (options.AuthToken == "") options.AuthToken = null!;
             if (options.BaseUrlOverride == "") options.BaseUrlOverride = null;
-            if (options.BaseUrlOverride != null) options.BaseUrlOverride = options.BaseUrlOverride.TrimEnd('/');
+            if (options.BaseUrlOverride is not null) options.BaseUrlOverride = options.BaseUrlOverride.TrimEnd('/');
         });
     }
 

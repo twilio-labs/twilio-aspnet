@@ -3,7 +3,10 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetFramework>net471</TargetFramework>
+        <IsPackable>false</IsPackable>
         <LangVersion>13</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Microsoft.CSharp" />

@@ -1,5 +1,4 @@
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -11,7 +10,7 @@ namespace Twilio.AspNet.Core;
 /// </summary>
 public class ValidateTwilioRequestFilter : IEndpointFilter
 {
-    public async ValueTask<object> InvokeAsync(
+    public async ValueTask<object?> InvokeAsync(
         EndpointFilterInvocationContext efiContext,
         EndpointFilterDelegate next
     )

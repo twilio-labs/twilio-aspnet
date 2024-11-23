@@ -4,10 +4,13 @@
         <OutputType>Library</OutputType>
         <TargetFramework>net462</TargetFramework>
         <LangVersion>13</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
         <Version>0.0.0-alpha</Version>
         <PackageId>Twilio.AspNet.Mvc</PackageId>
         <PackageVersion>0.0.0-alpha</PackageVersion>
         <Authors>Twilio Labs</Authors>
+        <Title>Twilio helper library for ASP.NET MVC</Title>
         <Description>Twilio helper library for ASP.NET MVC on .NET Framework.</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageReleaseNotes>Refer to the changelog at https://github.com/twilio-labs/twilio-aspnet/blob/main/CHANGELOG.md</PackageReleaseNotes>
@@ -16,6 +19,7 @@
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/twilio-labs/twilio-aspnet</PackageProjectUrl>
         <RepositoryUrl>https://github.com/twilio-labs/twilio-aspnet.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
         <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
         <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>

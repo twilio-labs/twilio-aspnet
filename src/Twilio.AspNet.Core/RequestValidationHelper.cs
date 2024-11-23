@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,11 +24,11 @@ public static class RequestValidationHelper
 
         var authToken = options.AuthToken;
         var baseUrlOverride = options.BaseUrlOverride;
-        var allowLocal = options.AllowLocal;
+        var allowLocal = options.AllowLocal ?? false;
 
         var request = context.Request;
 
-        string urlOverride = null;
+        string? urlOverride = null;
         if (!string.IsNullOrEmpty(baseUrlOverride))
         {
             urlOverride = $"{baseUrlOverride}{request.Path}{request.QueryString}";
@@ -67,7 +64,7 @@ public static class RequestValidationHelper
     public static async Task<bool> IsValidRequestAsync(
         HttpContext context, 
         string authToken, 
-        string urlOverride, 
+        string? urlOverride, 
         bool allowLocal = false
     )
     {
@@ -107,7 +104,7 @@ public static class RequestValidationHelper
     public static bool IsValidRequest(
         HttpContext context, 
         string authToken, 
-        string urlOverride, 
+        string? urlOverride, 
         bool allowLocal = false
     )
     {
@@ -125,7 +122,7 @@ public static class RequestValidationHelper
             ? $"{request.Scheme}://{(request.IsHttps ? request.Host.Host : request.Host.ToUriComponent())}{request.Path}{request.QueryString}"
             : urlOverride;
 
-        Dictionary<string, string> parameters = null;
+        Dictionary<string, string>? parameters = null;
         if (request.HasFormContentType)
         {
             parameters = request.Form.ToDictionary(kv => kv.Key, kv => kv.Value.ToString());
@@ -148,9 +145,9 @@ public static class RequestValidationHelper
         }
 
         var connection = req.HttpContext.Connection;
-        if (connection.RemoteIpAddress != null)
+        if (connection.RemoteIpAddress is not null)
         {
-            if (connection.LocalIpAddress != null)
+            if (connection.LocalIpAddress is not null)
             {
                 return connection.RemoteIpAddress.Equals(connection.LocalIpAddress);
             }
@@ -159,7 +156,7 @@ public static class RequestValidationHelper
         }
 
         // for in memory TestServer or when dealing with default connection info
-        if (connection.RemoteIpAddress == null && connection.LocalIpAddress == null)
+        if (connection.RemoteIpAddress is null && connection.LocalIpAddress is null)
         {
             return true;
         }

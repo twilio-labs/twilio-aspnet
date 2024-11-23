@@ -1,5 +1,4 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Net;
 using System.Web.Mvc;
 
@@ -11,8 +10,8 @@ namespace Twilio.AspNet.Mvc;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Module)]
 public class ValidateRequestAttribute : ActionFilterAttribute
 {
-    protected internal string AuthToken { get; set; }
-    protected internal string BaseUrlOverride { get; set; }
+    protected internal string? AuthToken { get; set; }
+    protected internal string? BaseUrlOverride { get; set; }
     protected internal bool AllowLocal { get; set; }
 
     /// <summary>
@@ -47,7 +46,7 @@ public class ValidateRequestAttribute : ActionFilterAttribute
             ?.TrimEnd('/');
 
         var allowLocalAppSetting = appSettings["twilio:requestValidation:allowLocal"];
-        AllowLocal = allowLocalAppSetting != null
+        AllowLocal = allowLocalAppSetting is not null
             ? bool.Parse(allowLocalAppSetting)
             : requestValidationConfiguration?.AllowLocal
               ?? false;
@@ -56,13 +55,13 @@ public class ValidateRequestAttribute : ActionFilterAttribute
     public override void OnActionExecuting(ActionExecutingContext filterContext)
     {
         var httpContext = filterContext.HttpContext;
-        string urlOverride = null;
-        if (BaseUrlOverride != null)
+        string? urlOverride = null;
+        if (BaseUrlOverride is not null)
         {
             urlOverride = $"{BaseUrlOverride}{httpContext.Request.Path}{httpContext.Request.QueryString}";
         }
 
-        if (!RequestValidationHelper.IsValidRequest(filterContext.HttpContext, AuthToken, urlOverride, AllowLocal))
+        if (!RequestValidationHelper.IsValidRequest(filterContext.HttpContext, AuthToken!, urlOverride, AllowLocal))
         {
             filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
         }
