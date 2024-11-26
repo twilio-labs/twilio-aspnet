@@ -1,7 +1,4 @@
-using System;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Twilio.AspNet.Core.UnitTests;
@@ -11,12 +8,12 @@ public class ContextMocks
     public Moq.Mock<HttpContext> HttpContext { get; set; }
     public Moq.Mock<HttpRequest> Request { get; set; }
 
-    public ContextMocks(bool isLocal, FormCollection form = null, bool isProxied = false) : this("", isLocal, form,
+    public ContextMocks(bool isLocal, FormCollection? form = null, bool isProxied = false) : this("", isLocal, form,
         isProxied)
     {
     }
 
-    public ContextMocks(string urlOverride, bool isLocal, FormCollection form = null, bool isProxied = false)
+    public ContextMocks(string urlOverride, bool isLocal, FormCollection? form = null, bool isProxied = false)
     {
         var headers = new HeaderDictionary();
         headers.Add("X-Twilio-Signature", CalculateSignature(urlOverride, form));
@@ -35,29 +32,27 @@ public class ContextMocks
         Request.Setup(x => x.Headers).Returns(headers);
         Request.Setup(x => x.HttpContext).Returns(HttpContext.Object);
 
-        var uri = new Uri(ContextMocks.fakeUrl);
+        var uri = new Uri(FakeUrl);
         Request.Setup(x => x.QueryString).Returns(new QueryString(uri.Query));
         Request.Setup(x => x.Scheme).Returns(uri.Scheme);
         Request.Setup(x => x.Host).Returns(new HostString(uri.Host));
         Request.Setup(x => x.Path).Returns(new PathString(uri.AbsolutePath));
 
-        if (form != null)
-        {
-            Request.Setup(x => x.Method).Returns("POST");
-            Request.Setup(x => x.Form).Returns(form); 
-            Request.Setup(x => x.ReadFormAsync(new CancellationToken()))
-                .Returns(() => Task.FromResult((IFormCollection)form));
-            Request.Setup(x => x.HasFormContentType).Returns(true);
-        }
+        if (form is null) return;
+        Request.Setup(x => x.Method).Returns("POST");
+        Request.Setup(x => x.Form).Returns(form);
+        Request.Setup(x => x.ReadFormAsync(new CancellationToken()))
+            .Returns(() => Task.FromResult<IFormCollection>(form));
+        Request.Setup(x => x.HasFormContentType).Returns(true);
     }
 
-    public static string fakeUrl = "https://api.example.com/webhook";
-    public static string fakeAuthToken = "thisisafakeauthtoken";
+    public const string FakeUrl = "https://api.example.com/webhook";
+    public const string FakeAuthToken = "thisisafakeauthtoken";
 
-    private static string CalculateSignature(string urlOverride, FormCollection form)
+    private static string CalculateSignature(string? urlOverride, FormCollection? form)
         => ValidationHelper.CalculateSignature(
-            string.IsNullOrEmpty(urlOverride) ? fakeUrl : urlOverride,
-            fakeAuthToken,
+            string.IsNullOrEmpty(urlOverride) ? FakeUrl : urlOverride,
+            FakeAuthToken,
             form
         );
 }

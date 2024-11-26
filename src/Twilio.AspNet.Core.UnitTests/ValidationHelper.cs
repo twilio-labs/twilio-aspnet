@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Http;
@@ -8,10 +6,10 @@ namespace Twilio.AspNet.Core.UnitTests;
 
 internal static class ValidationHelper
 {
-    internal static string CalculateSignature(string url, string authToken, IFormCollection form)
+    internal static string CalculateSignature(string url, string authToken, IFormCollection? form)
     {
         var value = new StringBuilder(url);
-        if (form != null)
+        if (form is not null)
         {
             var sortedKeys = form.Keys.OrderBy(k => k, StringComparer.Ordinal).ToList();
             foreach (var key in sortedKeys)

@@ -1,9 +1,6 @@
-using System;
-using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -66,8 +63,8 @@ public class TwilioClientTests
         using var scope = host.Services.CreateScope();
         var twilioRestClients = new[]
         {
-            scope.ServiceProvider.GetService<TwilioRestClient>(),
-            (TwilioRestClient)scope.ServiceProvider.GetService<ITwilioRestClient>()
+            scope.ServiceProvider.GetRequiredService<TwilioRestClient>(),
+            (TwilioRestClient)scope.ServiceProvider.GetRequiredService<ITwilioRestClient>()
         };
         foreach (var client in twilioRestClients)
         {
@@ -82,15 +79,16 @@ public class TwilioClientTests
         using var scope = host.Services.CreateScope();
 
         var client = scope.ServiceProvider.GetRequiredService<TwilioRestClient>();
+        Assert.NotNull(ApiKeyTwilioOptions.Client);
         Assert.Equal(ApiKeyTwilioOptions.Client.Region, client.Region);
         Assert.Equal(ApiKeyTwilioOptions.Client.Edge, client.Edge);
         Assert.Equal(ApiKeyTwilioOptions.Client.AccountSid, client.AccountSid);
         Assert.Equal(ApiKeyTwilioOptions.Client.LogLevel, client.LogLevel);
         Assert.Equal(ApiKeyTwilioOptions.Client.ApiKeySid,
-            typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
+            typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(client));
         Assert.Equal(ApiKeyTwilioOptions.Client.ApiKeySecret,
-            typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
+            typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(client));
     }
 
@@ -101,15 +99,16 @@ public class TwilioClientTests
         using var scope = host.Services.CreateScope();
 
         var client = scope.ServiceProvider.GetRequiredService<TwilioRestClient>();
+        Assert.NotNull(AuthTokenTwilioOptions.Client);
         Assert.Equal(AuthTokenTwilioOptions.Client.Region, client.Region);
         Assert.Equal(AuthTokenTwilioOptions.Client.Edge, client.Edge);
         Assert.Equal(AuthTokenTwilioOptions.Client.AccountSid, client.AccountSid);
         Assert.Equal(AuthTokenTwilioOptions.Client.LogLevel, client.LogLevel);
         Assert.Equal(AuthTokenTwilioOptions.Client.AccountSid,
-            typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
+            typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(client));
         Assert.Equal(AuthTokenTwilioOptions.Client.AuthToken,
-            typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
+            typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(client));
     }
 
@@ -167,15 +166,16 @@ public class TwilioClientTests
         {
             var client = scope.ServiceProvider.GetRequiredService<TwilioRestClient>();
 
+            Assert.NotNull(ValidTwilioOptions.Client);
             Assert.Equal(ValidTwilioOptions.Client.Region, client.Region);
             Assert.Equal(ValidTwilioOptions.Client.Edge, client.Edge);
             Assert.Equal(ValidTwilioOptions.Client.AccountSid, client.AccountSid);
             Assert.Equal(ValidTwilioOptions.Client.LogLevel, client.LogLevel);
             Assert.Equal(ValidTwilioOptions.Client.ApiKeySid,
-                typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
+                typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetValue(client));
             Assert.Equal(ValidTwilioOptions.Client.ApiKeySecret,
-                typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
+                typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetValue(client));
         }
 
@@ -211,10 +211,10 @@ public class TwilioClientTests
             Assert.Equal(updatedOptions.Client.AccountSid, client.AccountSid);
             Assert.Equal(updatedOptions.Client.LogLevel, client.LogLevel);
             Assert.Equal(updatedOptions.Client.AccountSid,
-                typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)!
+                typeof(TwilioRestClient).GetField("_username", BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetValue(client));
             Assert.Equal(updatedOptions.Client.AuthToken,
-                typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)!
+                typeof(TwilioRestClient).GetField("_password", BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetValue(client));
         }
     }
@@ -228,7 +228,7 @@ public class TwilioClientTests
         var twilioRestClient = scope.ServiceProvider.GetService<TwilioRestClient>();
 
         var actualHttpClient = (System.Net.Http.HttpClient)typeof(SystemNetHttpClient)
-            .GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)
             .GetValue(twilioRestClient.HttpClient);
 
         Assert.NotNull(actualHttpClient);

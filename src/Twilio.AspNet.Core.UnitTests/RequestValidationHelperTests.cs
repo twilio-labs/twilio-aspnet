@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Xunit;
@@ -30,7 +28,7 @@ public class RequestValidationHelperTests
     public void TestNoLocal()
     {
         var fakeContext = new ContextMocks(true).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, "bad-token", false);
+        var result = RequestValidationHelper.IsValidRequest(fakeContext, "bad-token");
 
         Assert.False(result);
     }
@@ -39,7 +37,7 @@ public class RequestValidationHelperTests
     public void TestNoForm()
     {
         var fakeContext = new ContextMocks(true).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
+        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.FakeAuthToken);
 
         Assert.True(result);
     }
@@ -52,7 +50,7 @@ public class RequestValidationHelperTests
         contextMocks.Request.Setup(x => x.Method).Returns("POST");
         contextMocks.Request.Setup(x => x.Form).Throws(new Exception("poof!"));
 
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
+        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.FakeAuthToken);
 
         Assert.True(result);
     }
@@ -62,8 +60,7 @@ public class RequestValidationHelperTests
     {
         var fakeContext = new ContextMocks(true).HttpContext.Object;
         var result =
-            RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, "https://example.com/",
-                false);
+            RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.FakeAuthToken, "https://example.com/");
 
         Assert.False(result);
     }
@@ -73,8 +70,7 @@ public class RequestValidationHelperTests
     {
         var fakeContext = new ContextMocks("https://example.com/", true).HttpContext.Object;
         var result =
-            RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, "https://example.com/",
-                false);
+            RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.FakeAuthToken, "https://example.com/");
 
         Assert.True(result);
     }
@@ -88,7 +84,7 @@ public class RequestValidationHelperTests
             { "key2", "value2" }
         });
         var fakeContext = new ContextMocks(true, form).HttpContext.Object;
-        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.fakeAuthToken, false);
+        var result = RequestValidationHelper.IsValidRequest(fakeContext, ContextMocks.FakeAuthToken);
 
         Assert.True(result);
     }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -53,13 +49,11 @@ public class ValidateTwilioRequestTests
                 { "From", "+1234567890" },
                 { "Body", "Ahoy!" }
             });
-            c.Request.Headers.Add(
-                "X-Twilio-Signature", ValidationHelper.CalculateSignature(
+            c.Request.Headers["X-Twilio-Signature"] = ValidationHelper.CalculateSignature(
                     $"{ValidTwilioOptions.RequestValidation.BaseUrlOverride.TrimEnd('/')}{c.Request.Path}",
                     ValidTwilioOptions.RequestValidation.AuthToken,
                     c.Request.Form
-                )
-            );
+                );
         });
 
         Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
@@ -87,7 +81,7 @@ public class ValidateTwilioRequestTests
                 { "From", "+1234567890" },
                 { "Body", "Ahoy!" }
             });
-            c.Request.Headers.Add("X-Twilio-Signature", "sldflsjf");
+            c.Request.Headers["X-Twilio-Signature"] = "sldflsjf";
         });
 
         Assert.Equal(StatusCodes.Status403Forbidden, context.Response.StatusCode);
@@ -121,13 +115,12 @@ public class ValidateTwilioRequestTests
                 { "From", "+1234567890" },
                 { "Body", "Ahoy!" }
             });
-            c.Request.Headers.Add(
-                "X-Twilio-Signature", ValidationHelper.CalculateSignature(
+            c.Request.Headers["X-Twilio-Signature"] = ValidationHelper.CalculateSignature(
                     $"{ValidTwilioOptions.RequestValidation.BaseUrlOverride.TrimEnd('/')}{c.Request.Path}",
                     ValidTwilioOptions.RequestValidation.AuthToken,
                     c.Request.Form
                 )
-            );
+;
         });
 
         Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
@@ -158,13 +151,12 @@ public class ValidateTwilioRequestTests
                 { "From", "+1234567890" },
                 { "Body", "Ahoy!" }
             });
-            c.Request.Headers.Add(
-                "X-Twilio-Signature", ValidationHelper.CalculateSignature(
+            c.Request.Headers["X-Twilio-Signature"] = ValidationHelper.CalculateSignature(
                     $"{updatedOptions.RequestValidation.BaseUrlOverride.TrimEnd('/')}{c.Request.Path}",
                     updatedOptions.RequestValidation.AuthToken,
                     c.Request.Form
                 )
-            );
+;
         });
 
         Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
@@ -190,7 +182,7 @@ public class ValidateTwilioRequestTests
             c.Request.Host = new HostString("localhost");
             c.Request.Method = HttpMethods.Post;
             c.Request.Path = "/sms";
-            c.Request.Headers.Add("X-Twilio-Signature", "sdfsjf");
+            c.Request.Headers["X-Twilio-Signature"] = "sdfsjf";
         });
 
         Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);

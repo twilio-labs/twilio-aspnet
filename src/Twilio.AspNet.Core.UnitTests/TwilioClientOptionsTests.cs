@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -35,7 +32,7 @@ public class TwilioClientOptionsTests
         serviceCollection.AddSingleton(BuildEmptyConfiguration());
         serviceCollection.AddTwilioClient((_, options) =>
         {
-            var client = ValidTwilioOptions.Client;
+            var client = ValidTwilioOptions.Client ?? throw new Exception("Client options not configured.");
             options.AccountSid = client.AccountSid;
             options.AuthToken = client.AuthToken;
             options.ApiKeySid = client.ApiKeySid;
@@ -81,11 +78,10 @@ public class TwilioClientOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
-                new KeyValuePair<string, string>("Twilio:AuthToken", ValidTwilioOptions.AuthToken),
-                new KeyValuePair<string, string>("Twilio:Client:AccountSid", ValidTwilioOptions.Client.AccountSid)
-            })
+            .AddInMemoryCollection([
+                new KeyValuePair<string, string?>("Twilio:AuthToken", ValidTwilioOptions.AuthToken),
+                new KeyValuePair<string, string?>("Twilio:Client:AccountSid", ValidTwilioOptions.Client.AccountSid)
+            ])
             .Build();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
@@ -164,11 +160,10 @@ public class TwilioClientOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
-                new KeyValuePair<string, string>("Twilio:Client:AccountSid", "AccountSid"),
-                new KeyValuePair<string, string>("Twilio:Client:AuthToken", "AuthToken"),
-            }).Build();
+            .AddInMemoryCollection([
+                new KeyValuePair<string, string?>("Twilio:Client:AccountSid", "AccountSid"),
+                new KeyValuePair<string, string?>("Twilio:Client:AuthToken", "AuthToken")
+            ]).Build();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddTwilioClient();
 
@@ -187,12 +182,11 @@ public class TwilioClientOptionsTests
     {
         var serviceCollection = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new[]
-            {
-                new KeyValuePair<string, string>("Twilio:Client:AccountSid", "AccountSid"),
-                new KeyValuePair<string, string>("Twilio:Client:ApiKeySid", "ApiKeySid"),
-                new KeyValuePair<string, string>("Twilio:Client:ApiKeySecret", "ApiKeySecret"),
-            }).Build();
+            .AddInMemoryCollection([
+                new KeyValuePair<string, string?>("Twilio:Client:AccountSid", "AccountSid"),
+                new KeyValuePair<string, string?>("Twilio:Client:ApiKeySid", "ApiKeySid"),
+                new KeyValuePair<string, string?>("Twilio:Client:ApiKeySecret", "ApiKeySecret")
+            ]).Build();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddTwilioClient();
 
