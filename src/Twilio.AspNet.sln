@@ -31,6 +31,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Mvc.UnitTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Core.UnitTests", "Twilio.AspNet.Core.UnitTests\Twilio.AspNet.Core.UnitTests.csproj", "{B3E732C9-27EF-4E96-B620-5B5DA57D9AD3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{9B3D65CE-AF46-4122-885D-1CFE42D5EAFB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{4CAACCDD-6731-4617-9DE4-B6495B96DE08}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\ci.yml = ..\.github\workflows\ci.yml
+		..\.github\workflows\release.yml = ..\.github\workflows\release.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,5 +71,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D0F9171-129A-4B05-809E-F501DBC23197}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9B3D65CE-AF46-4122-885D-1CFE42D5EAFB} = {339A75DF-3315-4CF3-9FD9-DAF1B0DB50B2}
+		{4CAACCDD-6731-4617-9DE4-B6495B96DE08} = {9B3D65CE-AF46-4122-885D-1CFE42D5EAFB}
 	EndGlobalSection
 EndGlobal

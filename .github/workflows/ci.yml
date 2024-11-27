@@ -109,20 +109,12 @@ jobs:
         shell: pwsh
       
       - name: (Twilio.AspNet.Core.UnitTests) Test
-        run: dotnet test --no-build --logger trx
+        run: dotnet test --no-build --no-restore
         working-directory: src/Twilio.AspNet.Core.UnitTests/
         shell: pwsh
 
-      - name: (Twilio.AspNet.Core.UnitTests) Report Tests
-        uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
-        with:
-          name: Twilio.AspNet.Core.UnitTests
-          path: src/Twilio.AspNet.Core.UnitTests/TestResults/*.trx
-          reporter: dotnet-trx
-        
       - name: (Twilio.AspNet.Core) Pack
-        run: dotnet pack -c Release -o ..\..\
+        run: dotnet pack --no-build --no-restore -c Release -o ..\..\ 
         working-directory: src/Twilio.AspNet.Core/
         shell: pwsh
 
@@ -156,20 +148,12 @@ jobs:
         shell: pwsh
         
       - name: (Twilio.AspNet.Mvc.UnitTests) Test
-        run: dotnet test --no-build --logger trx
+        run: dotnet test --no-build --no-restore
         working-directory: src/Twilio.AspNet.Mvc.UnitTests/
         shell: pwsh
         
-      - name: (Twilio.AspNet.Mvc.UnitTests) Report Tests
-        uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
-        with:
-          name: Twilio.AspNet.Mvc.UnitTests
-          path: src/Twilio.AspNet.Mvc.UnitTests/TestResults/*.trx
-          reporter: dotnet-trx
-        
       - name: (Twilio.AspNet.Mvc) Pack
-        run: dotnet pack -c Release -o ..\..\
+        run: dotnet pack --no-build --no-restore -c Release -o ..\..\
         working-directory: src/Twilio.AspNet.Mvc/
         shell: pwsh
         
