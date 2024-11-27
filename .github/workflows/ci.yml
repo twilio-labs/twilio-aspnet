@@ -42,13 +42,12 @@ jobs:
     permissions:
       checks: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 7.0.x
-          dotnet-quality: ga
+          dotnet-version: 9.x
 
       - name: Update project versions
         run: |
