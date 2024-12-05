@@ -41,9 +41,15 @@ public class SmsRequest : TwilioRequest
     /// The number of media items associated with your message
     /// </summary>
     public int NumMedia { get; set; }
-        
+
     /// <summary>
     /// The number of media items associated with a "Click to WhatsApp" advertisement.
     /// </summary>
     public int ReferralNumMedia { get; set; }
+
+    /// <summary>
+    /// The number of media files associated with the Message resource
+    /// </summary>
+    public int NumSegments { get; set; }
+    
 }
