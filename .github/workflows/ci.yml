@@ -8,7 +8,7 @@ on:
         default: 0.0.0-alpha
         required: false
         type: string
-        
+
   push:
     branches: [ "main" ]
     paths:
@@ -30,11 +30,11 @@ on:
         description: 'The version of the library to use when compiling and packaging.'
         required: true
 
-env: 
+env:
   CI: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_NOLOGO: true
-      
+
 jobs:
   build:
     name: Build, test, and pack
@@ -42,13 +42,12 @@ jobs:
     permissions:
       checks: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 7.0.x
-          dotnet-quality: ga
+          dotnet-version: 9.x
 
       - name: Update project versions
         run: |
@@ -62,67 +61,59 @@ jobs:
               }
           }
         shell: pwsh
-          
+
       # Build and pack Twilio.AspNet.Common
       - name: (Twilio.AspNet.Common) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Common/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Common) Build
         run: dotnet build --no-restore --configuration Release
         working-directory: src/Twilio.AspNet.Common/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Common) Pack
         run: dotnet pack -c Release -o ..\..\
         working-directory: src/Twilio.AspNet.Common/
         shell: pwsh
 
       - name: (Twilio.AspNet.Common) Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Twilio.AspNet.Common NuGet Package
           path: |
             Twilio.AspNet.Common.${{ inputs.libraryVersion || '0.0.0-alpha' }}.nupkg
             Twilio.AspNet.Common.${{ inputs.libraryVersion || '0.0.0-alpha' }}.snupkg
-        
+
       # Build, test, and pack Twilio.AspNet.Core
       - name: (Twilio.AspNet.Core) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Core/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Core) Build
         run: dotnet build --no-restore --configuration Release
         working-directory: src/Twilio.AspNet.Core/
         shell: pwsh
-      
+
       - name: (Twilio.AspNet.Core.UnitTests) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Core.UnitTests/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Core.UnitTests) Build
         run: dotnet build --no-restore
         working-directory: src/Twilio.AspNet.Core.UnitTests/
         shell: pwsh
-      
+
       - name: (Twilio.AspNet.Core.UnitTests) Test
-        run: dotnet test --no-build --logger trx
+        run: dotnet test --no-build --no-restore
         working-directory: src/Twilio.AspNet.Core.UnitTests/
         shell: pwsh
 
-      - name: (Twilio.AspNet.Core.UnitTests) Report Tests
-        uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
-        with:
-          name: Twilio.AspNet.Core.UnitTests
-          path: src/Twilio.AspNet.Core.UnitTests/TestResults/*.trx
-          reporter: dotnet-trx
-        
       - name: (Twilio.AspNet.Core) Pack
-        run: dotnet pack -c Release -o ..\..\
+        run: dotnet pack --no-build --no-restore -c Release -o ..\..\ 
         working-directory: src/Twilio.AspNet.Core/
         shell: pwsh
 
@@ -133,48 +124,40 @@ jobs:
           path: |
             Twilio.AspNet.Core.${{ inputs.libraryVersion || '0.0.0-alpha' }}.nupkg
             Twilio.AspNet.Core.${{ inputs.libraryVersion || '0.0.0-alpha' }}.snupkg
-        
+
       # Build, test, and pack Twilio.AspNet.Mvc
       - name: (Twilio.AspNet.Mvc) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Mvc/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Mvc) Build
         run: dotnet build --no-restore --configuration Release
         working-directory: src/Twilio.AspNet.Mvc/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Mvc.UnitTests) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Mvc.UnitTests/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Mvc.UnitTests) Build
         run: dotnet build --no-restore
         working-directory: src/Twilio.AspNet.Mvc.UnitTests/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Mvc.UnitTests) Test
-        run: dotnet test --no-build --logger trx
+        run: dotnet test --no-build --no-restore
         working-directory: src/Twilio.AspNet.Mvc.UnitTests/
         shell: pwsh
         
-      - name: (Twilio.AspNet.Mvc.UnitTests) Report Tests
-        uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
-        with:
-          name: Twilio.AspNet.Mvc.UnitTests
-          path: src/Twilio.AspNet.Mvc.UnitTests/TestResults/*.trx
-          reporter: dotnet-trx
-        
       - name: (Twilio.AspNet.Mvc) Pack
-        run: dotnet pack -c Release -o ..\..\
+        run: dotnet pack --no-build --no-restore -c Release -o ..\..\
         working-directory: src/Twilio.AspNet.Mvc/
         shell: pwsh
-        
+
       - name: (Twilio.AspNet.Mvc) Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Twilio.AspNet.Mvc NuGet Package
           path: |

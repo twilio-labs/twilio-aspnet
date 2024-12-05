@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 $originalLocation = Get-Location
 
 function Remove-EntirePath() {

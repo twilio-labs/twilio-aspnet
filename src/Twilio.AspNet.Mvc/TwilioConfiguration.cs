@@ -1,36 +1,35 @@
 ﻿using System.Configuration;
 
-namespace Twilio.AspNet.Mvc
+namespace Twilio.AspNet.Mvc;
+
+public class RequestValidationConfigurationSection : ConfigurationSection
 {
-    public class RequestValidationConfigurationSection : ConfigurationSection
+    [ConfigurationProperty("authToken")]
+    public string AuthToken
     {
-        [ConfigurationProperty("authToken")]
-        public string AuthToken
-        {
-            get => (string)this["authToken"];
-            set => this["authToken"] = value;
-        }
-
-        [ConfigurationProperty("baseUrlOverride")]
-        public string BaseUrlOverride
-        {
-            get => (string)this["baseUrlOverride"];
-            set => this["baseUrlOverride"] = value;
-        }
-
-        [ConfigurationProperty("allowLocal")]
-        public bool AllowLocal
-        {
-            get => (bool)this["allowLocal"];
-            set => this["allowLocal"] = value;
-        }
+        get => (string)this["authToken"];
+        set => this["authToken"] = value;
     }
 
-    public class TwilioSectionGroup : ConfigurationSectionGroup
+    [ConfigurationProperty("baseUrlOverride")]
+    public string BaseUrlOverride
     {
-
-        [ConfigurationProperty("requestValidation", IsRequired = false)]
-        public RequestValidationConfigurationSection RequestValidation 
-            => (RequestValidationConfigurationSection)Sections["requestValidation"];
+        get => (string)this["baseUrlOverride"];
+        set => this["baseUrlOverride"] = value;
     }
+
+    [ConfigurationProperty("allowLocal")]
+    public bool AllowLocal
+    {
+        get => (bool)this["allowLocal"];
+        set => this["allowLocal"] = value;
+    }
+}
+
+public class TwilioSectionGroup : ConfigurationSectionGroup
+{
+
+    [ConfigurationProperty("requestValidation", IsRequired = false)]
+    public RequestValidationConfigurationSection RequestValidation 
+        => (RequestValidationConfigurationSection)Sections["requestValidation"];
 }

@@ -552,7 +552,7 @@ bool IsValidTwilioRequest(HttpContext httpContext)
         ?.Value ?? throw new Exception("TwilioRequestValidationOptions missing.");
 
     string? urlOverride = null;
-    if (options.BaseUrlOverride != null)
+    if (options.BaseUrlOverride is not null)
     {
         var request = httpContext.Request;
         urlOverride = $"{options.BaseUrlOverride.TrimEnd('/')}{request.Path}{request.QueryString}";

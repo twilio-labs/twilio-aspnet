@@ -1,6 +1,7 @@
+#!/usr/bin/env pwsh
 function updateStandardCsproj() {
   Param($inputFileNameRelative, $targetVersion)
-  
+
   Write-Host "Updating : $inputFileNameRelative"
 
   $inputFileName = Join-Path $PSScriptRoot $inputFileNameRelative
