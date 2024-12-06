@@ -56,7 +56,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Twilio" Version="7.7.0" />
+        <PackageReference Include="Twilio" Version="7.8.0" />
         <PackageReference Include="Twilio.AspNet.Common" Version="0.0.0-alpha" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
             <PrivateAssets>all</PrivateAssets>
