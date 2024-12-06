@@ -19,7 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\LICENSE = ..\LICENSE
 		..\nuget.config = ..\nuget.config
 		..\README.md = ..\README.md
-		..\version_bump.ps1 = ..\version_bump.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Twilio.AspNet.Core", "Twilio.AspNet.Core\Twilio.AspNet.Core.csproj", "{0BFC96B4-9E96-499D-B6E3-C8D17BCF869F}"
