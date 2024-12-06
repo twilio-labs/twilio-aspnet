@@ -1,14 +1,7 @@
 name: CI Build
 
 on:
-  workflow_dispatch:
-    inputs:
-      libraryVersion:
-        description: 'The version of the library to use when compiling and packaging.'
-        default: 0.0.0-alpha
-        required: false
-        type: string
-
+  workflow_dispatch: {}
   push:
     branches: [ "main" ]
     paths:
@@ -23,17 +16,11 @@ on:
       - '.github/workflows/*'
       - '.github/actions/*'
 
-  workflow_call:
-    inputs:
-      libraryVersion:
-        type: string
-        description: 'The version of the library to use when compiling and packaging.'
-        required: true
-
 env:
   CI: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_NOLOGO: true
+  MSBUILDTERMINALLOGGER: off
 
 jobs:
   build:
@@ -49,117 +36,89 @@ jobs:
         with:
           dotnet-version: 9.x
 
-      - name: Update project versions
-        run: |
-          Get-ChildItem **/*.csproj -Recurse | ForEach-Object {
-              $FileContent = Get-Content $_
-              $NewVersion = '${{ inputs.libraryVersion }}'
-              if($NewVersion -eq '') { Return }
-              If($FileContent -like '*0.0.0-alpha*')
-              {
-                  $FileContent -replace '0.0.0-alpha',$NewVersion | Set-Content -Path $_
-              }
-          }
-        shell: pwsh
-
       # Build and pack Twilio.AspNet.Common
       - name: (Twilio.AspNet.Common) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Common/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Common) Build
         run: dotnet build --no-restore --configuration Release
         working-directory: src/Twilio.AspNet.Common/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Common) Pack
-        run: dotnet pack -c Release -o ..\..\
+        run: dotnet pack --no-restore --no-build  --configuration Release --output ..\..\
         working-directory: src/Twilio.AspNet.Common/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Common) Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Twilio.AspNet.Common NuGet Package
           path: |
-            Twilio.AspNet.Common.${{ inputs.libraryVersion || '0.0.0-alpha' }}.nupkg
-            Twilio.AspNet.Common.${{ inputs.libraryVersion || '0.0.0-alpha' }}.snupkg
+            Twilio.AspNet.Common.*.nupkg
+            Twilio.AspNet.Common.*.snupkg
 
       # Build, test, and pack Twilio.AspNet.Core
       - name: (Twilio.AspNet.Core) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Core/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Core) Build
         run: dotnet build --no-restore --configuration Release
         working-directory: src/Twilio.AspNet.Core/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Core.UnitTests) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Core.UnitTests/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Core.UnitTests) Build
         run: dotnet build --no-restore
         working-directory: src/Twilio.AspNet.Core.UnitTests/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Core.UnitTests) Test
-        run: dotnet test --no-build --no-restore
+        run: dotnet test --no-restore --no-build
         working-directory: src/Twilio.AspNet.Core.UnitTests/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Core) Pack
-        run: dotnet pack --no-build --no-restore -c Release -o ..\..\ 
+        run: dotnet pack --no-restore --no-build --configuration Release --output ..\..\ 
         working-directory: src/Twilio.AspNet.Core/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Core) Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Twilio.AspNet.Core NuGet Package
           path: |
-            Twilio.AspNet.Core.${{ inputs.libraryVersion || '0.0.0-alpha' }}.nupkg
-            Twilio.AspNet.Core.${{ inputs.libraryVersion || '0.0.0-alpha' }}.snupkg
+            Twilio.AspNet.Core.*.nupkg
+            Twilio.AspNet.Core.*.snupkg
 
       # Build, test, and pack Twilio.AspNet.Mvc
       - name: (Twilio.AspNet.Mvc) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Mvc/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Mvc) Build
         run: dotnet build --no-restore --configuration Release
         working-directory: src/Twilio.AspNet.Mvc/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Mvc.UnitTests) Restore
         run: dotnet restore
         working-directory: src/Twilio.AspNet.Mvc.UnitTests/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Mvc.UnitTests) Build
         run: dotnet build --no-restore
         working-directory: src/Twilio.AspNet.Mvc.UnitTests/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Mvc.UnitTests) Test
         run: dotnet test --no-build --no-restore
         working-directory: src/Twilio.AspNet.Mvc.UnitTests/
-        shell: pwsh
         
       - name: (Twilio.AspNet.Mvc) Pack
-        run: dotnet pack --no-build --no-restore -c Release -o ..\..\
+        run: dotnet pack --no-build --no-restore --configuration Release --output ..\..\
         working-directory: src/Twilio.AspNet.Mvc/
-        shell: pwsh
 
       - name: (Twilio.AspNet.Mvc) Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Twilio.AspNet.Mvc NuGet Package
           path: |
-            Twilio.AspNet.Mvc.${{ inputs.libraryVersion || '0.0.0-alpha' }}.nupkg
-            Twilio.AspNet.Mvc.${{ inputs.libraryVersion || '0.0.0-alpha' }}.snupkg
+            Twilio.AspNet.Mvc.*.nupkg
+            Twilio.AspNet.Mvc.*.snupkg
