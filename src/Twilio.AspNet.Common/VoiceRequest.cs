@@ -166,4 +166,45 @@ public class VoiceRequest : TwilioRequest
     public string? SipSourceIp { get; set; }
 
     #endregion
+
+    #region Conversation Relay Parameters
+
+    /// <summary>
+    /// A unique identifier for the application 
+    /// </summary>
+    public string? ApplicationSid { get; set; }
+
+    /// <summary>
+    /// A unique identifier for the Conversation Relay Session 
+    /// </summary>
+    public string? SessionId { get; set; }
+
+    /// <summary>
+    /// The status of the session: ended, failed, completed, in-progress
+    /// </summary>
+    public string? SessionStatus { get; set; }
+
+    /// <summary>
+    /// Duration of the Conversation Relay Session 
+    /// </summary>
+    public string? SessionDuration { get; set; }
+
+    /// <summary>
+    /// Error Code from the Conversation Relay Session 
+    /// </summary>
+    public string? ErrorCode { get; set; }
+
+    /// <summary>
+    /// Error Message from the Conversation Relay Session 
+    /// </summary>
+    public string? ErrorMessage { get; set; }
+    
+    /// <summary>
+    /// The string of escaped JSON returned from an End session message in Conversation Relay
+    /// https://www.twilio.com/docs/voice/twiml/connect/conversationrelay#end-session-message
+    /// https://www.twilio.com/docs/voice/twiml/connect/conversationrelay#connect-action-url-callback
+    /// </summary>
+    public string? HandoffData { get; set; }
+
+    #endregion
 }
