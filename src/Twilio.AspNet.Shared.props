@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/twilio-labs/twilio-aspnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/twilio-labs/twilio-aspnet.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageIconUrl>https://s3.amazonaws.com/com.twilio.prod.twilio-docs/images/twilio-icon-64x64.png</PackageIconUrl>
+    <PackageIconUrl>https://github.com/twilio-labs/twilio-aspnet/blob/main/icon.png?raw=true</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
